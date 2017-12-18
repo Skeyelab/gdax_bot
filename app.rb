@@ -6,7 +6,7 @@ require 'bundler'
 Bundler.require
 Dotenv.load
 
-load 'functions.rb'
+Dir["./inc/*.rb"].each {|file| require file }
 
 redis = Redis.new
 require 'rubygems'
