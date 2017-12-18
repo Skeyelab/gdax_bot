@@ -105,7 +105,7 @@ def update_accounts
   return accounts
 end
 
-def update_orders
+def orders
   rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   orders = []
