@@ -3,7 +3,9 @@ require 'bundler'
 Bundler.require
 Dotenv.load
 
-load 'functions.rb'
+#load 'functions.rb'
+
+Dir["./inc/*.rb"].each {|file| require file }
 
 redis = Redis.new
 
@@ -19,6 +21,3 @@ end
 
 orders = update_orders
 binding.pry
-
-#watch_order_and_rebuy(orders[0], 9300)
-#watch_order_and_sell(orders[0], 10510)
