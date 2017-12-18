@@ -95,36 +95,16 @@ end
 def watch_order_and_rebuy (order, rebuy_level)
   rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
-  puts "Checking on order #{order.id}"
-  loop do
-    begin
-      rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
-      if rest_api.order(order.id)["settled"]
-        break
-      else
-        sleep 1.0/3.0
-        print "."
-      end
-    rescue Coinbase::Exchange::NotFoundError => e
-      if e.message == "{\"message\":\"NotFound\"}"
-        puts "Order not found"
-        return
-        puts "Error, retrying"
-        sleep 1
-        retry
-      end
-    end
-    puts ""
-    proceeds = (order["price"].to_f * order["size"].to_f).round_down(2)
-    order_size = (proceeds/rebuy_level).round_down(8)
+  watch_order(order)
 
-    puts "Rebuying #{order_size} BTC @ $#{rebuy_level}"
 
-    rest_api.buy(order_size, rebuy_level) do |resp|
-      puts "Order ID is #{resp.id}"
-    end
+  order_size = ((bal(order.product_id) * 0.99)/rebuy_level).round_down(5)
+
+  puts "Rebuying #{order_size} BTC @ $#{rebuy_level}"
+  open_order = rest_api.buy(order_size, rebuy_level)
+
   end
-end
+
 
 def spread
   rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
@@ -133,7 +113,7 @@ def spread
   end
 end
 
-def market_skim(times=2, pair="ETH-BTC", percent_of_portfolio=0.99)
+def market_skim(times=2, pair="ETH-BTC", percent_of_portfolio=0.99, down=0.00002, up=0.00002)
 
 
   redis = Redis.new
@@ -144,7 +124,7 @@ def market_skim(times=2, pair="ETH-BTC", percent_of_portfolio=0.99)
     spot = "%.5f" % redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}")
     puts "Spot: #{spot}"
     begin
-      open_position((spot.to_f - 0.00002).round_down(5), (spot.to_f + 0.00002).round_down(5), percent_of_portfolio, pair)
+      open_position((spot.to_f - down).round_down(5), (spot.to_f + up).round_down(5), percent_of_portfolio, pair)
 
     rescue => exception
       puts exception
@@ -181,128 +161,130 @@ def open_position (open_price, close_price, percent_of_portfolio, pair="BTC-USD"
 
   #binding.pry
   order_size = (bal(pair) * percent_of_portfolio)/open_price
-  
-  open_order = rest_api.buy(order_size.round_down(8),open_price)
 
-  close_position(open_order, close_price)
-  sleep 1
-end
+                open_order = rest_api.buy(order_size.round_down(8),open_price)
 
-
-def watch_order(order)
-  redis = Redis.new
-
-  pair = order.product_id
-
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair )
-
-  puts "Checking on order #{order.id}"
-puts order
-  loop do
-    begin
-      spot = "%.5f" % redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}")
-
-      puts "%.5f" % (spot.to_f - order.price)
-
-      rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair )
-      if rest_api.order(order.id)["settled"]
-        return true
-      else
-        sleep 1.0/3.0
-
-end
-
-rescue Coinbase::Exchange::NotFoundError => e
-  if e.message == "{\"message\":\"NotFound\"}"
-    puts "Order not found"
-    sleep 1
-    return false
-  end
-rescue Exception => e
-  puts "Error, retrying"
-  puts e
-  sleep 1
-  retry
-end
-end
-end
+                close_position(open_order, close_price)
+                sleep 1
+                end
 
 
+                def watch_order(order)
+                  redis = Redis.new
+
+                  pair = order.product_id
+
+                  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair )
+
+                  puts "Checking on order #{order.id}"
+                  puts order
+                  loop do
+                    begin
+                      spot = "%.5f" % redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}")
+
+                      puts "%.5f" % (spot.to_f - order.price)
+
+                      rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair )
+                      if rest_api.order(order.id)["settled"]
+                        return true
+                      else
+                        sleep 1.0/3.0
+
+                      end
+
+                    rescue Coinbase::Exchange::NotFoundError => e
+                      if e.message == "{\"message\":\"NotFound\"}"
+                        puts "Order not found"
+                        sleep 1
+                        return false
+                      end
+                    rescue Exception => e
+                      puts "Error, retrying"
+                      puts e
+                      sleep 1
+                      retry
+                    end
+                  end
+                end
 
 
-def close_position (order, price)
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: order.product_id )
-
-  if !watch_order(order)
-    return
-  end
-  order_size = order.size
 
 
-  puts ""
+                def close_position (order, price)
+                  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: order.product_id )
+
+                  if !watch_order(order)
+                    return
+                  end
+                  order_size = order.size
 
 
-  if order["side"] == "buy"
-    puts "Selling #{order_size.to_f} #{order['product_id'].split('-')[0]} @ $#{price}"
-
-    begin
-      sell_order = rest_api.sell(order_size,price)
-      puts "Sell order ID is #{sell_order.id}"
-      puts sell_order
-      watch_order sell_order
-      return
-
-    rescue Coinbase::Exchange::NotFoundError => e
-      if e.message == "{\"message\":\"NotFound\"}"
-        puts "Order not found"
-        sleep 1
-        return
-      end
-
-    rescue Exception => e
-      binding.pry
-    end
+                  puts ""
 
 
-    # elsif order["side"] == "sell"
-    #   puts "Selling #{order_size} #{order_size} #{order['product_id'].split('-')[0]} @ $#{price}"
-    #   begin
-    #     sell_order = rest_api.buy(order_size,price) do |resp|
-    #       puts "Sell order ID is #{resp.id}"
+                  if order["side"] == "buy"
+                    puts "Selling #{order_size.to_f} #{order['product_id'].split('-')[0]} @ $#{price}"
 
-    #       return sell_order
-    #     end
-    #   rescue Exception => e
-    #     binding.pry
-    #   end
+                    begin
+                      sell_order = rest_api.sell(order_size,price)
+                      puts "Sell order ID is #{sell_order.id}"
+                      puts sell_order
+                      watch_order sell_order
+                      return
+
+                    rescue Coinbase::Exchange::NotFoundError => e
+                      if e.message == "{\"message\":\"NotFound\"}"
+                        puts "Order not found"
+                        sleep 1
+                        return
+                      end
+
+                    rescue Exception => e
+                      binding.pry
+                    end
 
 
-  end
+                    # elsif order["side"] == "sell"
+                    #   puts "Selling #{order_size} #{order_size} #{order['product_id'].split('-')[0]} @ $#{price}"
+                    #   begin
+                    #     sell_order = rest_api.buy(order_size,price) do |resp|
+                    #       puts "Sell order ID is #{resp.id}"
 
-end
+                    #       return sell_order
+                    #     end
+                    #   rescue Exception => e
+                    #     binding.pry
+                    #   end
 
-def watch_order_and_sell (order, sell_level)
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
-  puts "Checking on order #{order.id}"
-  loop do
-    begin
-      rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
-      if rest_api.order(order.id)["settled"]
-        break
-      else
-        sleep 1.0/3.0
-        print "."
-      end
-    rescue Exception => e
-      puts "Error, retrying"
-      sleep 1
-      retry
-    end
-  end
-  puts ""
-  proceeds = (order["price"].to_f * order["size"].to_f).round_down(2)
-  order_size = (proceeds/sell_level).round_down(8)
+                  end
+
+                end
+
+                def watch_order_and_sell (order, sell_level)
+                  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+
+                  puts "Checking on order #{order.id}"
+                  loop do
+                    begin
+                      rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+                      if rest_api.order(order.id)["settled"]
+                        break
+                      else
+                        sleep 1.0/3.0
+                        print "."
+                      end
+                    rescue Exception => e
+                      puts "Error, retrying"
+                      sleep 1
+                      retry
+                    end
+                  end
+                  puts ""
+                  proceeds = (order["price"].to_f * order["size"].to_f).round_down(2)
+                  order_size = (proceeds/sell_level).round_down(8)
+
+                  order_size = (bal(pair) * percent_of_portfolio)/open_price
 
   puts "Selling #{order_size} BTC @ $#{sell_level}"
 
