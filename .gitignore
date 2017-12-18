@@ -1,2 +1,6 @@
 
 .env
+
+.vscode/launch.json
+
+.sfdx/tools/apex.db
