@@ -42,7 +42,7 @@ end
 
 
 
-load 'websocket.rb'
+#load 'websocket.rb'
 
 websocket = Coinbase::Exchange::Websocket.new( keepalive: true)
 websocket.match do |resp|
