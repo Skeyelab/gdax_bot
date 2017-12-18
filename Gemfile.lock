@@ -1,0 +1,72 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    addressable (2.5.2)
+      public_suffix (>= 2.0.2, < 4.0)
+    bigdecimal (1.3.3)
+    coderay (1.1.2)
+    coinbase (4.1.0)
+    coinbase-exchange (0.2.0)
+      bigdecimal
+      em-http-request
+      faye-websocket
+    cookiejar (0.3.3)
+    dotenv (2.2.1)
+    em-http-request (1.1.5)
+      addressable (>= 2.3.4)
+      cookiejar (!= 0.3.1)
+      em-socksify (>= 0.3)
+      eventmachine (>= 1.0.3)
+      http_parser.rb (>= 0.6.0)
+    em-socksify (0.3.1)
+      eventmachine (>= 1.0.0.beta.4)
+    equatable (0.5.0)
+    eventmachine (1.2.5)
+    faye-websocket (0.10.7)
+      eventmachine (>= 0.12.0)
+      websocket-driver (>= 0.5.1)
+    hitimes (1.2.6)
+    http_parser.rb (0.6.0)
+    method_source (0.9.0)
+    necromancer (0.4.0)
+    pastel (0.7.2)
+      equatable (~> 0.5.0)
+      tty-color (~> 0.4.0)
+    percentage (1.0.0)
+    pry (0.11.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.9.0)
+    public_suffix (3.0.1)
+    redis (4.0.1)
+    timers (4.1.2)
+      hitimes
+    tty-color (0.4.2)
+    tty-cursor (0.5.0)
+    tty-prompt (0.13.2)
+      necromancer (~> 0.4.0)
+      pastel (~> 0.7.0)
+      timers (~> 4.1.2)
+      tty-cursor (~> 0.5.0)
+      tty-reader (~> 0.1.0)
+    tty-reader (0.1.0)
+      wisper (~> 2.0.0)
+    websocket-driver (0.7.0)
+      websocket-extensions (>= 0.1.0)
+    websocket-extensions (0.1.3)
+    wisper (2.0.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  coinbase
+  coinbase-exchange
+  dotenv
+  eventmachine
+  percentage
+  pry
+  redis
+  tty-prompt
+
+BUNDLED WITH
+   1.16.0
