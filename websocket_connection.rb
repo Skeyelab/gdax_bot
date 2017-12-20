@@ -63,9 +63,12 @@ websocket.match do |resp|
   when "LTC-BTC"
     redis.set("spot_LTC_BTC", resp.price)
     #p "LTC Spot Rate: $ %.2f" % resp.price
+  when "BCH-USD"
+    redis.set("spot_BCH_USD", resp.price)
+    #p "LTC Spot Rate: $ %.2f" % resp.price
   end
   #puts "."
-  puts "$%.2f" % redis.get("spot_BTC_USD") + " | " + "$%.2f" % redis.get("spot_ETH_USD") + " | " + "$%.2f" % redis.get("spot_LTC_USD") + " | " + "Ƀ%.5f" % redis.get("spot_ETH_BTC") + " | " + "Ƀ%.5f" % redis.get("spot_LTC_BTC")
+  puts "$%.2f" % redis.get("spot_BTC_USD") + " | " + "$%.2f" % redis.get("spot_ETH_USD") + " | " + "$%.2f" % redis.get("spot_LTC_USD") + " | " + "Ƀ%.5f" % redis.get("spot_ETH_BTC") + " | " + "Ƀ%.5f" % redis.get("spot_LTC_BTC") + " | " + "$%.5f" % redis.get("spot_BCH_USD")
 end
 
 # websocket.message do |resp|
