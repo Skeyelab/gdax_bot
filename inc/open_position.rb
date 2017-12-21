@@ -8,4 +8,6 @@ def open_position (open_price, close_price, percent_of_portfolio, pair="BTC-USD"
   open_order = rest_api.buy(order_size.round_down(8), open_price)
 
   close_position(open_order, close_price)
+  puts "Position closed"
+  print "\a"
 end
