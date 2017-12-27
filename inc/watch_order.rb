@@ -5,25 +5,31 @@ def watch_order(order)
 
   rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair )
 
-  puts "Checking on order #{order.id}"
-  puts order
+  spinner = TTY::Spinner.new("[:spinner] Checking on #{order.side} order - Current spread: :spread")
+
+  #puts "Checking on order #{order.id}"
+  #puts order
   loop do
     begin
       spot = "%.5f" % redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}")
 
-      puts "%.5f" % (spot.to_f - order.price)
-
+      #puts "%.5f" % (spot.to_f - order.price)
+      spinner.update(spread: "%.5f" % (spot.to_f - order.price))
+      spinner.spin
       rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair )
       if rest_api.order(order.id)["settled"]
+        spinner.success('(successful)')
         return true
       else
         sleep 1.0/3.0
-
+        spinner.spin
       end
 
     rescue Coinbase::Exchange::NotFoundError => e
       if e.message == "{\"message\":\"NotFound\"}"
-        puts "Order not found"
+        spinner.stop("Order not found")
+
+        #puts "Order not found"
         sleep 1
         return false
       end
