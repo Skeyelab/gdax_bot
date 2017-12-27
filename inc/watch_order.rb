@@ -5,7 +5,7 @@ def watch_order(order)
 
   rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair )
 
-  spinner = TTY::Spinner.new("[:spinner] Checking on #{order.side} order - Current spread: :spread",clear: true)
+  spinner = TTY::Spinner.new("[:spinner] Checking on #{order.side} order - Current spread: :spread")
 
   loop do
     begin
