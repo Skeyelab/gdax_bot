@@ -11,7 +11,7 @@ def close_position (order, price)
 
 
   if order["side"] == "buy"
-    #puts "Selling #{order_size.to_f} #{order['product_id'].split('-')[0]} @ $#{price}"
+    puts "Selling #{order_size.to_f} #{order['product_id'].split('-')[0]} @ $#{price}"
 
     begin
       sell_order = rest_api.sell(order_size,price)

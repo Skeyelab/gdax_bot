@@ -5,6 +5,7 @@ def watch_order(order)
 
   rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair )
 
+
   spinner = TTY::Spinner.new("[:spinner] #{order.side.capitalize}ing :size :p1 for :price :p2 - Current spread: :spread", format: :bouncing_ball)
   loop do
     begin
@@ -16,6 +17,9 @@ def watch_order(order)
       spinner.update(spread: "%.5f" % (spot.to_f - order.price))
       spinner.spin
       rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair )
+
+
+
       if rest_api.order(order.id)["settled"]
         spinner.success('(successful)')
         return true
