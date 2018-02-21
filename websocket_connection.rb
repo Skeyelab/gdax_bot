@@ -37,7 +37,7 @@ module EchoServer
       send_data(" | ")
       send_data("Ƀ%.8f" % redis.get("spot_LTC_BTC"))
       send_data(" | ")
-      send_data("$%.8f" % redis.get("spot_BCH_USD"))
+      send_data("Ƀ%.2f" % redis.get("spot_BCH_USD"))
       send_data(" | ")
       send_data("Ƀ%.8f" % redis.get("spot_BCH_BTC"))
     end
@@ -51,6 +51,8 @@ end
 websocket = Coinbase::Exchange::Websocket.new( keepalive: true)
 websocket.match do |resp|
   #  puts resp
+  # puts resp.product_id
+
   case resp.product_id
   when "BTC-USD"
     redis.set("spot_BTC_USD", resp.price)
@@ -75,7 +77,7 @@ websocket.match do |resp|
     #p "LTC Spot Rate: $ %.2f" % resp.price
   end
   #puts "."
-  puts "$%.2f" % redis.get("spot_BTC_USD") + " | " + "$%.2f" % redis.get("spot_ETH_USD") + " | " + "$%.2f" % redis.get("spot_LTC_USD") + " | " + "Ƀ%.5f" % redis.get("spot_ETH_BTC") + " | " + "Ƀ%.5f" % redis.get("spot_LTC_BTC") + " | " + "$%.5f" % redis.get("spot_BCH_USD") + " | " + "Ƀ%.5f" % redis.get("spot_BCH_BTC")
+  puts "$%.2f" % redis.get("spot_BTC_USD") + " | " + "$%.2f" % redis.get("spot_ETH_USD") + " | " + "$%.2f" % redis.get("spot_LTC_USD") + " | " + "Ƀ%.5f" % redis.get("spot_ETH_BTC") + " | " + "Ƀ%.5f" % redis.get("spot_LTC_BTC") + " | " + "$%.2f" % redis.get("spot_BCH_USD") + " | " + "Ƀ%.5f" % redis.get("spot_BCH_BTC")
 end
 
 # websocket.message do |resp|
