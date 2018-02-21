@@ -5,7 +5,6 @@ Dotenv.load
 system('clear')
 Dir["./inc/*.rb"].each {|file| require file }
 
-redis = Redis.new
 
 # rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
@@ -15,7 +14,9 @@ redis = Redis.new
 #   end
 # end
 
-begin
+def gdax_bot
+  redis = Redis.new
+
   loop do
 
     prompt = TTY::Prompt.new
@@ -35,18 +36,27 @@ begin
     when 'prompt'
       binding.pry
     when 'trailing_stop'
-      pair = prompt.ask('Pair?', default: 'LTC-BTC')
-      open_price = prompt.ask('Open Price?', default: redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f - 0.00001)
-      percent_of_portfolio = prompt.ask('Percent of portfolio to use?', default: 10.0)
-      profit = prompt.ask('Profit Goal %?', default: 1.0)
-      t_stop = prompt.ask('Trailing Stop %?', default: 0.5)
-      stop_percent = prompt.ask('Initial Stop Loss %?', default: 1.0)
-
-      trailing_stop(open_price, percent_of_portfolio, pair, profit, t_stop, stop_percent)
+      # pair = prompt.ask('Pair?', default: 'LTC-BTC')
+      choices = %w(LTC-BTC ETH-BTC BCH-BTC BTC-USD ETH-USD LTC-USD BCH-USD)
+      pair = prompt.enum_select("Pair?", choices, per_page: 7)
+      open_price = prompt.ask('Open Price?', default: (redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f).round_down(5)).to_f
+      percent_of_portfolio = prompt.ask('Percent of portfolio to use?', default: 10.0).to_f
+      profit = prompt.ask('Profit Goal %?', default: 1.0).to_f
+      t_stop = prompt.ask('Trailing Stop %?', default: 0.5).to_f
+      stop_percent = prompt.ask('Initial Stop Loss %?', default: 1.0).to_f
+      trailing_stop(open_price, percent_of_portfolio/100, pair, profit, t_stop, stop_percent)
     end
   end
+
+end
+
+begin
+  gdax_bot
+rescue SystemExit => e
+  abort
 rescue Exception => e
-  binding.pry
+  puts "Error: #{e}"
+  gdax_bot
 ensure
   system('stty -raw echo')
 end
