@@ -17,7 +17,7 @@ module GetKey
     if @use_stty
       system('stty raw -echo') # => Raw mode, no echo
       char = (STDIN.read_nonblock(1).ord rescue nil)
-      system('stty -raw echo') # => Reset terminal mode
+      #system('stty -raw echo') # => Reset terminal mode
       return char
     else
       return Win32API.new('crtdll', '_kbhit', [ ], 'I').Call.zero? ? nil : Win32API.new('crtdll', '_getch', [ ], 'L').Call
