@@ -15,8 +15,8 @@ def close_position (order, price)
 
     begin
       sell_order = rest_api.sell(order_size,price)
-      puts "Sell order ID is #{sell_order.id}"
-      puts sell_order
+      #puts "Sell order ID is #{sell_order.id}"
+      #puts sell_order
       watch_order sell_order
       return
 
@@ -28,7 +28,7 @@ def close_position (order, price)
       end
 
     rescue Exception => e
-      binding.pry
+      #binding.pry
     end
 
 
@@ -43,7 +43,7 @@ def close_position (order, price)
     #   rescue Exception => e
     #     binding.pry
     #   end
-
+    print "\a"
 
   end
 
