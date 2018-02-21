@@ -15,31 +15,38 @@ redis = Redis.new
 #   end
 # end
 
-loop do
+begin
+  loop do
 
-  prompt = TTY::Prompt.new
-  choice = prompt.select("Choose your destiny?") do |menu|
-    menu.enum '.'
+    prompt = TTY::Prompt.new
+    choice = prompt.select("Choose your destiny?") do |menu|
+      menu.enum '.'
 
-    #menu.choice 'Open and Close Order', 'open_and_close'
-    menu.choice 'Trailing Stop', 'trailing_stop'
+      #menu.choice 'Open and Close Order', 'open_and_close'
+      menu.choice 'Trailing Stop', 'trailing_stop'
 
-    menu.choice 'Prompt', 'prompt'
-    menu.choice 'Exit', 'exit'
+      menu.choice 'Prompt', 'prompt'
+      menu.choice 'Exit', 'exit'
+    end
+
+    case choice
+    when 'exit'
+      abort
+    when 'prompt'
+      binding.pry
+    when 'trailing_stop'
+      pair = prompt.ask('Pair?', default: 'LTC-BTC')
+      open_price = prompt.ask('Open Price?', default: redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f - 0.00001)
+      percent_of_portfolio = prompt.ask('Percent of portfolio to use?', default: 10.0)
+      profit = prompt.ask('Profit Goal %?', default: 1.0)
+      t_stop = prompt.ask('Trailing Stop %?', default: 0.5)
+      stop_percent = prompt.ask('Initial Stop Loss %?', default: 1.0)
+
+      trailing_stop(open_price, percent_of_portfolio, pair, profit, t_stop, stop_percent)
+    end
   end
-
-  case choice
-  when 'exit'
-    abort
-  when 'prompt'
-    binding.pry
-  when 'trailing_stop'
-    pair = prompt.ask('Pair?', default: 'LTC-BTC')
-    open_price = prompt.ask('Open Price?', default: redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f - 0.00001)
-    percent_of_portfolio = prompt.ask('Percent of portfolio to use?', default: 10.0)
-    profit = prompt.ask('Profit Goal %?', default: 1.0)
-    t_stop = prompt.ask('Trailing Stop %?', default: 0.5)
-    stop_percent = prompt.ask('Initial Stop Loss %?', default: 1.0)
-    trailing_stop(open_price, percent_of_portfolio, pair, profit, t_stop, stop_percent)
-  end
+rescue Exception => e
+  binding.pry
+ensure
+  system('stty -raw echo')
 end
