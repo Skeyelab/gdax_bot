@@ -15,7 +15,10 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=1.0,
   market_high = 0.0
   order_size = (bal(pair) * percent_of_portfolio)/open_price
   open_order = rest_api.buy(order_size.round_down(8), open_price)
-  watch_order(open_order)
+  
+  if watch_order(open_order) == false
+  	return false
+  end
 
   profit_made = false
   stop_loss_reached = false
