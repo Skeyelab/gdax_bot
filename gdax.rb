@@ -14,6 +14,12 @@ Dir["./inc/*.rb"].each {|file| require file }
 #   end
 # end
 
+def pair_menu
+  prompt = TTY::Prompt.new
+  choices = %w(LTC-BTC ETH-BTC BCH-BTC BTC-USD ETH-USD LTC-USD BCH-USD)
+  return prompt.enum_select("Pair?", choices, per_page: 7)
+end
+
 def gdax_bot
   redis = Redis.new
 
@@ -25,7 +31,7 @@ def gdax_bot
 
       #menu.choice 'Open and Close Order', 'open_and_close'
       menu.choice 'Trailing Stop', 'trailing_stop'
-
+      menu.choice 'View Data Stream', 'view_websocket'
       menu.choice 'Prompt', 'prompt'
       menu.choice 'Exit', 'exit'
     end
@@ -35,19 +41,18 @@ def gdax_bot
       abort
     when 'prompt'
       binding.pry
+    when 'view_websocket'
+      view_websocket
     when 'trailing_stop'
-      # pair = prompt.ask('Pair?', default: 'LTC-BTC')
-      choices = %w(LTC-BTC ETH-BTC BCH-BTC BTC-USD ETH-USD LTC-USD BCH-USD)
-      pair = prompt.enum_select("Pair?", choices, per_page: 7)
-      open_price = prompt.ask('Open Price?', default: (redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f).round_down(5)).to_f
-      percent_of_portfolio = prompt.ask('Percent of portfolio to use?', default: 10.0).to_f
-      profit = prompt.ask('Profit Goal %?', default: 1.0).to_f
-      t_stop = prompt.ask('Trailing Stop %?', default: 0.5).to_f
-      stop_percent = prompt.ask('Initial Stop Loss %?', default: 1.0).to_f
-      trailing_stop(open_price, percent_of_portfolio/100, pair, profit, t_stop, stop_percent)
+      trailing_start_menu
     end
   end
 
+end
+
+check_for_zombie_websocket
+ws_task = Daemons.call do
+  run_websocket
 end
 
 begin
@@ -58,5 +63,6 @@ rescue Exception => e
   puts "Error: #{e}"
   gdax_bot
 ensure
+  ws_task.stop
   system('stty -raw echo')
 end
