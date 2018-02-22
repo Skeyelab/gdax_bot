@@ -7,10 +7,9 @@ def open_position (open_price, close_price, percent_of_portfolio, pair="BTC-USD"
   #binding.pry
   order_size = (bal(pair) * percent_of_portfolio)/open_price
   open_order = rest_api.buy(order_size.round_down(8), open_price)
-
-  close_position(open_order, close_price)
-
-  end_time = Time.now
-  puts "#{Percentage.change(open_price,close_price).to_f}% gain in #{humanize((end_time - start).to_i)}."
+	if close_position(open_order, close_price)
+		end_time = Time.now
+		puts "#{Percentage.change(open_price,close_price).to_f}% gain in #{humanize((end_time - start).to_i)}."
+	end
 
 end
