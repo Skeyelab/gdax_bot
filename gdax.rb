@@ -14,6 +14,12 @@ Dir["./inc/*.rb"].each {|file| require file }
 #   end
 # end
 
+def pair_menu
+  prompt = TTY::Prompt.new
+  choices = %w(LTC-BTC ETH-BTC BCH-BTC BTC-USD ETH-USD LTC-USD BCH-USD)
+  return prompt.enum_select("Pair?", choices, per_page: 7)
+end
+
 def gdax_bot
   redis = Redis.new
 
@@ -36,9 +42,9 @@ def gdax_bot
     when 'prompt'
       binding.pry
     when 'trailing_stop'
-      # pair = prompt.ask('Pair?', default: 'LTC-BTC')
-      choices = %w(LTC-BTC ETH-BTC BCH-BTC BTC-USD ETH-USD LTC-USD BCH-USD)
-      pair = prompt.enum_select("Pair?", choices, per_page: 7)
+      #choices = %w(LTC-BTC ETH-BTC BCH-BTC BTC-USD ETH-USD LTC-USD BCH-USD)
+      #pair = prompt.enum_select("Pair?", choices, per_page: 7)
+      pair = pair_menu
       open_price = prompt.ask('Open Price?', default: (redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f).round_down(5)).to_f
       percent_of_portfolio = prompt.ask('Percent of portfolio to use?', default: 10.0).to_f
       profit = prompt.ask('Profit Goal %?', default: 1.0).to_f
