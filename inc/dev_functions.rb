@@ -71,6 +71,7 @@ def run_websocket
 
   websocket = Coinbase::Exchange::Websocket.new( keepalive: true)
   websocket.match do |resp|
+    redis.set("last_ws_message_time", resp["time"])
 
     case resp.product_id
     when "BTC-USD"

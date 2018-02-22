@@ -4,3 +4,5 @@
 .vscode/launch.json
 
 .sfdx/tools/apex.db
+
+*.pid
