@@ -26,6 +26,15 @@ module GetKey
 
 end
 
+def watch_stream_times
+  redis = Redis.new
+
+  loop do
+    puts redis.get("last_ws_message_time")
+    sleep 1
+  end
+end
+
 def check_for_zombie_websocket
 
   begin
