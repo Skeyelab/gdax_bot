@@ -6,3 +6,5 @@
 .sfdx/tools/apex.db
 
 *.pid
+
+Gemfile.lock
