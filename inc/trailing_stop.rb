@@ -102,3 +102,4 @@ end
 #   puts "#{Percentage.change(open_price,close_price).to_f}% gain in #{humanize((end_time - start).to_i)}."
 
 # end
+

@@ -1,4 +1,8 @@
 def trailing_start_menu
+
+  prompt = TTY::Prompt.new
+  redis = Redis.new
+
   pair = pair_menu
   open_price = prompt.ask('Open Price?', default: (redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f).round_down(5)).to_f
   percent_of_portfolio = prompt.ask('Percent of portfolio to use?', default: 10.0).to_f
