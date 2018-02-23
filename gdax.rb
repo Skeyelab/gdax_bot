@@ -51,7 +51,8 @@ def gdax_bot
 end
 
 check_for_zombie_websocket
-ws_task = Daemons.call do
+
+ws_task = Daemons.call({ :app_name => "GDAX_Connection",:backtrace  => true}) do
   run_websocket
 end
 

@@ -29,7 +29,7 @@ end
 def check_for_zombie_websocket
 
   begin
-    file = File.open("./proc.pid", "rb")
+    file = File.open("./GDAX_Connection.pid", "rb")
     contents = file.read
     pid = contents.to_i
     Process.kill("QUIT", pid)
