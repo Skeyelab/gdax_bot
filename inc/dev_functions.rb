@@ -101,6 +101,18 @@ def run_websocket
 
   end
 
-  websocket.start!
+  EM.run do
+    websocket.start!
+    EM.add_periodic_timer(1) {
+      if (Time.now - Time.parse(redis.get("last_ws_message_time"))) > 5
+        websocket.start!
+      end
+    }
+    EM.error_handler { |e|
+      sleep 1
+    }
+  end
+
+  #websocket.start!
 
 end
