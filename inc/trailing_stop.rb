@@ -1,4 +1,4 @@
-def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5, t_stop=0.25, stop_percent=1.0 )
+def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5, t_stop=0.25, stop_percent=1.0,existing=false )
 
   redis = Redis.new
 
@@ -13,13 +13,15 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 
   market_high = 0.0
   order_size = (bal(pair) * percent_of_portfolio)/open_price
-  order_size = 0.04540135
-  binding.pry
-  # open_order = rest_api.buy(order_size.round_down(8), open_price)
   
-  # if watch_order(open_order) == false
-  #   return false
-  # end
+  if existing
+    order_size = existing["size"].to_f
+  else  
+    open_order = rest_api.buy(order_size.round_down(8), open_price)
+    if watch_order(open_order) == false
+      return false
+    end 
+  end
 
   profit_made = false
   stop_loss_reached = false
@@ -72,7 +74,16 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
   stop_distance = "%.5f" % (spot - stop_price)
   t_stop_distance = "%.5f" % (spot - t_stop_price)
 
-  puts "profit: #{current_profit_percentage.round_down(4)}%\t| profit #: #{current_profit}\t| profit % goal: #{profit}\t| profit goal: #{profit_goal_price}\t| open: #{open_price}\t| current: #{spot}\t| spot SMA: #{spot_array.sma.round(5)}\t| stop %: #{stop_percent}\t| stop: #{stop_price}\t| stop range: #{stop_distance}\t| t stop range: #{t_stop_distance} | market high: #{market_high}"
+  if spot < spot_array.sma.round(5)
+    trend = "-"
+  elsif spot > spot_array.sma.round(5)
+    trend = "+"
+  else
+    trend = " "
+  end
+
+
+  puts "profit: #{current_profit_percentage.round_down(4)}%\t| profit #: #{current_profit}\t| profit % goal: #{profit}\t| profit goal: #{profit_goal_price}\t| open: #{open_price}\t| current: #{spot}\t| #{trend} | spot SMA: #{spot_array.sma.round(5)}\t| stop %: #{stop_percent}\t| stop: #{stop_price}\t| stop range: #{stop_distance}\t| t stop range: #{t_stop_distance} | market high: #{market_high}"
   #sleep 1
   last_spot = spot
   last_t_stop = t_stop_price
