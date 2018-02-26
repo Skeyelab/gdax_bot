@@ -30,11 +30,11 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
   loop do
     sleep 1.0/100
   spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
-  current_profit_percentage = Percentage.change(open_price, spot).to_f
   spot_array << spot
   spot_array = spot_array.last(500)
+  current_profit_percentage = Percentage.change(open_price, spot_array.sma.round(5)).to_f
 
-  if stop_price > spot
+  if stop_price > spot_array.sma.round(5)
     #elsif (-stop_percent) > current_profit_percentage.to_f
     puts "Stop loss reached"
     stop_loss_reached = true
@@ -55,11 +55,11 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
     #break
   end
 
-  if spot >= profit_goal_price
+  if spot_array.sma.round(5) >= profit_goal_price
     profit_made = true
   end
 
-  if spot > market_high
+  if spot_array.sma.round(5) > market_high
     market_high = spot
     t_stop_price = spot - (spot * t_stop / 100)
 
@@ -71,9 +71,9 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
     print "* "
   end
 
-  current_profit = "%.5f" % (spot - open_price)
-  stop_distance = "%.5f" % (spot - stop_price)
-  t_stop_distance = "%.5f" % (spot - t_stop_price)
+  current_profit = "%.5f" % (spot_array.sma.round(5) - open_price)
+  stop_distance = "%.5f" % (spot_array.sma.round(5) - stop_price)
+  t_stop_distance = "%.5f" % (spot_array.sma.round(5) - t_stop_price)
 
   if spot < spot_array.sma.round(5)
     trend = "-"
@@ -84,7 +84,7 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
   end
 
 
-  puts "profit: #{current_profit_percentage.round_down(4)}%\t| profit #: #{current_profit}\t| profit % goal: #{profit}\t| profit goal: #{profit_goal_price}\t| open: #{open_price}\t| current: #{spot}\t| #{trend} | spot SMA: #{spot_array.sma.round(5)}\t| stop %: #{stop_percent}\t| stop: #{stop_price}\t| stop range: #{stop_distance}\t| t stop range: #{t_stop_distance} | market high: #{market_high}"
+  puts "profit: #{current_profit_percentage.round_down(4)}%  \t| profit #: #{current_profit}\t| profit % goal: #{profit}\t| profit goal: #{profit_goal_price}\t| open: #{open_price}\t| current: #{spot}\t| #{trend} | spot SMA: #{spot_array.sma.round(5)}  \t| stop %: #{stop_percent}\t| stop: #{stop_price}\t| stop range: #{stop_distance}\t| t stop range: #{t_stop_distance} | market high: #{market_high}"
   #sleep 1
   last_spot = spot
   last_t_stop = t_stop_price
