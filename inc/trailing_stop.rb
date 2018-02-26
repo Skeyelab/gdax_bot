@@ -44,9 +44,9 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
       binding.pry
     end
     if pair.split('-')[1] == "USD"
-      order =  rest_api.sell(order_size.round_down(8), (spot - 0.01).round_down(2))
+      #order =  rest_api.sell(order_size.round_down(8), (spot - 0.01).round_down(2))
     else
-      order =  rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8))
+      #order =  rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8))
     end
     watch_order(order)
     puts "Sold"
