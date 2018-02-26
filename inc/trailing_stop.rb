@@ -1,4 +1,4 @@
-def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5, t_stop=0.25, stop_percent=1.0 )
+def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5, t_stop=0.25, stop_percent=1.0,existing=false )
 
   redis = Redis.new
 
@@ -13,10 +13,14 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 
   market_high = 0.0
   order_size = (bal(pair) * percent_of_portfolio)/open_price
-  open_order = rest_api.buy(order_size.round_down(8), open_price)
   
-  if watch_order(open_order) == false
-    return false
+  if existing
+    order_size = existing["size"].to_f
+  else  
+    open_order = rest_api.buy(order_size.round_down(8), open_price)
+    if watch_order(open_order) == false
+      return false
+    end 
   end
 
   profit_made = false
@@ -26,46 +30,61 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
   loop do
     sleep 1.0/100
   spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
-  current_profit_percentage = Percentage.change(open_price, spot).to_f
   spot_array << spot
-  spot_array = spot_array.last(100)
+  spot_array = spot_array.last(500)
+  current_profit_percentage = Percentage.change(open_price, spot_array.sma.round(5)).to_f
 
-  if stop_price > spot
+  if stop_price > spot_array.sma.round(5)
     #elsif (-stop_percent) > current_profit_percentage.to_f
     puts "Stop loss reached"
     stop_loss_reached = true
     spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
-    puts "Selling at #{spot - 0.00001}"
     if !profit_made
       binding.pry
     end
-    order =  rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(5))
+    if pair.split('-')[1] == "USD"
+      puts "Selling at #{spot - 0.01}"
+      order =  rest_api.sell(order_size.round_down(8), (spot - 0.01).round_down(2))
+    else
+      puts "Selling at #{spot - 0.00001}"
+      order =  rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8))
+    end
     watch_order(order)
     puts "Sold"
     return
     #break
   end
 
-  if spot >= profit_goal_price
+  if spot_array.sma.round(5) >= profit_goal_price
     profit_made = true
   end
 
-  if spot > market_high
+  if spot_array.sma.round(5) > market_high
     market_high = spot
     t_stop_price = spot - (spot * t_stop / 100)
 
-    stop_price = t_stop_price
   end
 
   if profit_made
+    stop_price = t_stop_price
+
     print "* "
   end
 
-  current_profit = "%.5f" % (spot - open_price)
-  stop_distance = "%.5f" % (spot - stop_price)
-  t_stop_distance = "%.5f" % (spot - t_stop_price)
+  current_profit = ((spot_array.sma.round(5) - open_price) * order_size).round(5)
+  stop_distance = "%.5f" % (spot_array.sma.round(5) - stop_price)
+  t_stop_distance = "%.5f" % (spot_array.sma.round(5) - t_stop_price)
 
-  puts "profit: #{current_profit_percentage.round_down(4)}% | profit #: #{current_profit} | profit % goal: #{profit} | profit goal: #{profit_goal_price}% | open: #{open_price} | current: #{spot} | spot SMA: #{spot_array.sma.round(5)} | stop %: #{stop_percent} | stop: #{stop_price} | stop range: #{stop_distance} | t stop range: #{t_stop_distance} | market high: #{market_high}"
+  if spot < spot_array.sma.round(5)
+    trend = "-"
+  elsif spot > spot_array.sma.round(5)
+    trend = "+"
+  else
+    trend = " "
+  end
+
+
+  puts "profit: #{current_profit_percentage.round_down(4)}%   \t| profit #: #{current_profit}\t| profit % goal: #{profit}\t| profit goal: #{profit_goal_price}\t| open: #{open_price}\t| current: #{spot}\t| #{trend} | spot SMA: #{spot_array.sma.round(5)}  \t| stop %: #{stop_percent}\t| stop: #{stop_price}\t| stop range: #{stop_distance}\t| t stop range: #{t_stop_distance} | market high: #{market_high}"
   #sleep 1
   last_spot = spot
   last_t_stop = t_stop_price
