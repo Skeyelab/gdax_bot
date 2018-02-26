@@ -71,7 +71,7 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
     print "* "
   end
 
-  current_profit = "%.5f" % (spot_array.sma.round(5) - open_price)
+  current_profit = ((spot_array.sma.round(5) - open_price) * order_size).round(5)
   stop_distance = "%.5f" % (spot_array.sma.round(5) - stop_price)
   t_stop_distance = "%.5f" % (spot_array.sma.round(5) - t_stop_price)
 
