@@ -84,7 +84,7 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
   end
 
 
-  puts "profit: #{current_profit_percentage.round_down(4)}%  \t| profit #: #{current_profit}\t| profit % goal: #{profit}\t| profit goal: #{profit_goal_price}\t| open: #{open_price}\t| current: #{spot}\t| #{trend} | spot SMA: #{spot_array.sma.round(5)}  \t| stop %: #{stop_percent}\t| stop: #{stop_price}\t| stop range: #{stop_distance}\t| t stop range: #{t_stop_distance} | market high: #{market_high}"
+  puts "profit: #{current_profit_percentage.round_down(4)}%   \t| profit #: #{current_profit}\t| profit % goal: #{profit}\t| profit goal: #{profit_goal_price}\t| open: #{open_price}\t| current: #{spot}\t| #{trend} | spot SMA: #{spot_array.sma.round(5)}  \t| stop %: #{stop_percent}\t| stop: #{stop_price}\t| stop range: #{stop_distance}\t| t stop range: #{t_stop_distance} | market high: #{market_high}"
   #sleep 1
   last_spot = spot
   last_t_stop = t_stop_price
