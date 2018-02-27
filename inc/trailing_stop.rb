@@ -102,3 +102,4 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 		last_spot = spot
 		last_t_stop = t_stop_price
 	end
+end
