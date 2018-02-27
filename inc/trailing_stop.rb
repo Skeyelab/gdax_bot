@@ -1,4 +1,4 @@
-def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5, t_stop=0.25, stop_percent=1.0,existing=false )
+def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5, t_stop=0.25, stop_percent=1.0, existing=false )
 
 	redis = Redis.new
 
@@ -69,7 +69,6 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 
 		if profit_made
 			stop_price = t_stop_price
-
 			print "* "
 			color = :green
 		end
