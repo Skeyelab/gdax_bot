@@ -4,6 +4,9 @@ def trailing_start_menu
 	redis = Redis.new
 
 	pair = pair_menu
+	if pair == "Back"
+		return
+	end
 
 	if prompt.yes?('Create new order?')
 		existing = false
@@ -11,6 +14,9 @@ def trailing_start_menu
 		percent_of_portfolio = prompt.ask('Percent of portfolio to use?', default: 10.0).to_f
 	else
 		existing = select_recent_order_menu(pair)
+		if existing == false
+			return
+		end
 		open_price = existing["price"].to_f
 		percent_of_portfolio = 10
 	end
@@ -29,7 +35,7 @@ def select_recent_order_menu(pair)
 	rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 	rest_api.orders(status: "done") do |resp|
 		resp.each do |order|
-			if order["product_id"] == pair and order["done_reason"] == "filled"
+			if order["product_id"] == pair and order["done_reason"] == "filled" and order["side"] == "buy"
 				orders << order
 			end
 		end
@@ -43,6 +49,15 @@ def select_recent_order_menu(pair)
 		orders[0..4].each do |order|
 			menu.choice "#{order["size"]} @ #{order["price"]}", order
 		end
+		menu.choice "Manual"
+		menu.choice "Back"
+	end
+	if selected_order == "Back"
+		return false
+	elsif selected_order == "Manual"
+		selected_order = {}
+		selected_order["size"] = prompt.ask("Order size?")
+		selected_order["price"] = prompt.ask("Open price?")
 	end
 	return selected_order
 end
