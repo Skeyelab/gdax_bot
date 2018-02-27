@@ -9,6 +9,8 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
   last_t_stop = t_stop_price
   rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair )
 
+  color = :light_yellow
+
   start = Time.now
 
   market_high = 0.0
@@ -32,9 +34,10 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
   spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
   spot_array << spot
   spot_array = spot_array.last(500)
+  spot_sma = spot_array.sma.round(5)
   current_profit_percentage = Percentage.change(open_price, spot_array.sma.round(5)).to_f
 
-  if stop_price > spot_array.sma.round(5)
+  if stop_price > spot_sma
     #elsif (-stop_percent) > current_profit_percentage.to_f
     puts "Stop loss reached"
     stop_loss_reached = true
@@ -55,11 +58,11 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
     #break
   end
 
-  if spot_array.sma.round(5) >= profit_goal_price
+  if spot_sma >= profit_goal_price
     profit_made = true
   end
 
-  if spot_array.sma.round(5) > market_high
+  if spot > market_high
     market_high = spot
     t_stop_price = spot - (spot * t_stop / 100)
 
@@ -69,22 +72,32 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
     stop_price = t_stop_price
 
     print "* "
+    color = :green
   end
 
-  current_profit = ((spot_array.sma.round(5) - open_price) * order_size).round(5)
-  stop_distance = "%.5f" % (spot_array.sma.round(5) - stop_price)
-  t_stop_distance = "%.5f" % (spot_array.sma.round(5) - t_stop_price)
+  current_profit = ((spot_sma - open_price) * order_size).round(5)
+  stop_distance = "%.5f" % (spot_sma - stop_price)
+  t_stop_distance = "%.5f" % (spot_sma - t_stop_price)
 
-  if spot < spot_array.sma.round(5)
+  if spot < spot_sma
     trend = "-"
-  elsif spot > spot_array.sma.round(5)
+  elsif spot > spot_sma
     trend = "+"
   else
     trend = " "
   end
 
+  system('stty raw -echo')
+  k = GetKey.getkey
+  system('stty -raw echo')
 
-  puts "profit: #{current_profit_percentage.round_down(4)}%   \t| profit #: #{current_profit}\t| profit % goal: #{profit}\t| profit goal: #{profit_goal_price}\t| open: #{open_price}\t| current: #{spot}\t| #{trend} | spot SMA: #{spot_array.sma.round(5)}  \t| stop %: #{stop_percent}\t| stop: #{stop_price}\t| stop range: #{stop_distance}\t| t stop range: #{t_stop_distance} | market high: #{market_high}"
+  case k
+  when 99
+    return false
+  end
+
+
+  puts "profit: #{current_profit_percentage.round_down(4)}%   \t| profit #{pair.split('-')[1]}: #{current_profit}\t| profit % goal: #{profit}\t| profit goal: #{profit_goal_price}\t| open: #{open_price}\t| current: #{spot}\t| #{trend} | spot SMA: #{spot_sma}  \t| stop %: #{stop_percent}\t| stop: #{stop_price}\t| stop range: #{stop_distance}\t| t stop range: #{t_stop_distance} | market high: #{market_high}".colorize(color)
   #sleep 1
   last_spot = spot
   last_t_stop = t_stop_price
