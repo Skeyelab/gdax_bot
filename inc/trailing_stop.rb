@@ -80,11 +80,11 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
   t_stop_distance = "%.5f" % (spot_sma - t_stop_price)
 
   if spot < spot_sma
-    trend = "-".white.on_red
+    trend = " - ".white.on_red.bold
   elsif spot > spot_sma
-    trend = "+".black.on_green
+    trend = " + ".white.on_green.bold
   else
-    trend = " ".white
+    trend = "   ".white
   end
 
   system('stty raw -echo')
@@ -97,9 +97,9 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
   end
 
 
-  print "profit: #{current_profit_percentage.round_down(4)}%   \t| profit #{pair.split('-')[1]}: #{current_profit}\t| profit % goal: #{profit}\t| profit goal: #{profit_goal_price}\t| open: #{open_price}\t| current: #{spot}\t| ".colorize(color)
+  print "profit: #{current_profit_percentage.round_down(4)}%   \t| profit #{pair.split('-')[1]}: #{current_profit}\t| profit % goal: #{profit}\t| profit goal: #{profit_goal_price}\t| open: #{open_price}\t| current: #{spot}\t|".colorize(color)
   print trend
-  puts  " | spot SMA: #{spot_sma}  \t| stop %: #{stop_percent}\t| stop: #{stop_price}\t| stop range: #{stop_distance}\t| t stop range: #{t_stop_distance} | market high: #{market_high}".colorize(color)
+  puts  "| spot SMA: #{spot_sma}  \t| stop %: #{stop_percent}\t| stop: #{stop_price}\t| stop range: #{stop_distance}\t| t stop range: #{t_stop_distance} | market high: #{market_high}".colorize(color)
   #sleep 1
   last_spot = spot
   last_t_stop = t_stop_price
