@@ -19,6 +19,7 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 		order_size = existing["size"].to_f
 	else
 		open_order = rest_api.buy(order_size.round_down(8), open_price)
+		tryPushMessage("#{pair}", "Trailing Stop Buy Order Placed")
 		if watch_order(open_order) == false
 			return false
 		end
