@@ -10,3 +10,4 @@ loop do
 	k = GetKey.getkey
 	puts "Key pressed: #{k.inspect}"
 	sleep 1
+end

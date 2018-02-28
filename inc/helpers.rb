@@ -53,8 +53,8 @@ end
 
 def tryPushMessage(message, title)
 
-	if ENV['PUSHOVER_USER'] != "" and ENV['PUSHOVER_APP'] != ""
-		Pushover.notification(message: 'message', title: 'title', user: ENV['PUSHOVER_USER'], token: ENV['PUSHOVER_APP'])
+	unless ENV['PUSHOVER_USER'] == ""
+		Pushover.notification(message: message, title: title, user: ENV['PUSHOVER_USER'], token: "a1ny247b6atuu67s9vc8g4djgm3c3p")
 		return true
 	else
 		return false
