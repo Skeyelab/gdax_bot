@@ -63,7 +63,7 @@ rescue SystemExit => e
 rescue Exception => e
 	puts "Error: #{e}"
 	gdax_bot
-ensure
+	ensure
 	ws_task.stop
 	system('stty -raw echo')
 end

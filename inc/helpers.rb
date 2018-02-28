@@ -19,7 +19,15 @@ class Float
 	end
 end
 
+def tryPushMessage(message, title)
 
+	if ENV['PUSHOVER_USER'] != "" and ENV['PUSHOVER_APP'] != ""
+		Pushover.notification(message: 'message', title: 'title', user: ENV['PUSHOVER_USER'], token: ENV['PUSHOVER_APP'])
+		return true
+	else
+		return false
+	end
+end
 
 def usd_bal
 	rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
