@@ -19,6 +19,38 @@ class Float
 	end
 end
 
+def init_redis
+	redis = Redis.new
+	unless redis.get("spot_BTC_USD")
+		redis.set("spot_BTC_USD",0)
+	end
+	unless redis.get("spot_ETH_USD")
+		redis.set("spot_ETH_USD",0)
+	end
+
+	unless redis.get("spot_LTC_USD")
+		redis.set("spot_LTC_USD",0)
+	end
+
+	unless redis.get("spot_ETH_BTC")
+		redis.set("spot_ETH_BTC",0)
+	end
+
+	unless redis.get("spot_LTC_BTC")
+		redis.set("spot_LTC_BTC",0)
+	end
+
+	unless redis.get("spot_BCH_USD")
+		redis.set("spot_BCH_USD",0)
+	end
+
+	unless redis.get("spot_BCH_BTC")
+		redis.set("spot_BCH_BTC",0)
+	end
+end
+
+
+
 def tryPushMessage(message, title)
 
 	if ENV['PUSHOVER_USER'] != "" and ENV['PUSHOVER_APP'] != ""
