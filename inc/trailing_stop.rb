@@ -29,11 +29,12 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 	spot_array = []
 
 	#puts "Profit Goal %: #{'%.2f' % profit}"
-	puts "Profit Goal #{pair.split('-')[1]} : #{'%.5f' % profit_goal_price}"
+	print "Profit Goal #{pair.split('-')[1]}: "
+	puts "#{'%.5f' % profit_goal_price}".green
 	#puts "Open: #{'%.5f' % open_price}"
 	#puts "Hard Stop %: #{'%.2f' % stop_percent}"
 	#puts "Trailing Stop %: #{'%.2f' % t_stop}"
-	spinner = TTY::Spinner.new("[:spinner] Profit %: :p1 Profit #: :p2 Current Price: :spot :trend SMA: :sma Stop: :stop",interval: 20, format: :bouncing_ball, hide_cursor: true)
+	spinner = TTY::Spinner.new("[:spinner] Profit %: :p1 Profit #: :p2 Current Price: :spot :trend SMA: :sma Stop: :stop",interval: 5, format: :bouncing_ball, hide_cursor: true)
 
 
 	loop do
@@ -100,6 +101,7 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 
 		case k
 		when 99
+			spinner.error('(Canceled)')
 			return false
 		end
 
