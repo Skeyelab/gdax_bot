@@ -113,7 +113,7 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 		#print trend
 		#puts  "| spot SMA: #{'%.5f' % spot_sma} | stop %: #{'%.2f' % stop_percent} | stop: #{'%.5f' % stop_price} | stop range: #{'%.5f' % stop_distance} | t stop range: #{'%.5f' % t_stop_distance} | market high: #{'%.5f' % market_high}".colorize(color)
 
-		if i % 10 == 0
+		if i % 5 == 0
 			spinner.update(p1: "#{'%.5f' % current_profit_percentage.round_down(5)}")
 			spinner.update(p2: "#{'%.5f' % current_profit}")
 			spinner.update(spot: "#{'%.5f' % spot}")
