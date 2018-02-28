@@ -38,6 +38,7 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 	#puts "Trailing Stop %: #{'%.2f' % t_stop}"
 	spinner = TTY::Spinner.new("[:spinner] Profit %: :p1 | Profit #{pair.split('-')[1]}: :p2 | Current Price: :spot |:trend| SMA: :sma | Stop: :stop",interval: 5, format: :bouncing_ball, hide_cursor: true)
 
+	tryPushMessage("#{pair}", "Trailing Stop Started")
 
 	i = 0
 	loop do
@@ -65,6 +66,7 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 				order =  rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8))
 			end
 			watch_order(order)
+			tryPushMessage("#{pair}", "Trailing Stop Completed")
 			puts "Sold"
 			return
 			#break
