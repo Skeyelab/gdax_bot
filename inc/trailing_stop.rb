@@ -10,6 +10,7 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 	rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair )
 
 	color = :light_yellow
+	bg_color = :default
 
 	start = Time.now
 
@@ -86,8 +87,8 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 
 		if profit_made
 			stop_price = t_stop_price
-			print "* "
-			color = :green
+			color = :light_white
+			bg_color = :green
 		end
 
 		current_profit = ((spot_sma - open_price) * order_size).round(5)
@@ -117,7 +118,7 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 		#puts  "| spot SMA: #{'%.5f' % spot_sma} | stop %: #{'%.2f' % stop_percent} | stop: #{'%.5f' % stop_price} | stop range: #{'%.5f' % stop_distance} | t stop range: #{'%.5f' % t_stop_distance} | market high: #{'%.5f' % market_high}".colorize(color)
 
 		if i % 5 == 0
-			spinner.update(p1: "#{'%.5f' % current_profit_percentage.round_down(5)}".colorize(color))
+			spinner.update(p1: "#{'%.5f' % current_profit_percentage.round_down(5)}".colorize(:color => color, :background => bg_color))
 			spinner.update(p2: "#{'%.5f' % current_profit}")
 			spinner.update(spot: "#{'%.5f' % spot}")
 			spinner.update(trend: "#{trend}")
