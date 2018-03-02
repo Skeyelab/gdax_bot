@@ -1,6 +1,9 @@
 
 .env
 
+key_checker.rb
+console.rb
+
 .vscode/*
 
 .sfdx/tools/apex.db
