@@ -5,6 +5,10 @@ Dotenv.load
 system('clear')
 Dir["./inc/*.rb"].each {|file| require file }
 
+if parseOptions[:debug]
+	puts "DEBUG MODE"
+end
+
 init_env
 init_redis
 check_for_zombie_websocket

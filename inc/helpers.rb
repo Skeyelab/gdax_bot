@@ -7,6 +7,18 @@ def humanize secs
 	}.compact.reverse.join(' ')
 end
 
+def parseOptions
+
+	opts = Slop.parse do |o|
+		o.bool '-d', '--debug', 'Debug Mode'
+		o.on '-h','--help' do
+			puts o
+			exit
+		end
+	end
+	return opts
+end
+
 class Numeric
 	def percent_of(n)
 		self.to_f / n.to_f * 100.0
