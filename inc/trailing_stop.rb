@@ -124,7 +124,7 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 			spinner.update(trend: "#{trend}")
 			spinner.update(sma: "#{'%.5f' % spot_sma}")
 			spinner.update(stop: "#{'%.5f' % stop_price}")
-			spinner.update(dist: "#{'%.5f' % t_stop_distance}")
+			spinner.update(dist: "#{'%.5f' % stop_distance}")
 			spinner.update(s2: "#{'%.5f' % (spot - spot_sma).abs}")
 			spinner.spin
 		end
