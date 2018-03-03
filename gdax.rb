@@ -5,7 +5,7 @@ Dotenv.load
 system('clear')
 Dir["./inc/*.rb"].each {|file| require file }
 
-
+init_env
 init_redis
 check_for_zombie_websocket
 

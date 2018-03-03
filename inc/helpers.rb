@@ -19,6 +19,13 @@ class Float
 	end
 end
 
+def init_env
+	return true if File.file?(".env")
+	puts "No .env file found"
+	abort
+	#if no .env file, create it
+end
+
 def init_redis
 	redis = Redis.new
 	unless redis.get("spot_BTC_USD")
