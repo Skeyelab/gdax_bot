@@ -38,9 +38,11 @@ def trailing_start_menu
 	else
 		puts "Paused job found, resuming."
 		puts ""
+		puts "Pair: #{checkForPausedJob('ts')['pair'].green}"
+		puts "Open: #{checkForPausedJob('ts')['existing']['size'].to_s.green} @ #{checkForPausedJob('ts')['existing']['price'].to_s.green}"
 		puts "Profit Goal %? #{checkForPausedJob('ts')['profit'].to_s.green}"
-puts "Trailing Stop %? #{checkForPausedJob('ts')['t_stop'].to_s.green}"
-puts "Initial Stop Loss %? #{checkForPausedJob('ts')['stop'].to_s.green}"
+		puts "Trailing Stop %? #{checkForPausedJob('ts')['t_stop'].to_s.green}"
+		puts "Initial Stop Loss %? #{checkForPausedJob('ts')['stop'].to_s.green}"
 		trailing_stop(checkForPausedJob("ts")["open_price"], checkForPausedJob("ts")["percent_of_portfolio"], checkForPausedJob("ts")["pair"], checkForPausedJob("ts")["profit"], checkForPausedJob("ts")["t_stop"], checkForPausedJob("ts")["stop_percent"], checkForPausedJob("ts")["existing"])
 
 	end
