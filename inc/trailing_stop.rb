@@ -1,5 +1,9 @@
 def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5, t_stop=0.25, stop_percent=1.0, existing=false )
 
+	if checkForPausedJob("ts")
+		File.delete("jobs/paused_ts.json")
+	end
+
 	redis = Redis.new
 
 	last_spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
@@ -26,6 +30,19 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 		end
 	end
 
+	jobHash = {
+		open_price: open_price,
+		percent_of_portfolio: percent_of_portfolio,
+		pair: pair,
+		profit: profit,
+		t_stop: t_stop,
+		stop_percent: stop_percent,
+		existing: {
+			"price"=>open_price,
+			"size"=>order_size
+		}
+	}
+
 	profit_made = false
 	stop_loss_reached = false
 	spot_array = []
@@ -36,7 +53,7 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 	#puts "Open: #{'%.5f' % open_price}"
 	#puts "Hard Stop %: #{'%.2f' % stop_percent}"
 	puts ""
-	puts "Press 'c' to cancel."
+	puts "Press 'c' to cancel, 'p' to pause."
 	#puts "Trailing Stop %: #{'%.2f' % t_stop}"
 	spinner = TTY::Spinner.new("[:spinner] Profit %: :p1 | Profit #{pair.split('-')[1]}: :p2 | Current Price: :spot |:trend| SMA: :sma | Stop: :stop | Stop Distance: :dist | SMA Dist: :s2",interval: 5, format: :bouncing_ball, hide_cursor: true)
 
@@ -110,6 +127,12 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 		case k
 		when 99
 			spinner.error('(Canceled)')
+			return false
+		when 112
+			spinner.stop('(Paused)')
+			File.open("jobs/paused_ts.json","w") do |f|
+				f.write(jobHash.to_json)
+			end
 			return false
 		end
 

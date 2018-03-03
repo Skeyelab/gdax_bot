@@ -11,3 +11,5 @@ console.rb
 *.pid
 
 Gemfile.lock
+
+jobs/*

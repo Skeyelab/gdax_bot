@@ -19,6 +19,16 @@ class Float
 	end
 end
 
+def checkForPausedJob(type)
+	if File.file?("jobs/paused_#{type}.json")
+		file = File.read("jobs/paused_#{type}.json")
+		paused_job = JSON.parse(file)
+		return paused_job
+	else
+		return false 
+	end
+end
+
 def init_env
 	return true if File.file?(".env")
 	puts "No .env file found"
