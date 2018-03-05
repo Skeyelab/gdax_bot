@@ -78,11 +78,13 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 				binding.pry
 			end
 			if pair.split('-')[1] == "USD"
+				spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
 				puts "Selling at #{spot - 0.01}"
-				order =  rest_api.sell(order_size.round_down(8), (spot - 0.01).round_down(2))
+				order =  rest_api.sell(order_size.round_down(8), (spot - 0.01).round_down(2),{:type => 'market'})
 			else
+				spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
 				puts "Selling at #{spot - 0.00001}"
-				order =  rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8))
+				order =  rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8),{:type => 'market'})
 			end
 			watch_order(order)
 			tryPushMessage("#{pair}", "Trailing Stop Completed")
