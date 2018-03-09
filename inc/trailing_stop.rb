@@ -28,6 +28,7 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 		if watch_order(open_order) == false
 			return false
 		end
+		order_size = open_order["size"]
 	end
 
 	jobHash = {
@@ -87,9 +88,9 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 				order =  rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8),{:type => 'market'})
 			end
 			watch_order(order)
-			tryPushMessage("#{pair}", "Trailing Stop Completed")
+			#tryPushMessage("#{pair}", "Trailing Stop Completed")
 			puts "Sold"
-			return
+			return true
 			#break
 		end
 
