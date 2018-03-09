@@ -35,16 +35,34 @@ def watch_stream_times
 	end
 end
 
-def check_for_zombie_websocket
+def writejSON
 
-	begin
-		file = File.open("./GDAX_Connection.pid", "rb")
-		contents = file.read
-		pid = contents.to_i
-		Process.kill("QUIT", pid)
-		return
-	rescue Exception => e
-		return
+	t = Thread.new do
+		redis = Redis.new
+		while true do
+			File.open('./public/blah.json', 'w') { |file| file.write(Time.now) }
+			# or call tick function
+			sleep 1
+		end
+	end
+
+	return t
+
+end
+
+def check_for_zombie_servers
+
+	Dir.glob('./*.pid') do |file|
+
+		begin
+			file = File.open(file, "rb")
+			contents = file.read
+			pid = contents.to_i
+			Process.kill("QUIT", pid)
+			return
+		rescue Exception => e
+			return
+		end
 	end
 
 end
