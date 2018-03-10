@@ -28,7 +28,7 @@ def trailing_stop (open_price, percent_of_portfolio, pair="LTC-BTC", profit=0.5,
 		if watch_order(open_order) == false
 			return false
 		end
-		order_size = open_order["size"]
+		order_size = open_order["size"].to_f
 	end
 
 	jobHash = {
