@@ -21,7 +21,7 @@ DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 # requested file and then looks up its content type.
 
 def content_type(path)
-	 ext = File.extname(path).split(".").last
+	 ext = File.extname(path).split('.').last
 	 CONTENT_TYPE_MAPPING.fetch(ext, DEFAULT_CONTENT_TYPE)
 end
 
@@ -29,13 +29,13 @@ end
 # generates a path to a file on the server.
 
 def requested_file(request_line)
-	 request_uri = request_line.split(" ")[1]
+	 request_uri = request_line.split(' ')[1]
 	 path = URI.unescape(URI(request_uri).path)
 
 	 clean = []
 
 	 # Split the path into components
-	 parts = path.split("/")
+	 parts = path.split('/')
 
 	 parts.each do |part|
  		 # skip any empty or current directory (".") path components
@@ -71,7 +71,7 @@ def startWebserver
  		 # Make sure the file exists and is not a directory
  		 # before attempting to open it.
  		 if File.exist?(path) && !File.directory?(path)
-  			 File.open(path, "rb") do |file|
+  			 File.open(path, 'rb') do |file|
    				 socket.print "HTTP/1.1 200 OK\r\n" +
     				             "Content-Type: #{content_type(file)}\r\n" +
     				             "Content-Length: #{file.size}\r\n" +

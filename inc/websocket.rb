@@ -3,7 +3,7 @@ module Coinbase
  		 # Websocket client for Coinbase Exchange
  		 class Websocket
   			 def initialize(options = {})
-   				 @ws_url = options[:ws_url] || "wss://ws-feed.gdax.com"
+   				 @ws_url = options[:ws_url] || 'wss://ws-feed.gdax.com'
    				 @product = options[:product_id] || ['BTC-USD', 'ETH-USD', 'LTC-USD', 'ETH-BTC', 'LTC-BTC', 'BCH-USD', 'BCH-BTC']
    				 @keepalive = options[:keepalive] || true
 

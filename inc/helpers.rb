@@ -30,47 +30,47 @@ def checkForPausedJob(type)
 end
 
 def init_env
-	 return true if File.file?(".env")
-	 puts "No .env file found"
+	 return true if File.file?('.env')
+	 puts 'No .env file found'
 	 abort
 	 # if no .env file, create it
 end
 
 def init_redis
 	 redis = Redis.new
-	 unless redis.get("spot_BTC_USD")
- 		 redis.set("spot_BTC_USD", 0)
+	 unless redis.get('spot_BTC_USD')
+ 		 redis.set('spot_BTC_USD', 0)
  	end
-	 unless redis.get("spot_ETH_USD")
- 		 redis.set("spot_ETH_USD", 0)
- 	end
-
-	 unless redis.get("spot_LTC_USD")
- 		 redis.set("spot_LTC_USD", 0)
+	 unless redis.get('spot_ETH_USD')
+ 		 redis.set('spot_ETH_USD', 0)
  	end
 
-	 unless redis.get("spot_ETH_BTC")
- 		 redis.set("spot_ETH_BTC", 0)
+	 unless redis.get('spot_LTC_USD')
+ 		 redis.set('spot_LTC_USD', 0)
  	end
 
-	 unless redis.get("spot_LTC_BTC")
- 		 redis.set("spot_LTC_BTC", 0)
+	 unless redis.get('spot_ETH_BTC')
+ 		 redis.set('spot_ETH_BTC', 0)
  	end
 
-	 unless redis.get("spot_BCH_USD")
- 		 redis.set("spot_BCH_USD", 0)
+	 unless redis.get('spot_LTC_BTC')
+ 		 redis.set('spot_LTC_BTC', 0)
  	end
 
-	 unless redis.get("spot_BCH_BTC")
- 		 redis.set("spot_BCH_BTC", 0)
+	 unless redis.get('spot_BCH_USD')
+ 		 redis.set('spot_BCH_USD', 0)
+ 	end
+
+	 unless redis.get('spot_BCH_BTC')
+ 		 redis.set('spot_BCH_BTC', 0)
  	end
 end
 
 def tryPushMessage(message, title)
-	 if ENV['PUSHOVER_USER'] == ""
+	 if ENV['PUSHOVER_USER'] == ''
  		 return false
  	else
- 		 Pushover.notification(message: message, title: title, user: ENV['PUSHOVER_USER'], token: "a1ny247b6atuu67s9vc8g4djgm3c3p")
+ 		 Pushover.notification(message: message, title: title, user: ENV['PUSHOVER_USER'], token: 'a1ny247b6atuu67s9vc8g4djgm3c3p')
  		 return true
  	end
 end
@@ -80,7 +80,7 @@ def usd_bal
 
 	 rest_api.accounts do |resp|
  		 resp.each do |account|
-  			 if account.currency == "USD"
+  			 if account.currency == 'USD'
    				 return account.available.to_f - 0.01
    			end
   		end
@@ -105,7 +105,7 @@ class Account
  	end
 end
 
-def bal(pair = "BTC-USD")
+def bal(pair = 'BTC-USD')
 	 rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
 	 rest_api.accounts do |resp|
@@ -127,7 +127,7 @@ def update_accounts
   			 held = 0
   			 rest_api.account_holds(account.id) do |resp|
    				 resp.each do |hold|
-    					 held = held + hold["amount"].to_f
+    					 held = held + hold['amount'].to_f
     				end
    			end
   			 accounts << Account.new(account.id, account.currency, account.available, held)
@@ -142,7 +142,7 @@ def orders
 
 	 orders = []
 
-	 rest_api.orders(status: "open") do |resp|
+	 rest_api.orders(status: 'open') do |resp|
  		 resp.each do |order|
   			 orders << order
   		end
