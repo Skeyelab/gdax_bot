@@ -62,7 +62,7 @@ def select_recent_order_menu(pair)
 	 selected_order = prompt.select("Trail which order?", per_page: 10) do |menu|
  		 menu.enum '.'
  		 orders[0..4].each do |order|
-  			 menu.choice "#{order["size"]} @ #{order["price"]}", order
+  			 menu.choice "#{order['size']} @ #{order['price']}", order
   		end
  		 menu.choice "Manual"
  		 menu.choice "Back"
