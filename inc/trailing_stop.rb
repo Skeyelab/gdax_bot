@@ -111,12 +111,12 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
     t_stop_distance = format('%.5f', (spot_sma - t_stop_price))
 
     trend = if spot < spot_sma
-              ' - '.white.on_red.bold
-            elsif spot > spot_sma
-              ' + '.white.on_green.bold
-            else
-              '   '.white
-            end
+      ' - '.white.on_red.bold
+    elsif spot > spot_sma
+      ' + '.white.on_green.bold
+    else
+      '   '.white
+    end
 
     system('stty raw -echo')
     k = GetKey.getkey
