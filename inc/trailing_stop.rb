@@ -63,7 +63,7 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
     sleep 1.0 / 100
     spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
     spot_array << spot
-    spot_array = spot_array.last(250)
+    spot_array = spot_array.last(500)
     spot_sma = spot_array.sma.round(5)
     current_profit_percentage = Percentage.change(open_price, spot_array.sma.round(5)).to_f
 
