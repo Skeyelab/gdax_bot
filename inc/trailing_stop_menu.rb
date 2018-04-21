@@ -2,7 +2,17 @@ def trailing_start_menu
 	 prompt = TTY::Prompt.new
 	 redis = Redis.new
 
-	 unless checkForPausedJob("ts")
+	 if checkForPausedJob("ts")
+ 		 puts "Paused job found, resuming."
+ 		 puts ""
+ 		 puts "Pair: #{checkForPausedJob('ts')['pair'].green}"
+ 		 puts "Open: #{checkForPausedJob('ts')['existing']['size'].to_s.green} @ #{checkForPausedJob('ts')['existing']['price'].to_s.green}"
+ 		 puts "Profit Goal %? #{checkForPausedJob('ts')['profit'].to_s.green}"
+ 		 puts "Trailing Stop %? #{checkForPausedJob('ts')['t_stop'].to_s.green}"
+ 		 puts "Initial Stop Loss %? #{checkForPausedJob('ts')['stop'].to_s.green}"
+ 		 trailing_stop(checkForPausedJob("ts")["open_price"], checkForPausedJob("ts")["percent_of_portfolio"], checkForPausedJob("ts")["pair"], checkForPausedJob("ts")["profit"], checkForPausedJob("ts")["t_stop"], checkForPausedJob("ts")["stop_percent"], checkForPausedJob("ts")["existing"])
+
+ 	else
 
  		 pair = pair_menu
  		 if pair == "Back"
@@ -31,16 +41,6 @@ def trailing_start_menu
   		end
 
  		 trailing_stop(open_price, percent_of_portfolio/100, pair, profit, t_stop, stop_percent, existing)
- 	else
- 		 puts "Paused job found, resuming."
- 		 puts ""
- 		 puts "Pair: #{checkForPausedJob('ts')['pair'].green}"
- 		 puts "Open: #{checkForPausedJob('ts')['existing']['size'].to_s.green} @ #{checkForPausedJob('ts')['existing']['price'].to_s.green}"
- 		 puts "Profit Goal %? #{checkForPausedJob('ts')['profit'].to_s.green}"
- 		 puts "Trailing Stop %? #{checkForPausedJob('ts')['t_stop'].to_s.green}"
- 		 puts "Initial Stop Loss %? #{checkForPausedJob('ts')['stop'].to_s.green}"
- 		 trailing_stop(checkForPausedJob("ts")["open_price"], checkForPausedJob("ts")["percent_of_portfolio"], checkForPausedJob("ts")["pair"], checkForPausedJob("ts")["profit"], checkForPausedJob("ts")["t_stop"], checkForPausedJob("ts")["stop_percent"], checkForPausedJob("ts")["existing"])
-
  	end
 end
 

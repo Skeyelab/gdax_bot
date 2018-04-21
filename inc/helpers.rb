@@ -67,11 +67,11 @@ def init_redis
 end
 
 def tryPushMessage(message, title)
-	 unless ENV['PUSHOVER_USER'] == ""
+	 if ENV['PUSHOVER_USER'] == ""
+ 		 return false
+ 	else
  		 Pushover.notification(message: message, title: title, user: ENV['PUSHOVER_USER'], token: "a1ny247b6atuu67s9vc8g4djgm3c3p")
  		 return true
- 	else
- 		 return false
  	end
 end
 

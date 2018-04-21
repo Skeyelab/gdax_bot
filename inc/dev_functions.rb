@@ -36,7 +36,7 @@ end
 def writejSON
 	 t = Thread.new do
  		 redis = Redis.new
- 		 while true do
+ 		 while true
   			 File.open('./public/blah.json', 'w') { |file| file.write(Time.now) }
   			 # or call tick function
   			 sleep 1
