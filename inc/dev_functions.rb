@@ -95,26 +95,27 @@ def run_websocket
     case resp.product_id
     when 'BTC-USD'
       redis.set('spot_BTC_USD', resp.price)
-    # p "BTC Spot Rate: $ %.2f" % resp.price
+      # p "BTC Spot Rate: $ %.2f" % resp.price
     when 'ETH-USD'
       redis.set('spot_ETH_USD', resp.price)
-    # p "ETH Spot Rate: $ %.2f" % resp.price
+      # p "ETH Spot Rate: $ %.2f" % resp.price
     when 'LTC-USD'
       redis.set('spot_LTC_USD', resp.price)
-    # p "LTC Spot Rate: $ %.2f" % resp.price
+      # p "LTC Spot Rate: $ %.2f" % resp.price
     when 'ETH-BTC'
       redis.set('spot_ETH_BTC', resp.price)
-    # p "LTC Spot Rate: $ %.2f" % resp.price
+      # p "LTC Spot Rate: $ %.2f" % resp.price
     when 'LTC-BTC'
       redis.set('spot_LTC_BTC', resp.price)
-    # p "LTC Spot Rate: $ %.2f" % resp.price
+      # p "LTC Spot Rate: $ %.2f" % resp.price
     when 'BCH-USD'
       redis.set('spot_BCH_USD', resp.price)
-    # p "LTC Spot Rate: $ %.2f" % resp.price
+      # p "LTC Spot Rate: $ %.2f" % resp.price
     when 'BCH-BTC'
       redis.set('spot_BCH_BTC', resp.price)
       # p "LTC Spot Rate: $ %.2f" % resp.price
     end
+    sleep 1.0/20.0
     # puts "."
     # puts "$%.2f" % redis.get("spot_BTC_USD") + " | " + "$%.2f" % redis.get("spot_ETH_USD") + " | " + "$%.2f" % redis.get("spot_LTC_USD") + " | " + "Ƀ%.5f" % redis.get("spot_ETH_BTC") + " | " + "Ƀ%.5f" % redis.get("spot_LTC_BTC") + " | " + "$%.2f" % redis.get("spot_BCH_USD") + " | " + "Ƀ%.5f" % redis.get("spot_BCH_BTC")
   end

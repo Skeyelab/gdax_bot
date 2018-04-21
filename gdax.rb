@@ -13,9 +13,9 @@ webSocket_daemon = Daemons.call({ :app_name => 'GDAX_Bot', :backtrace => true, :
   run_websocket
 end
 
-webServer_daemon = Daemons.call({ :app_name => 'Webserver', :backtrace => true, :multiple => true}) do
-  startWebserver
-end
+# webServer_daemon = Daemons.call({ :app_name => 'Webserver', :backtrace => true, :multiple => true}) do
+#   startWebserver
+# end
 
 begin
   gdax_bot_main_menu
@@ -26,6 +26,6 @@ rescue Exception => e
   gdax_bot_main_menu
 ensure
   webSocket_daemon.stop
-  webServer_daemon.stop
+  #  webServer_daemon.stop
   system('stty -raw echo')
 end
