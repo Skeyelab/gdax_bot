@@ -4,7 +4,7 @@ def open_position(open_price, close_price, percent_of_portfolio, pair = 'BTC-USD
 	 start = Time.now
 
 	 # binding.pry
-	 order_size = (bal(pair) * percent_of_portfolio)/open_price
+	 order_size = (bal(pair) * percent_of_portfolio) / open_price
 	 open_order = rest_api.buy(order_size.round_down(8), open_price)
 	 if close_position(open_order, close_price)
  		 end_time = Time.now

@@ -35,7 +35,7 @@ def watch_order(order)
    				 spinner.success('(successful)')
    				 return true
    			else
-   				 sleep 1.0/3.0
+   				 sleep 1.0 / 3.0
    				 spinner.spin
    			end
     rescue Coinbase::Exchange::NotFoundError => e

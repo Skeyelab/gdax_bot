@@ -40,7 +40,7 @@ def trailing_start_menu
   			 open_price = prompt.ask('Open Price?', default: (redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f).round_down(5)).to_f
   		end
 
- 		 trailing_stop(open_price, percent_of_portfolio/100, pair, profit, t_stop, stop_percent, existing)
+ 		 trailing_stop(open_price, percent_of_portfolio / 100, pair, profit, t_stop, stop_percent, existing)
  	end
 end
 
