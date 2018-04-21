@@ -3,7 +3,7 @@ def watch_order(order)
 
   pair = order.product_id
 
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair )
+  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair)
   puts "Press 'c' to cancel the order"
   system('stty raw -echo')
   spinner = TTY::Spinner.new("[:spinner] #{order.side.capitalize}ing :size :p1 for :price :p2 - Current spread: :spread", format: :bouncing_ball, hide_cursor: true)
@@ -16,7 +16,7 @@ def watch_order(order)
       spinner.update(price: '%.5f' % order.price)
       spinner.update(spread: '%.5f' % (spot.to_f - order.price))
       spinner.spin
-      rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair )
+      rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair)
 
       k = GetKey.getkey
 
