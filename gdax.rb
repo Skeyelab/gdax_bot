@@ -22,6 +22,7 @@ end
 begin
   gdax_bot_main_menu
 rescue SystemExit => e
+  puts "Error: #{e}"
   abort
 rescue Exception => e
   puts "Error: #{e}"

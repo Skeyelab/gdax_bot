@@ -13,15 +13,15 @@ def watch_order_and_sell(order, sell_level)
         sleep 1.0 / 3.0
         print '.'
       end
-    rescue Exception => e
+    rescue Exception
       puts 'Error, retrying'
       sleep 1
       retry
     end
   end
   puts ''
-  proceeds = (order['price'].to_f * order['size'].to_f).round_down(2)
-  order_size = (proceeds / sell_level).round_down(8)
+  # proceeds = (order['price'].to_f * order['size'].to_f).round_down(2)
+  # order_size = (proceeds / sell_level).round_down(8)
 
   order_size = (bal(pair) * percent_of_portfolio) / open_price
 

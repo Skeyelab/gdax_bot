@@ -52,7 +52,7 @@ def select_recent_order_menu(pair)
     end
   end
 
-  recent_orders = []
+  # recent_orders = []
 
   prompt = TTY::Prompt.new
   selected_order = prompt.select('Trail which order?', per_page: 10) do |menu|

@@ -109,7 +109,7 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
 
     current_profit = ((spot_sma - open_price) * order_size).round(5)
     stop_distance = format('%.5f', (spot_sma - stop_price))
-    t_stop_distance = format('%.5f', (spot_sma - t_stop_price))
+    # t_stop_distance = format('%.5f', (spot_sma - t_stop_price))
 
     trend = if spot < spot_sma
               ' - '.white.on_red.bold
