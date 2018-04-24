@@ -14,7 +14,7 @@ CONTENT_TYPE_MAPPING = {
   'png' => 'image/png',
   'jpg' => 'image/jpeg',
   'json' => 'application/json'
-}
+}.freeze
 
 # Treat as binary data if content type cannot be found
 DEFAULT_CONTENT_TYPE = 'application/octet-stream'
@@ -101,4 +101,3 @@ def startWebserver
     socket.close
   end
 end
-
