@@ -79,7 +79,7 @@ def view_websocket
   redis = Redis.new
 
   loop do
-    puts '$%.2f' % redis.get('spot_BTC_USD') + ' | ' + '$%.2f' % redis.get('spot_ETH_USD') + ' | ' + '$%.2f' % redis.get('spot_LTC_USD') + ' | ' + 'Ƀ%.5f' % redis.get('spot_ETH_BTC') + ' | ' + 'Ƀ%.5f' % redis.get('spot_LTC_BTC') + ' | ' + '$%.2f' % redis.get('spot_BCH_USD') + ' | ' + 'Ƀ%.5f' % redis.get('spot_BCH_BTC')
+    puts format('$%.2f', redis.get('spot_BTC_USD')) + ' | ' + format('$%.2f', redis.get('spot_ETH_USD')) + ' | ' + format('$%.2f', redis.get('spot_LTC_USD')) + ' | ' + format('Ƀ%.5f', redis.get('spot_ETH_BTC')) + ' | ' + format('Ƀ%.5f', redis.get('spot_LTC_BTC')) + ' | ' + format('$%.2f', redis.get('spot_BCH_USD')) + ' | ' + format('Ƀ%.5f', redis.get('spot_BCH_BTC'))
     sleep 1.0/20
     k = GetKey.getkey
     system('stty -raw echo')
