@@ -60,7 +60,7 @@ def tryPushMessage(message, title)
   else
     Pushover.notification(message: message, title: title, user: ENV['PUSHOVER_USER'], token: 'a1ny247b6atuu67s9vc8g4djgm3c3p')
     true
-   end
+  end
 end
 
 def usd_bal

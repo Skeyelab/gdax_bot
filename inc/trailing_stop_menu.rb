@@ -50,7 +50,7 @@ def select_recent_order_menu(pair)
     resp.each do |order|
       if (order['product_id'] == pair) && (order['done_reason'] == 'filled') && (order['side'] == 'buy')
         orders << order
-       end
+      end
     end
   end
 
