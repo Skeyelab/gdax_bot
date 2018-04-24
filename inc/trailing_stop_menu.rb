@@ -1,5 +1,4 @@
 def trailing_start_menu
-
 	prompt = TTY::Prompt.new
 	redis = Redis.new
 

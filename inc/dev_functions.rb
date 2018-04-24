@@ -36,7 +36,6 @@ def watch_stream_times
 end
 
 def writejSON
-
 	t = Thread.new do
 		redis = Redis.new
 		while true do
@@ -47,11 +46,9 @@ def writejSON
 	end
 
 	return t
-
 end
 
 def check_for_zombie_servers
-
 	Dir.glob('./*.pid') do |file|
 
 		begin
@@ -64,7 +61,6 @@ def check_for_zombie_servers
 			return
 		end
 	end
-
 end
 module Process
 	def exist?(pid)
@@ -93,7 +89,6 @@ def view_websocket
 end
 
 def run_websocket
-
 	redis = Redis.new
 
 	websocket = Coinbase::Exchange::Websocket.new( keepalive: true)
@@ -141,5 +136,4 @@ def run_websocket
 	end
 
 	 #websocket.start!
-
 end

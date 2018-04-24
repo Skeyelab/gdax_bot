@@ -25,5 +25,4 @@ def gdax_bot_main_menu
 			trailing_start_menu
 		end
 	end
-
 end

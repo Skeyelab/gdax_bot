@@ -98,6 +98,5 @@ def startWebserver
 
 		socket.close
 	end
-
 end
 

@@ -28,5 +28,4 @@ def watch_order_and_sell (order, sell_level)
 	rest_api.sell(order_size,sell_level) do |resp|
 		puts "Order ID is #{resp.id}"
 	end
-
 end

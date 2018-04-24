@@ -42,5 +42,4 @@ def close_position (order, price)
 		print "\a"
 
 	end
-
 end

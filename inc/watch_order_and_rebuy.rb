@@ -7,5 +7,4 @@ def watch_order_and_rebuy (order, rebuy_level)
 
 	puts "Rebuying #{order_size} BTC @ $#{rebuy_level}"
 	open_order = rest_api.buy(order_size, rebuy_level)
-
 end
