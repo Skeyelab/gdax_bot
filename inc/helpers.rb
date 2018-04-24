@@ -96,9 +96,7 @@ def bal(pair = 'BTC-USD')
 
   rest_api.accounts do |resp|
     resp.each do |account|
-      if account.currency == pair.split('-')[1]
-        return account.available.to_f.round_down(8)
-      end
+      return account.available.to_f.round_down(8) if account.currency == pair.split('-')[1]
     end
   end
 end
