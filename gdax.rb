@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 require 'rubygems'
 require 'bundler'
 Bundler.require
 Dotenv.load
 system('clear')
-Dir['./inc/*.rb'].each {|file| require file }
+Dir['./inc/*.rb'].each { |file| require file }
 
 init_env
 init_redis
 check_for_zombie_servers
 
-webSocket_daemon = Daemons.call({ :app_name => 'GDAX_Bot', :backtrace => true, :multiple => true}) do
+webSocket_daemon = Daemons.call(app_name: 'GDAX_Bot', backtrace: true, multiple: true) do
   run_websocket
 end
 
@@ -20,6 +22,7 @@ end
 begin
   gdax_bot_main_menu
 rescue SystemExit => e
+  puts "Error: #{e}"
   abort
 rescue Exception => e
   puts "Error: #{e}"

@@ -1,21 +1,23 @@
-def humanize secs
-  [[60, :seconds], [60, :minutes], [24, :hours], [1000, :days]].map{ |count, name|
-    if secs > 0
+# frozen_string_literal: true
+
+def humanize(secs)
+  [[60, :seconds], [60, :minutes], [24, :hours], [1000, :days]].map do |count, name|
+    if secs.positive?
       secs, n = secs.divmod(count)
       "#{n.to_i} #{name}"
     end
-  }.compact.reverse.join(' ')
+  end.compact.reverse.join(' ')
 end
 
 class Numeric
   def percent_of(n)
-    self.to_f / n.to_f * 100.0
+    to_f / n.to_f * 100.0
   end
 end
 
 class Float
-  def round_down n = 0
-    n < 1 ? self.to_i.to_f : (self - 0.5 / 10**n).round(n)
+  def round_down(n = 0)
+    n < 1 ? to_i.to_f : (self - 0.5 / 10**n).round(n)
   end
 end
 
@@ -23,9 +25,9 @@ def checkForPausedJob(type)
   if File.file?("jobs/paused_#{type}.json")
     file = File.read("jobs/paused_#{type}.json")
     paused_job = JSON.parse(file)
-    return paused_job
+    paused_job
   else
-    return false 
+    false
   end
 end
 
@@ -37,41 +39,27 @@ def init_env
 end
 
 def init_redis
-  redis = Redis.new
-  unless redis.get('spot_BTC_USD')
-    redis.set('spot_BTC_USD', 0)
-  end
-  unless redis.get('spot_ETH_USD')
-    redis.set('spot_ETH_USD', 0)
+  begin
+    redis = Redis.new
+  rescue Exception => e
+    puts e
   end
 
-  unless redis.get('spot_LTC_USD')
-    redis.set('spot_LTC_USD', 0)
-  end
-
-  unless redis.get('spot_ETH_BTC')
-    redis.set('spot_ETH_BTC', 0)
-  end
-
-  unless redis.get('spot_LTC_BTC')
-    redis.set('spot_LTC_BTC', 0)
-  end
-
-  unless redis.get('spot_BCH_USD')
-    redis.set('spot_BCH_USD', 0)
-  end
-
-  unless redis.get('spot_BCH_BTC')
-    redis.set('spot_BCH_BTC', 0)
-  end
+  redis.set('spot_BTC_USD', 0) unless redis.get('spot_BTC_USD')
+  redis.set('spot_ETH_USD', 0) unless redis.get('spot_ETH_USD')
+  redis.set('spot_LTC_USD', 0) unless redis.get('spot_LTC_USD')
+  redis.set('spot_ETH_BTC', 0) unless redis.get('spot_ETH_BTC')
+  redis.set('spot_LTC_BTC', 0) unless redis.get('spot_LTC_BTC')
+  redis.set('spot_BCH_USD', 0) unless redis.get('spot_BCH_USD')
+  redis.set('spot_BCH_BTC', 0) unless redis.get('spot_BCH_BTC')
 end
 
 def tryPushMessage(message, title)
   if ENV['PUSHOVER_USER'] == ''
-    return false
+    false
   else
     Pushover.notification(message: message, title: title, user: ENV['PUSHOVER_USER'], token: 'a1ny247b6atuu67s9vc8g4djgm3c3p')
-    return true
+    true
   end
 end
 
@@ -80,16 +68,14 @@ def usd_bal
 
   rest_api.accounts do |resp|
     resp.each do |account|
-      if account.currency == 'USD'
-        return account.available.to_f - 0.01
-       end
+      return account.available.to_f - 0.01 if account.currency == 'USD'
     end
   end
 end
 
 def decimals(a)
   num = 0
-  while(a != a.to_i)
+  while a != a.to_i
     num += 1
     a *= 10
   end
@@ -110,9 +96,7 @@ def bal(pair = 'BTC-USD')
 
   rest_api.accounts do |resp|
     resp.each do |account|
-      if account.currency == pair.split('-')[1]
-        return account.available.to_f.round_down(8)
-       end
+      return account.available.to_f.round_down(8) if account.currency == pair.split('-')[1]
     end
   end
 end
@@ -127,14 +111,14 @@ def update_accounts
       held = 0
       rest_api.account_holds(account.id) do |resp|
         resp.each do |hold|
-          held = held + hold['amount'].to_f
+          held += hold['amount'].to_f
         end
       end
       accounts << Account.new(account.id, account.currency, account.available, held)
     end
   end
 
-  return accounts
+  accounts
 end
 
 def orders
@@ -149,5 +133,5 @@ def orders
     puts "You have #{resp.count} open orders."
   end
 
-  return orders
+  orders
 end

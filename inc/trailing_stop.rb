@@ -84,7 +84,7 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
       end
       sleep 1
       watch_order(order)
-      # tryPushMessage("#{pair}", "Trailing Stop Completed")
+      tryPushMessage(pair.to_s, 'Trailing Stop Completed')
       puts 'Sold'
       return true
       # break
@@ -109,15 +109,15 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
 
     current_profit = ((spot_sma - open_price) * order_size).round(5)
     stop_distance = format('%.5f', (spot_sma - stop_price))
-    t_stop_distance = format('%.5f', (spot_sma - t_stop_price))
+    # t_stop_distance = format('%.5f', (spot_sma - t_stop_price))
 
     trend = if spot < spot_sma
-      ' - '.white.on_red.bold
-    elsif spot > spot_sma
-      ' + '.white.on_green.bold
-    else
-      '   '.white
-    end
+              ' - '.white.on_red.bold
+            elsif spot > spot_sma
+              ' + '.white.on_green.bold
+            else
+              '   '.white
+            end
 
     system('stty raw -echo')
     k = GetKey.getkey
@@ -139,7 +139,7 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
     # print trend
     # puts  "| spot SMA: #{'%.5f' % spot_sma} | stop %: #{'%.2f' % stop_percent} | stop: #{'%.5f' % stop_price} | stop range: #{'%.5f' % stop_distance} | t stop range: #{'%.5f' % t_stop_distance} | market high: #{'%.5f' % market_high}".colorize(color)
 
-    if i % 5 == 0
+    if (i % 5).zero?
       spinner.update(p1: format('%.5f', current_profit_percentage.round_down(5)).to_s.colorize(color: color, background: bg_color))
       spinner.update(p2: format('%.5f', current_profit).to_s)
       spinner.update(spot: format('%.5f', spot).to_s)

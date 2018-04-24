@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Coinbase
   module Exchange
     # Websocket client for Coinbase Exchange
@@ -27,11 +29,11 @@ module Coinbase
       end
 
       def stop!
-        if @reactor_owner == true
-          @socket.onclose = ->(_event) { EM.stop }
-        else
-          @socket.onclose = ->(_event) { nil }
-        end
+        @socket.onclose = if @reactor_owner == true
+                            ->(_event) { EM.stop }
+                          else
+                            ->(_event) { nil }
+                          end
         @socket.close
       end
 

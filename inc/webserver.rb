@@ -1,4 +1,6 @@
 
+# frozen_string_literal: true
+
 require 'socket'
 require 'uri'
 
@@ -12,7 +14,7 @@ CONTENT_TYPE_MAPPING = {
   'png' => 'image/png',
   'jpg' => 'image/jpeg',
   'json' => 'application/json'
-}
+}.freeze
 
 # Treat as binary data if content type cannot be found
 DEFAULT_CONTENT_TYPE = 'application/octet-stream'
@@ -72,10 +74,10 @@ def startWebserver
     # before attempting to open it.
     if File.exist?(path) && !File.directory?(path)
       File.open(path, 'rb') do |file|
-        socket.print "HTTP/1.1 200 OK\r\n" +
-                     "Content-Type: #{content_type(file)}\r\n" +
-                     "Content-Length: #{file.size}\r\n" +
-                     "Connection: close\r\n"
+        socket.print "HTTP/1.1 200 OK\r\n" \
+         "Content-Type: #{content_type(file)}\r\n" \
+         "Content-Length: #{file.size}\r\n" \
+         "Connection: close\r\n"
 
         socket.print "\r\n"
 
@@ -86,10 +88,10 @@ def startWebserver
       message = "File not found.\n"
 
       # respond with a 404 error code to indicate the file does not exist
-      socket.print "HTTP/1.1 404 Not Found\r\n" +
-                   "Content-Type: text/plain\r\n" +
-                   "Content-Length: #{message.size}\r\n" +
-                   "Connection: close\r\n"
+      socket.print "HTTP/1.1 404 Not Found\r\n" \
+      "Content-Type: text/plain\r\n" \
+      "Content-Length: #{message.size}\r\n" \
+      "Connection: close\r\n"
 
       socket.print "\r\n"
 
@@ -99,4 +101,3 @@ def startWebserver
     socket.close
   end
 end
-
