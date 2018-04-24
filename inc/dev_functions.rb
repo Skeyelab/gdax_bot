@@ -41,7 +41,7 @@ end
 
 def writejSON
   t = Thread.new do
-    redis = Redis.new
+    # redis = Redis.new
     loop do
       File.open('./public/blah.json', 'w') { |file| file.write(Time.now) }
       # or call tick function
@@ -60,7 +60,7 @@ def check_for_zombie_servers
       pid = contents.to_i
       Process.kill('QUIT', pid)
       return
-    rescue Exception => e
+    rescue Exception
       return
     end
   end
