@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GetKey
 
   # Check if Win32API is accessible or not

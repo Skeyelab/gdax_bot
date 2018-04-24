@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def trailing_start_menu
   prompt = TTY::Prompt.new
   redis = Redis.new

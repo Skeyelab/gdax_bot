@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def gdax_bot_main_menu
   redis = Redis.new
 

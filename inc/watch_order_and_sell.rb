@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def watch_order_and_sell (order, sell_level)
   rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 

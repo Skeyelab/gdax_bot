@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Coinbase
   module Exchange
     # Websocket client for Coinbase Exchange
