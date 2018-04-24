@@ -6,7 +6,7 @@ def gdax_bot_main_menu
   loop do
 
     prompt = TTY::Prompt.new
-    choice = prompt.select("Choose your destiny?") do |menu|
+    choice = prompt.select('Choose your destiny?') do |menu|
       menu.enum '.'
 
       #menu.choice 'Open and Close Order', 'open_and_close'

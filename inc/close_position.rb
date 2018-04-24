@@ -8,8 +8,8 @@ def close_position (order, price)
   end
   order_size = order.size
 
-  if order["side"] == "buy"
-    puts ""
+  if order['side'] == 'buy'
+    puts ''
     puts "Selling #{order_size.to_f} #{order['product_id'].split('-')[0]} @ $#{price}"
 
     begin
@@ -20,8 +20,8 @@ def close_position (order, price)
       return
 
     rescue Coinbase::Exchange::NotFoundError => e
-      if e.message == "{\"message\":\"NotFound\"}"
-        puts "Order not found"
+      if e.message == '{"message":"NotFound"}'
+        puts 'Order not found'
         sleep 1
         return
       end

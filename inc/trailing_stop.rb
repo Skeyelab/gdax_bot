@@ -84,7 +84,7 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
       end
       sleep 1
       watch_order(order)
-      tryPushMessage("#{pair}", "Trailing Stop Completed")
+      tryPushMessage("#{pair}", 'Trailing Stop Completed')
       puts 'Sold'
       return true
       # break

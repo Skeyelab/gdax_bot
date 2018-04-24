@@ -32,7 +32,7 @@ def watch_stream_times
   redis = Redis.new
 
   loop do
-    puts redis.get("last_ws_message_time")
+    puts redis.get('last_ws_message_time')
     sleep 1
   end
 end
@@ -54,10 +54,10 @@ def check_for_zombie_servers
   Dir.glob('./*.pid') do |file|
 
     begin
-      file = File.open(file, "rb")
+      file = File.open(file, 'rb')
       contents = file.read
       pid = contents.to_i
-      Process.kill("QUIT", pid)
+      Process.kill('QUIT', pid)
       return
     rescue Exception => e
       return
@@ -79,7 +79,7 @@ def view_websocket
   redis = Redis.new
 
   loop do
-    puts "$%.2f" % redis.get("spot_BTC_USD") + " | " + "$%.2f" % redis.get("spot_ETH_USD") + " | " + "$%.2f" % redis.get("spot_LTC_USD") + " | " + "Ƀ%.5f" % redis.get("spot_ETH_BTC") + " | " + "Ƀ%.5f" % redis.get("spot_LTC_BTC") + " | " + "$%.2f" % redis.get("spot_BCH_USD") + " | " + "Ƀ%.5f" % redis.get("spot_BCH_BTC")
+    puts '$%.2f' % redis.get('spot_BTC_USD') + ' | ' + '$%.2f' % redis.get('spot_ETH_USD') + ' | ' + '$%.2f' % redis.get('spot_LTC_USD') + ' | ' + 'Ƀ%.5f' % redis.get('spot_ETH_BTC') + ' | ' + 'Ƀ%.5f' % redis.get('spot_LTC_BTC') + ' | ' + '$%.2f' % redis.get('spot_BCH_USD') + ' | ' + 'Ƀ%.5f' % redis.get('spot_BCH_BTC')
     sleep 1.0/20
     k = GetKey.getkey
     system('stty -raw echo')
@@ -95,29 +95,29 @@ def run_websocket
 
   websocket = Coinbase::Exchange::Websocket.new( keepalive: true)
   websocket.match do |resp|
-    redis.set("last_ws_message_time", resp["time"])
+    redis.set('last_ws_message_time', resp['time'])
 
     case resp.product_id
-    when "BTC-USD"
-      redis.set("spot_BTC_USD", resp.price)
+    when 'BTC-USD'
+      redis.set('spot_BTC_USD', resp.price)
     #p "BTC Spot Rate: $ %.2f" % resp.price
-    when "ETH-USD"
-      redis.set("spot_ETH_USD", resp.price)
+    when 'ETH-USD'
+      redis.set('spot_ETH_USD', resp.price)
     #p "ETH Spot Rate: $ %.2f" % resp.price
-    when "LTC-USD"
-      redis.set("spot_LTC_USD", resp.price)
+    when 'LTC-USD'
+      redis.set('spot_LTC_USD', resp.price)
     #p "LTC Spot Rate: $ %.2f" % resp.price
-    when "ETH-BTC"
-      redis.set("spot_ETH_BTC", resp.price)
+    when 'ETH-BTC'
+      redis.set('spot_ETH_BTC', resp.price)
     #p "LTC Spot Rate: $ %.2f" % resp.price
-    when "LTC-BTC"
-      redis.set("spot_LTC_BTC", resp.price)
+    when 'LTC-BTC'
+      redis.set('spot_LTC_BTC', resp.price)
     #p "LTC Spot Rate: $ %.2f" % resp.price
-    when "BCH-USD"
-      redis.set("spot_BCH_USD", resp.price)
+    when 'BCH-USD'
+      redis.set('spot_BCH_USD', resp.price)
     #p "LTC Spot Rate: $ %.2f" % resp.price
-    when "BCH-BTC"
-      redis.set("spot_BCH_BTC", resp.price)
+    when 'BCH-BTC'
+      redis.set('spot_BCH_BTC', resp.price)
       #p "LTC Spot Rate: $ %.2f" % resp.price
     end
     #puts "."
@@ -128,7 +128,7 @@ def run_websocket
   EM.run do
     websocket.start!
     EM.add_periodic_timer(1) {
-      if (Time.now - Time.parse(redis.get("last_ws_message_time"))) > 5
+      if (Time.now - Time.parse(redis.get('last_ws_message_time'))) > 5
         websocket.start!
       end
     }
