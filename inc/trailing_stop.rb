@@ -83,6 +83,7 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
         order = rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8), type: 'market')
       end
       sleep 1
+      binding.pry
       watch_order(order)
       tryPushMessage(pair.to_s, 'Trailing Stop Completed')
       puts 'Sold'
