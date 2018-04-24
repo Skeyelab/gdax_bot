@@ -29,8 +29,8 @@ def trailing_start_menu
       percent_of_portfolio = 10
     end
 
-    profit = prompt.ask('Profit Goal %?', default: 1.0).to_f
-    t_stop = prompt.ask('Trailing Stop %?', default: 0.5).to_f
+    profit = prompt.ask('Profit Goal %?', default: 1.1).to_f
+    t_stop = prompt.ask('Trailing Stop %?', default: 0.2).to_f
     stop_percent = prompt.ask('Initial Stop Loss %?', default: 10.0).to_f
 
     unless existing
