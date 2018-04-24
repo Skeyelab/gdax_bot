@@ -11,11 +11,11 @@ init_env
 init_redis
 check_for_zombie_servers
 
-webSocket_daemon = Daemons.call({ :app_name => 'GDAX_Bot',:backtrace  => true, :multiple => true}) do
+webSocket_daemon = Daemons.call({ app_name: 'GDAX_Bot',backtrace: true, multiple: true}) do
   run_websocket
 end
 
-webServer_daemon = Daemons.call({ :app_name => 'Webserver',:backtrace  => true, :multiple => true}) do
+webServer_daemon = Daemons.call({ app_name: 'Webserver',backtrace: true, multiple: true}) do
   startWebserver
 end
 
