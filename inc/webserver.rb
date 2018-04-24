@@ -55,7 +55,6 @@ end
 # similar to that of the "Hello World" example
 # shown earlier.
 
-
 def startWebserver
 	server = TCPServer.new('localhost', 2345)
 

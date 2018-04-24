@@ -28,7 +28,6 @@ def close_position (order, price)
 			 #binding.pry
 		end
 
-
 		# elsif order["side"] == "sell"
 		#   puts "Selling #{order_size} #{order_size} #{order['product_id'].split('-')[0]} @ $#{price}"
 		#   begin

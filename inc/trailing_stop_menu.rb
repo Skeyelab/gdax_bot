@@ -5,8 +5,6 @@ def trailing_start_menu
 
 	unless checkForPausedJob("ts")
 
-
-
 		pair = pair_menu
 		if pair == "Back"
 			return
@@ -23,7 +21,6 @@ def trailing_start_menu
 			open_price = existing["price"].to_f
 			percent_of_portfolio = 10
 		end
-
 
 		profit = prompt.ask('Profit Goal %?', default: 1.0).to_f
 		t_stop = prompt.ask('Trailing Stop %?', default: 0.5).to_f
