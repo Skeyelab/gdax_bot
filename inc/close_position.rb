@@ -4,6 +4,7 @@ def close_position(order, price)
   rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: order.product_id)
 
   return false unless watch_order(order)
+
   order_size = order.size
 
   if order['side'] == 'buy'
