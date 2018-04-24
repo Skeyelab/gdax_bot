@@ -50,7 +50,7 @@ module Coinbase
 					product_ids: product,
 					channels: [
 						'matches',
-						# 'level2'
+						 # 'level2'
 					]
 				}.to_json)
 			end

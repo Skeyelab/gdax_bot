@@ -25,7 +25,7 @@ def close_position (order, price)
 			end
 
 		rescue Exception => e
-			#binding.pry
+			 #binding.pry
 		end
 
 
