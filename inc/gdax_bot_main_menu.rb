@@ -23,7 +23,7 @@ def gdax_bot_main_menu
     when 'view_websocket'
       view_websocket
     when 'trailing_stop'
-      trailing_start_menu
+      trailing_stop_menu
     end
   end
 end
