@@ -65,7 +65,7 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
     spot_array << spot
     spot_array = spot_array.last(500)
     spot_sma = spot_array.sma.round(5)
-    current_profit_percentage = Percentage.change(open_price, spot_array.sma.round(5)).to_f
+    current_profit_percentage = Percentage.change(open_price, spot_sma).to_f
 
     if stop_price > spot_sma
       # elsif (-stop_percent) > current_profit_percentage.to_f
