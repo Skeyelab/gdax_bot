@@ -54,11 +54,11 @@ def init_redis
   redis.set('spot_BCH_BTC', 0) unless redis.get('spot_BCH_BTC')
 end
 
-def tryPushMessage(message, title)
+def tryPushMessage(message, title, sound='none')
   if ENV['PUSHOVER_USER'] == ''
     false
   else
-    Pushover.notification(message: message, title: title, user: ENV['PUSHOVER_USER'], token: 'a1ny247b6atuu67s9vc8g4djgm3c3p')
+    Pushover.notification(message: message, title: title, user: ENV['PUSHOVER_USER'], token: 'a1ny247b6atuu67s9vc8g4djgm3c3p', sound: sound)
     true
   end
 end

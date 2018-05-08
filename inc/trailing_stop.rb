@@ -84,7 +84,7 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
       end
       sleep 1
       watch_order(order) unless rest_api.order(order.id).settled
-      tryPushMessage(pair.to_s, 'Trailing Stop Completed')
+      tryPushMessage(pair.to_s, 'Trailing Stop Completed', 'cashregister')
       puts 'Sold'
       return true
       # break
