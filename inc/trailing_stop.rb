@@ -92,7 +92,7 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
 
     if (spot_sma >= profit_goal_price) && (profit_made == false)
       profit_made = true
-      tryPushMessage(pair.to_s, 'Profit Goal Reached')
+      tryPushMessage(pair.to_s, 'Profit Goal Reached', 'cashregister')
     end
 
     if spot > market_high
