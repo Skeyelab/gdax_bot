@@ -121,13 +121,14 @@ def run_websocket
       redis.set('spot_BCH_BTC', resp.price)
       # p "LTC Spot Rate: $ %.2f" % resp.price
     end
+    sleep 1.0/500
     # puts "."
     # puts "$%.2f" % redis.get("spot_BTC_USD") + " | " + "$%.2f" % redis.get("spot_ETH_USD") + " | " + "$%.2f" % redis.get("spot_LTC_USD") + " | " + "Ƀ%.5f" % redis.get("spot_ETH_BTC") + " | " + "Ƀ%.5f" % redis.get("spot_LTC_BTC") + " | " + "$%.2f" % redis.get("spot_BCH_USD") + " | " + "Ƀ%.5f" % redis.get("spot_BCH_BTC")
   end
 
   EM.run do
     websocket.start!
-    EM.add_periodic_timer(1) do
+    EM.add_periodic_timer(30) do
       websocket.start! if (Time.now - Time.parse(redis.get('last_ws_message_time'))) > 5
     end
     EM.error_handler do |_e|
