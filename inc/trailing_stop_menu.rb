@@ -45,7 +45,12 @@ end
 def select_recent_order_menu(pair)
   puts 'Please wait, building menu.'
   orders = []
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Exchange::Client.new(
+    ENV['GDAX_TOKEN'],
+    ENV['GDAX_SECRET'],
+    ENV['GDAX_PW']
+  )
+
   rest_api.orders(status: 'done') do |resp|
     resp.each do |order|
       orders << order if (order['product_id'] == pair) && (order['done_reason'] == 'filled') && (order['side'] == 'buy')

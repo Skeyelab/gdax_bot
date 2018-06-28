@@ -11,11 +11,11 @@ init_env
 init_redis
 check_for_zombie_servers
 
-webSocket_daemon = Daemons.call(app_name: 'GDAX_Bot', backtrace: true, multiple: true) do
+web_socket_daemon = Daemons.call(app_name: 'GDAX_Bot', backtrace: true, multiple: true) do
   run_websocket
 end
 
-# webServer_daemon = Daemons.call({ :app_name => 'Webserver', :monitor => true, :backtrace => true, :multiple => true}) do
+# web_server_daemon = Daemons.call({ :app_name => 'Webserver', :monitor => true, :backtrace => true, :multiple => true}) do
 #   startWebserver
 # end
 
@@ -24,11 +24,11 @@ begin
 rescue SystemExit => e
   puts "Error: #{e}"
   abort
-rescue Exception => e
+rescue StandardError => e
   puts "Error: #{e}"
   gdax_bot_main_menu
 ensure
-  webSocket_daemon.stop
-  #  webServer_daemon.stop
+  web_socket_daemon.stop
+  #  web_server_daemon.stop
   system('stty -raw echo')
 end

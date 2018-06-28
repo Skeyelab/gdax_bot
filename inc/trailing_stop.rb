@@ -73,12 +73,11 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
       stop_loss_reached = true
       spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
       binding.pry unless profit_made
+      spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
       if pair.split('-')[1] == 'USD'
-        spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
         puts "Selling at #{spot - 0.01}"
         order = rest_api.sell(order_size.round_down(8), (spot - 0.01).round_down(2), type: 'market')
       else
-        spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
         puts "Selling at #{spot - 0.00001}"
         order = rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8), type: 'market')
       end

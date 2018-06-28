@@ -41,7 +41,7 @@ end
 def init_redis
   begin
     redis = Redis.new
-  rescue Exception => e
+  rescue StandardError => e
     puts e
   end
 

@@ -59,9 +59,9 @@ def check_for_zombie_servers
       contents = file.read
       pid = contents.to_i
       Process.kill('QUIT', pid)
-      return
-    rescue Exception
-      return
+      break
+    rescue StandardError
+      break
     end
   end
 end
