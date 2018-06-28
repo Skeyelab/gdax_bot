@@ -55,7 +55,7 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
   # puts "Trailing Stop %: #{'%.2f' % t_stop}"
   spinner = TTY::Spinner.new("[:spinner] Profit %: :p1 | Profit #{pair.split('-')[1]}: :p2 | Current Price: :spot |:trend| SMA: :sma | Stop: :stop | Stop Distance: :dist | SMA Dist: :s2", interval: 5, format: :bouncing_ball, hide_cursor: true)
 
-  tryPushMessage(pair.to_s, 'Trailing Stop Started','pushover')
+  tryPushMessage(pair.to_s, 'Trailing Stop Started', 'pushover')
 
   i = 0
   loop do

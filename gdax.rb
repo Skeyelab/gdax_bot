@@ -15,7 +15,7 @@ webSocket_daemon = Daemons.call(app_name: 'GDAX_Bot', backtrace: true, multiple:
   run_websocket
 end
 
-# webServer_daemon = Daemons.call({ :app_name => 'Webserver', :backtrace => true, :multiple => true}) do
+# webServer_daemon = Daemons.call({ :app_name => 'Webserver', :monitor => true, :backtrace => true, :multiple => true}) do
 #   startWebserver
 # end
 
