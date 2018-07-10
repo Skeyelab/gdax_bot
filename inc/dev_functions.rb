@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# GetKey Module
 module GetKey
   # Check if Win32API is accessible or not
   @use_stty = begin
@@ -39,7 +40,7 @@ def watch_stream_times
   end
 end
 
-def writejSON
+def write_json
   t = Thread.new do
     # redis = Redis.new
     loop do
@@ -59,12 +60,14 @@ def check_for_zombie_servers
       contents = file.read
       pid = contents.to_i
       Process.kill('QUIT', pid)
-      return
-    rescue Exception
-      return
+      break
+    rescue StandardError
+      break
     end
   end
 end
+
+# Process Module
 module Process
   def exist?(pid)
     Process.kill(0, pid)
@@ -121,19 +124,19 @@ def run_websocket
       redis.set('spot_BCH_BTC', resp.price)
       # p "LTC Spot Rate: $ %.2f" % resp.price
     end
+    sleep 1.0 / 1000
     # puts "."
     # puts "$%.2f" % redis.get("spot_BTC_USD") + " | " + "$%.2f" % redis.get("spot_ETH_USD") + " | " + "$%.2f" % redis.get("spot_LTC_USD") + " | " + "Ƀ%.5f" % redis.get("spot_ETH_BTC") + " | " + "Ƀ%.5f" % redis.get("spot_LTC_BTC") + " | " + "$%.2f" % redis.get("spot_BCH_USD") + " | " + "Ƀ%.5f" % redis.get("spot_BCH_BTC")
   end
 
   EM.run do
     websocket.start!
-    EM.add_periodic_timer(1) do
-      websocket.start! if (Time.now - Time.parse(redis.get('last_ws_message_time'))) > 5
+    EM.add_periodic_timer(30) do
+      websocket.start! if (Time.now - Time.parse(redis.get('last_ws_message_time'))) > 30
     end
     EM.error_handler do |_e|
       sleep 1
     end
   end
-
   # websocket.start!
 end

@@ -13,7 +13,7 @@ def watch_order_and_sell(order, sell_level)
         sleep 1.0 / 3.0
         print '.'
       end
-    rescue Exception
+    rescue StandardError
       puts 'Error, retrying'
       sleep 1
       retry

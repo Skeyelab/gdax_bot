@@ -30,6 +30,10 @@ def watch_order(order)
           puts 'Order canceled successfully'
           return false
         end
+      when 120
+        system('stty -raw echo')
+        spinner.error('Exiting')
+        break
       end
 
       if rest_api.order(order.id)['settled']
@@ -47,7 +51,7 @@ def watch_order(order)
         sleep 1
         return false
       end
-    rescue Exception => e
+    rescue StandardError => e
       # puts "Error, retrying"
       # puts e
       sleep 1
