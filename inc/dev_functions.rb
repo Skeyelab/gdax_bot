@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# GetKey Module
 module GetKey
   # Check if Win32API is accessible or not
   @use_stty = begin
@@ -39,7 +40,7 @@ def watch_stream_times
   end
 end
 
-def writejSON
+def write_json
   t = Thread.new do
     # redis = Redis.new
     loop do
@@ -65,6 +66,8 @@ def check_for_zombie_servers
     end
   end
 end
+
+# Process Module
 module Process
   def exist?(pid)
     Process.kill(0, pid)

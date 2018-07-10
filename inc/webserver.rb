@@ -57,7 +57,7 @@ end
 # similar to that of the "Hello World" example
 # shown earlier.
 
-def startWebserver
+def start_webserver
   server = TCPServer.new('localhost', 2345)
 
   loop do

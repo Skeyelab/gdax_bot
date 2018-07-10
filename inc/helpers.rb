@@ -9,19 +9,21 @@ def humanize(secs)
   end.compact.reverse.join(' ')
 end
 
+# adds percent_of to Numeric class
 class Numeric
-  def percent_of(n)
-    to_f / n.to_f * 100.0
+  def percent_of(num)
+    to_f / num.to_f * 100.0
   end
 end
 
+# adds round_down to Float class
 class Float
-  def round_down(n = 0)
-    n < 1 ? to_i.to_f : (self - 0.5 / 10**n).round(n)
+  def round_down(num = 0)
+    num < 1 ? to_i.to_f : (self - 0.5 / 10**num).round(num)
   end
 end
 
-def checkForPausedJob(type)
+def check_for_paused_job(type)
   if File.file?("jobs/paused_#{type}.json")
     file = File.read("jobs/paused_#{type}.json")
     paused_job = JSON.parse(file)
@@ -54,7 +56,7 @@ def init_redis
   redis.set('spot_BCH_BTC', 0) unless redis.get('spot_BCH_BTC')
 end
 
-def tryPushMessage(message, title, sound = 'none')
+def try_push_message(message, title, sound = 'none')
   if ENV['PUSHOVER_USER'] == ''
     false
   else
@@ -73,15 +75,16 @@ def usd_bal
   end
 end
 
-def decimals(a)
+def decimals(abc)
   num = 0
-  while a != a.to_i
+  while abc != abc.to_i
     num += 1
-    a *= 10
+    abc *= 10
   end
   num
 end
 
+# Account class
 class Account
   def initialize(id, currency, balance = 0, hold = 0)
     @id = id
@@ -109,8 +112,8 @@ def update_accounts
   rest_api.accounts do |resp|
     resp.each do |account|
       held = 0
-      rest_api.account_holds(account.id) do |resp|
-        resp.each do |hold|
+      rest_api.account_holds(account.id) do |resp2|
+        resp2.each do |hold|
           held += hold['amount'].to_f
         end
       end
