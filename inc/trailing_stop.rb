@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0.5, t_stop = 0.25, stop_percent = 1.0, existing = false)
-  File.delete('jobs/paused_ts.json') if checkForPausedJob('ts')
+  File.delete('jobs/paused_ts.json') if check_for_paused_job('ts')
 
   redis = Redis.new
 
@@ -23,12 +23,12 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
     order_size = existing['size'].to_f
   else
     open_order = rest_api.buy(order_size.round_down(8), open_price)
-    tryPushMessage(pair.to_s, 'Trailing Stop Buy Order Placed')
+    try_push_message(pair.to_s, 'Trailing Stop Buy Order Placed')
     return false if watch_order(open_order) == false
     order_size = open_order['size'].to_f
   end
 
-  jobHash = {
+  job_hash = {
     open_price: open_price,
     percent_of_portfolio: percent_of_portfolio,
     pair: pair,
@@ -55,7 +55,7 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
   # puts "Trailing Stop %: #{'%.2f' % t_stop}"
   spinner = TTY::Spinner.new("[:spinner] Profit %: :p1 | Profit #{pair.split('-')[1]}: :p2 | Current Price: :spot |:trend| SMA: :sma | Stop: :stop | Stop Distance: :dist | SMA Dist: :s2", interval: 5, format: :bouncing_ball, hide_cursor: true)
 
-  tryPushMessage(pair.to_s, 'Trailing Stop Started', 'pushover')
+  try_push_message(pair.to_s, 'Trailing Stop Started', 'pushover')
 
   i = 0
   loop do
@@ -73,18 +73,17 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
       stop_loss_reached = true
       spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
       binding.pry unless profit_made
+      spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
       if pair.split('-')[1] == 'USD'
-        spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
         puts "Selling at #{spot - 0.01}"
         order = rest_api.sell(order_size.round_down(8), (spot - 0.01).round_down(2), type: 'market')
       else
-        spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
         puts "Selling at #{spot - 0.00001}"
         order = rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8), type: 'market')
       end
       sleep 1
       watch_order(order) unless rest_api.order(order.id).settled
-      tryPushMessage(pair.to_s, 'Trailing Stop Completed', 'cashregister')
+      try_push_message(pair.to_s, 'Trailing Stop Completed', 'cashregister')
       puts 'Sold'
       return true
       # break
@@ -92,7 +91,7 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
 
     if (spot_sma >= profit_goal_price) && (profit_made == false)
       profit_made = true
-      tryPushMessage(pair.to_s, 'Profit Goal Reached', 'cashregister')
+      try_push_message(pair.to_s, 'Profit Goal Reached', 'cashregister')
     end
 
     if spot > market_high
@@ -130,7 +129,7 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
     when 112
       spinner.stop('(Paused)')
       File.open('jobs/paused_ts.json', 'w') do |f|
-        f.write(jobHash.to_json)
+        f.write(job_hash.to_json)
       end
       return false
     end

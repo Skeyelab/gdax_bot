@@ -51,7 +51,7 @@ def watch_order(order)
         sleep 1
         return false
       end
-    rescue Exception => e
+    rescue StandardError => e
       # puts "Error, retrying"
       # puts e
       sleep 1
