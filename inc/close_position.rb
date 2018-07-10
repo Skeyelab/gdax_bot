@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
 def close_position(order, price)
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: order.product_id)
+  rest_api = Coinbase::Exchange::Client.new(
+    ENV['GDAX_TOKEN'],
+    ENV['GDAX_SECRET'],
+    ENV['GDAX_PW'],
+    product_id: order.product_id
+  )
 
   return false unless watch_order(order)
 
@@ -23,7 +28,7 @@ def close_position(order, price)
         sleep 1
         return
       end
-    rescue Exception => e
+    rescue StandardError => e
       puts e
       # binding.pry
     end
