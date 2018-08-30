@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# @todo Refactor trailing_buy
+# @body this code is messy
+
 def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0.5, t_stop = 0.25, stop_percent = 1.0, existing = false)
   File.delete('jobs/paused_ts.json') if check_for_paused_job('ts')
 
