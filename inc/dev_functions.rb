@@ -123,6 +123,9 @@ def run_websocket
     when 'BCH-BTC'
       redis.set('spot_BCH_BTC', resp.price)
       # p "LTC Spot Rate: $ %.2f" % resp.price
+    when 'ETC-BTC'
+      redis.set('spot_ETC_BTC', resp.price)
+      # p "LTC Spot Rate: $ %.2f" % resp.price
     end
     sleep 1.0 / 1000
     # puts "."

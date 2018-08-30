@@ -54,6 +54,7 @@ def init_redis
   redis.set('spot_LTC_BTC', 0) unless redis.get('spot_LTC_BTC')
   redis.set('spot_BCH_USD', 0) unless redis.get('spot_BCH_USD')
   redis.set('spot_BCH_BTC', 0) unless redis.get('spot_BCH_BTC')
+  redis.set('spot_ETC_BTC', 0) unless redis.get('spot_ETC_BTC')
 end
 
 def try_push_message(message, title, sound = 'none')
