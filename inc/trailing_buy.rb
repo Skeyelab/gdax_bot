@@ -1,6 +1,10 @@
 
 # frozen_string_literal: true
 
+# @todo Get trailing buy working
+# @body This one is gonna be sweet
+
+
 def trailing_buy(_percent_of_portfolio, pair = 'LTC-USD')
   redis = Redis.new
 
