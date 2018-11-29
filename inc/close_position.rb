@@ -2,9 +2,9 @@
 
 def close_position(order, price)
   rest_api = Coinbase::Exchange::Client.new(
-    ENV['GDAX_TOKEN'],
-    ENV['GDAX_SECRET'],
-    ENV['GDAX_PW'],
+    ENV["GDAX_TOKEN"],
+    ENV["GDAX_SECRET"],
+    ENV["GDAX_PW"],
     product_id: order.product_id
   )
 
@@ -12,9 +12,9 @@ def close_position(order, price)
 
   order_size = order.size
 
-  if order['side'] == 'buy'
-    puts ''
-    puts "Selling #{order_size.to_f} #{order['product_id'].split('-')[0]} @ $#{price}"
+  if order["side"] == "buy"
+    puts ""
+    puts "Selling #{order_size.to_f} #{order["product_id"].split("-")[0]} @ $#{price}"
 
     begin
       sell_order = rest_api.sell(order_size, price)
@@ -24,11 +24,11 @@ def close_position(order, price)
       return
     rescue Coinbase::Exchange::NotFoundError => e
       if e.message == '{"message":"NotFound"}'
-        puts 'Order not found'
+        puts "Order not found"
         sleep 1
         return
       end
-    rescue StandardError => e
+    rescue => e
       puts e
       # binding.pry
     end
