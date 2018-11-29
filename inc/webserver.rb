@@ -1,29 +1,28 @@
-
 # frozen_string_literal: true
 
-require 'socket'
-require 'uri'
+require "socket"
+require "uri"
 
 # Files will be served from this directory
-WEB_ROOT = `pwd`.strip + '/public'
+WEB_ROOT = `pwd`.strip + "/public"
 
 # Map extensions to their content type
 CONTENT_TYPE_MAPPING = {
-  'html' => 'text/html',
-  'txt' => 'text/plain',
-  'png' => 'image/png',
-  'jpg' => 'image/jpeg',
-  'json' => 'application/json'
+  "html" => "text/html",
+  "txt" => "text/plain",
+  "png" => "image/png",
+  "jpg" => "image/jpeg",
+  "json" => "application/json",
 }.freeze
 
 # Treat as binary data if content type cannot be found
-DEFAULT_CONTENT_TYPE = 'application/octet-stream'
+DEFAULT_CONTENT_TYPE = "application/octet-stream"
 
 # This helper function parses the extension of the
 # requested file and then looks up its content type.
 
 def content_type(path)
-  ext = File.extname(path).split('.').last
+  ext = File.extname(path).split(".").last
   CONTENT_TYPE_MAPPING.fetch(ext, DEFAULT_CONTENT_TYPE)
 end
 
@@ -31,21 +30,21 @@ end
 # generates a path to a file on the server.
 
 def requested_file(request_line)
-  request_uri = request_line.split(' ')[1]
+  request_uri = request_line.split(" ")[1]
   path = URI.unescape(URI(request_uri).path)
 
   clean = []
 
   # Split the path into components
-  parts = path.split('/')
+  parts = path.split("/")
 
   parts.each do |part|
     # skip any empty or current directory (".") path components
-    next if part.empty? || part == '.'
+    next if part.empty? || part == "."
     # If the path component goes up one directory level (".."),
     # remove the last clean component.
     # Otherwise, add the component to the Array of clean components
-    part == '..' ? clean.pop : clean << part
+    part == ".." ? clean.pop : clean << part
   end
 
   # return the web root joined to the clean path
@@ -58,7 +57,7 @@ end
 # shown earlier.
 
 def start_webserver
-  server = TCPServer.new('localhost', 2345)
+  server = TCPServer.new("localhost", 2345)
 
   loop do
     socket = server.accept
@@ -68,12 +67,12 @@ def start_webserver
 
     path = requested_file(request_line)
 
-    + path = File.join(path, 'index.html') if File.directory?(path)
+    + path = File.join(path, "index.html") if File.directory?(path)
 
     # Make sure the file exists and is not a directory
     # before attempting to open it.
     if File.exist?(path) && !File.directory?(path)
-      File.open(path, 'rb') do |file|
+      File.open(path, "rb") do |file|
         socket.print "HTTP/1.1 200 OK\r\n" \
          "Content-Type: #{content_type(file)}\r\n" \
          "Content-Length: #{file.size}\r\n" \

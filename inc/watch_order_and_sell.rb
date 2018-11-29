@@ -1,25 +1,25 @@
 # frozen_string_literal: true
 
 def watch_order_and_sell(order, sell_level)
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Exchange::Client.new(ENV["GDAX_TOKEN"], ENV["GDAX_SECRET"], ENV["GDAX_PW"])
 
   puts "Checking on order #{order.id}"
   loop do
     begin
-      rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
-      if rest_api.order(order.id)['settled']
+      rest_api = Coinbase::Exchange::Client.new(ENV["GDAX_TOKEN"], ENV["GDAX_SECRET"], ENV["GDAX_PW"])
+      if rest_api.order(order.id)["settled"]
         break
       else
         sleep 1.0 / 3.0
-        print '.'
+        print "."
       end
-    rescue StandardError
-      puts 'Error, retrying'
+    rescue
+      puts "Error, retrying"
       sleep 1
       retry
     end
   end
-  puts ''
+  puts ""
   # proceeds = (order['price'].to_f * order['size'].to_f).round_down(2)
   # order_size = (proceeds / sell_level).round_down(8)
 

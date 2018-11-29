@@ -5,8 +5,8 @@ module Coinbase
     # Websocket client for Coinbase Exchange
     class Websocket
       def initialize(options = {})
-        @ws_url = options[:ws_url] || 'wss://ws-feed.gdax.com'
-        @product = options[:product_id] || ['BTC-USD', 'ETH-USD', 'LTC-USD', 'ETH-BTC', 'LTC-BTC', 'BCH-USD', 'BCH-BTC', 'ETC-BTC', 'ZRX-BTC']
+        @ws_url = options[:ws_url] || "wss://ws-feed.gdax.com"
+        @product = options[:product_id] || ["BTC-USD", "ETH-USD", "LTC-USD", "ETH-BTC", "LTC-BTC", "BCH-USD", "BCH-BTC", "ETC-BTC", "ZRX-BTC"]
         @keepalive = options[:keepalive] || true
 
         @message_cb = ->(_data) { nil }
@@ -30,10 +30,10 @@ module Coinbase
 
       def stop!
         @socket.onclose = if @reactor_owner == true
-                            ->(_event) { EM.stop }
-                          else
-                            ->(_event) { nil }
-                          end
+          ->(_event) { EM.stop }
+        else
+          ->(_event) { nil }
+        end
         @socket.close
       end
 
@@ -48,12 +48,12 @@ module Coinbase
       def subscribe!(options = {})
         product = options[:product_id] || @product
         @socket.send({
-          type: 'subscribe',
+          type: "subscribe",
           product_ids: product,
           channels: [
-            'matches',
+            "matches",
             # 'level2'
-          ]
+          ],
         }.to_json)
       end
 
@@ -102,13 +102,13 @@ module Coinbase
       def ws_received(event)
         data = APIObject.new(JSON.parse(event.data))
         @message_cb.call(data)
-        case data['type']
-        when 'received' then @received_cb.call(data)
-        when 'open' then @open_cb.call(data)
-        when 'match' then @match_cb.call(data)
-        when 'change' then @change_cb.call(data)
-        when 'done' then @done_cb.call(data)
-        when 'error' then @error_cb.call(data)
+        case data["type"]
+        when "received" then @received_cb.call(data)
+        when "open" then @open_cb.call(data)
+        when "match" then @match_cb.call(data)
+        when "change" then @change_cb.call(data)
+        when "done" then @done_cb.call(data)
+        when "error" then @error_cb.call(data)
         end
       end
 

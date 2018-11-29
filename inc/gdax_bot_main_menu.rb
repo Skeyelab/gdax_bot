@@ -5,24 +5,24 @@ def gdax_bot_main_menu
 
   loop do
     prompt = TTY::Prompt.new
-    choice = prompt.select('Choose your destiny?') do |menu|
-      menu.enum '.'
+    choice = prompt.select("Choose your destiny?") { |menu|
+      menu.enum "."
 
       # menu.choice 'Open and Close Order', 'open_and_close'
-      menu.choice 'Trailing Stop', 'trailing_stop'
-      menu.choice 'View Data Stream', 'view_websocket'
-      menu.choice 'Prompt', 'prompt'
-      menu.choice 'Exit', 'exit'
-    end
+      menu.choice "Trailing Stop", "trailing_stop"
+      menu.choice "View Data Stream", "view_websocket"
+      menu.choice "Prompt", "prompt"
+      menu.choice "Exit", "exit"
+    }
 
     case choice
-    when 'exit'
+    when "exit"
       abort
-    when 'prompt'
+    when "prompt"
       binding.pry
-    when 'view_websocket'
+    when "view_websocket"
       view_websocket
-    when 'trailing_stop'
+    when "trailing_stop"
       trailing_stop_menu
     end
   end
