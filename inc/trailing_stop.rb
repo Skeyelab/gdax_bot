@@ -75,18 +75,21 @@ def trailing_stop(open_price, percent_of_portfolio, pair = "LTC-BTC", profit = 0
       stop_loss_reached = true
       spot = redis.get("spot_#{pair.split("-")[0]}_#{pair.split("-")[1]}").to_f
       binding.pry unless profit_made
-      spot = redis.get("spot_#{pair.split("-")[0]}_#{pair.split("-")[1]}").to_f
-      if pair.split("-")[1] == "USD"
-        puts "Selling at #{spot - 0.01}"
-        order = rest_api.sell(order_size.round_down(8), (spot - 0.01).round_down(2), type: "market")
-      else
-        puts "Selling at #{spot - 0.00001}"
-        order = rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8), type: "market")
-      end
-      sleep 1
-      watch_order(order) unless rest_api.order(order.id).settled
-      try_push_message(pair.to_s, "Trailing Stop Completed", "cashregister")
-      puts "Sold"
+
+      sell(pair, order_size)
+      # spot = redis.get("spot_#{pair.split("-")[0]}_#{pair.split("-")[1]}").to_f
+      # if pair.split("-")[1] == "USD"
+      #   puts "Selling at #{spot - 0.01}"
+      #   order = rest_api.sell(order_size.round_down(8), (spot - 0.01).round_down(2), type: "market")
+      # else
+      #   puts "Selling at #{spot - 0.00001}"
+      #   order = rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8), type: "market")
+      # end
+      # sleep 1
+      # watch_order(order) unless rest_api.order(order.id).settled
+      # try_push_message(pair.to_s, "Trailing Stop Completed", "cashregister")
+      # puts "Sold"
+
       return true
       # break
     end
@@ -125,6 +128,9 @@ def trailing_stop(open_price, percent_of_portfolio, pair = "LTC-BTC", profit = 0
     system("stty -raw echo")
 
     case k
+    when 115
+      sell(pair, order_size)
+      return true
     when 99
       spinner.error("(Canceled)")
       return false
@@ -155,4 +161,24 @@ def trailing_stop(open_price, percent_of_portfolio, pair = "LTC-BTC", profit = 0
     last_spot = spot
     last_t_stop = t_stop_price
   end
+end
+
+def sell(pair, order_size)
+  rest_api = Coinbase::Exchange::Client.new(ENV["GDAX_TOKEN"], ENV["GDAX_SECRET"], ENV["GDAX_PW"], product_id: pair)
+  redis = Redis.new
+  puts ""
+  puts "Selling"
+  spot = redis.get("spot_#{pair.split("-")[0]}_#{pair.split("-")[1]}").to_f
+  if pair.split("-")[1] == "USD"
+    puts "Selling at #{spot - 0.01}"
+    order = rest_api.sell(order_size.round_down(8), (spot - 0.01).round_down(2), type: "market")
+  else
+    puts "Selling at #{spot - 0.00001}"
+    order = rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8), type: "market")
+  end
+  sleep 1
+  watch_order(order) unless rest_api.order(order.id).settled
+  try_push_message(pair.to_s, "Trailing Stop Completed", "cashregister")
+  puts "Sold"
+
 end
