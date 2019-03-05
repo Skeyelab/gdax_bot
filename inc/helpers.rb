@@ -128,9 +128,12 @@ end
 
 
 def balancePortfolioContinual
+  prompt = TTY::Prompt.new
+  seconds = prompt.ask('How many often? (seconds): ',default: 900)
   while true
     balancePortfolio;
-    sleep 900
+
+    sleep seconds.to_i
     k = GetKey.getkey
     system('stty -raw echo')
     case k
