@@ -13,6 +13,7 @@ class Menus < GdaxBot
         menu.choice 'Trailing Stop', 'trailing_stop'
         menu.choice 'View Data Stream', 'view_websocket'
         menu.choice 'Prompt', 'prompt'
+        menu.choice 'Balance Portfolio', 'balance_portfolio'
         menu.choice 'Exit', 'exit'
       end
 
@@ -25,6 +26,8 @@ class Menus < GdaxBot
         view_websocket
       when 'trailing_stop'
         trailing_stop_menu
+      when 'balance_portfolio'
+        balancePortfolioContinual;
       end
     end
       end
