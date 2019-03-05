@@ -108,6 +108,65 @@ def bal(pair = 'BTC-USD')
   end
 end
 
+def balanceInUsd(currency)
+  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  redis = Redis.new
+
+  rest_api.accounts do |resp|
+    resp.each do |account|
+
+      spot = format('%.5f', redis.get("spot_#{currency}_USD")).to_f
+      return((account.available.to_f.round_down(8)) * spot).round_down(2) if account.currency == currency
+    end
+  end
+end
+balanceInUsd("BTC")
+
+def balances
+  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  redis = Redis.new
+
+  acts = ["LTC", "BCH", "BTC", "ETH"]
+  balncs = []
+  total = 0
+  acts.each do |act|
+    balnc = balanceInUsd(act)
+    balncs << {
+      "cur" => act,
+      "bal" => balnc
+    }
+    total = total + balnc
+  end
+  balncs << {
+    "cur" => "USD",
+    "bal" => bal.round_down(2)
+  }
+  total = total + bal.round_down(2)
+  #binding.pry
+  balsWPercents = []
+  balncs.each do |balnc|
+    balnc["per"] = ((balnc["bal"]/total)*100).round_down(2)
+    balnc["dif"] = (total/5)-balnc["bal"]
+    if balnc['cur'] != "USD"
+      #binding.pry
+      if balnc["dif"].positive?
+        balnc["BorS"] = {
+          "size" => format('%.5f', redis.get("spot_#{balnc['cur']}_USD")).to_f,
+          "price" => (redis.get("spot_#{balnc['cur']}_USD")).to_f + 0.01)}
+      else
+        balnc["BorS"] = {
+          "size" => format('%.5f', redis.get("spot_#{balnc['cur']}_USD")).to_f,
+          "price" => (redis.get("spot_#{balnc['cur']}_USD")).to_f - 0.01)}
+      end
+    end
+    balsWPercents << balnc
+
+  end
+   
+   puts total.round_down(2)
+  return balsWPercents
+end
+
 def update_accounts
   rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
