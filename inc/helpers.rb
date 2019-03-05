@@ -122,6 +122,23 @@ def balanceInUsd(currency)
 end
 balanceInUsd("BTC")
 
+
+def balancePortfolio
+  b = balances
+
+  b.each do |balnc|
+    if balnc["cur"] != "USD"
+      if balnc["BorS"]["move"] = "buy"
+        buy(balnc["cur"]+"-USD",balnc["BorS"]["price"],balnc["BorS"]["size"].abs)
+      else
+        sell(balnc["cur"]+"-USD",balnc["BorS"]["price"],balnc["BorS"]["size"].abs)
+      end
+    end
+  end
+end
+
+
+
 def balances
   rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   redis = Redis.new
@@ -151,18 +168,21 @@ def balances
       #binding.pry
       if balnc["dif"].positive?
         balnc["BorS"] = {
-          "size" => format('%.5f', redis.get("spot_#{balnc['cur']}_USD")).to_f,
-          "price" => (redis.get("spot_#{balnc['cur']}_USD")).to_f + 0.01)}
+          "size" => format('%.5f',(balnc["dif"]/format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
+          "price" => ((redis.get("spot_#{balnc['cur']}_USD").to_f).round_down(2) - 0.02).round_down(2),
+          "move" => "buy"
+        }
       else
         balnc["BorS"] = {
-          "size" => format('%.5f', redis.get("spot_#{balnc['cur']}_USD")).to_f,
-          "price" => (redis.get("spot_#{balnc['cur']}_USD")).to_f - 0.01)}
+          "size" => format('%.5f',(balnc["dif"]/format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
+          "price" => ((redis.get("spot_#{balnc['cur']}_USD").to_f).round_down(2) + 0.02).round_down(2),
+          "move" => "sell"
+        }
       end
     end
     balsWPercents << balnc
 
   end
-   
    puts total.round_down(2)
   return balsWPercents
 end
