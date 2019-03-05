@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+def blah_method
+  puts "blah"
+end
+
+
 def humanize(secs)
   [[60, :seconds], [60, :minutes], [24, :hours], [1000, :days]].map do |count, name|
     if secs.positive?
@@ -114,24 +119,39 @@ def balanceInUsd(currency)
 
   rest_api.accounts do |resp|
     resp.each do |account|
-
+      #binding.pry
       spot = format('%.5f', redis.get("spot_#{currency}_USD")).to_f
-      return((account.available.to_f.round_down(8)) * spot).round_down(2) if account.currency == currency
+      return((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2) if account.currency == currency
     end
   end
 end
-balanceInUsd("BTC")
+
+
+def balancePortfolioContinual
+  while true
+    balancePortfolio;
+    sleep 900
+    k = GetKey.getkey
+    system('stty -raw echo')
+    case k
+    when 120
+      break
+    end
+  end
+end
 
 
 def balancePortfolio
-  b = balances
-
+  b = balances;
   b.each do |balnc|
     if balnc["cur"] != "USD"
-      if balnc["BorS"]["move"] = "buy"
-        buy(balnc["cur"]+"-USD",balnc["BorS"]["price"],balnc["BorS"]["size"].abs)
+      #binding.pry
+      if balnc["BorS"]["move"] == "buy"
+        puts "buying #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
+        buy(balnc['cur']+'-USD',balnc['BorS']['price'],balnc['BorS']['size'].abs)
       else
-        sell(balnc["cur"]+"-USD",balnc["BorS"]["price"],balnc["BorS"]["size"].abs)
+        puts "selling #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
+        sell2(balnc['cur']+'-USD',balnc['BorS']['price'],balnc['BorS']['size'].abs)
       end
     end
   end
@@ -183,7 +203,7 @@ def balances
     balsWPercents << balnc
 
   end
-   puts total.round_down(2)
+   
   return balsWPercents
 end
 

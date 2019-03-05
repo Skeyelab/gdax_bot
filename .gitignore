@@ -10,7 +10,6 @@ console.rb
 
 *.pid
 
-Gemfile.lock
 
 jobs/*.json
 
