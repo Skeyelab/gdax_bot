@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 def humanize(secs)
-  [[60, :seconds], [60, :minutes], [24, :hours], [1000, :days]].map { |count, name|
+  [[60, :seconds], [60, :minutes], [24, :hours], [1000, :days]].map do |count, name|
     if secs.positive?
       secs, n = secs.divmod(count)
       "#{n.to_i} #{name}"
     end
-  }.compact.reverse.join(" ")
+  end.compact.reverse.join(' ')
 end
 
 # adds percent_of to Numeric class
@@ -34,8 +34,9 @@ def check_for_paused_job(type)
 end
 
 def init_env
-  return true if File.file?(".env")
-  puts "No .env file found"
+  return true if File.file?('.env')
+
+  puts 'No .env file found'
   abort
   # if no .env file, create it
 end
@@ -43,36 +44,37 @@ end
 def init_redis
   begin
     redis = Redis.new
-  rescue => e
+  rescue StandardError => e
     puts e
   end
 
-  redis.set("spot_BTC_USD", 0) unless redis.get("spot_BTC_USD")
-  redis.set("spot_ETH_USD", 0) unless redis.get("spot_ETH_USD")
-  redis.set("spot_LTC_USD", 0) unless redis.get("spot_LTC_USD")
-  redis.set("spot_ETH_BTC", 0) unless redis.get("spot_ETH_BTC")
-  redis.set("spot_LTC_BTC", 0) unless redis.get("spot_LTC_BTC")
-  redis.set("spot_BCH_USD", 0) unless redis.get("spot_BCH_USD")
-  redis.set("spot_BCH_BTC", 0) unless redis.get("spot_BCH_BTC")
-  redis.set("spot_ETC_BTC", 0) unless redis.get("spot_ETC_BTC")
-  redis.set("spot_ZRX_BTC", 0) unless redis.get("spot_ZRX_BTC")
+  redis.set('spot_BTC_USD', 0) unless redis.get('spot_BTC_USD')
+  redis.set('spot_ETH_USD', 0) unless redis.get('spot_ETH_USD')
+  redis.set('spot_LTC_USD', 0) unless redis.get('spot_LTC_USD')
+  redis.set('spot_ETH_BTC', 0) unless redis.get('spot_ETH_BTC')
+  redis.set('spot_LTC_BTC', 0) unless redis.get('spot_LTC_BTC')
+  redis.set('spot_BCH_USD', 0) unless redis.get('spot_BCH_USD')
+  redis.set('spot_BCH_BTC', 0) unless redis.get('spot_BCH_BTC')
+  redis.set('spot_ETC_BTC', 0) unless redis.get('spot_ETC_BTC')
+  redis.set('spot_ZRX_BTC', 0) unless redis.get('spot_ZRX_BTC')
 end
 
-def try_push_message(message, title, sound = "none")
-  if ENV["PUSHOVER_USER"] == ""
+def try_push_message(message, title, sound = 'none')
+  if ENV['PUSHOVER_USER'] == ''
     false
   else
-    Pushover.notification(message: message, title: title, user: ENV["PUSHOVER_USER"], token: "a1ny247b6atuu67s9vc8g4djgm3c3p", sound: sound)
+    message = Pushover::Message.create(message: message, title: title, user: ENV['PUSHOVER_USER'], token: 'a1ny247b6atuu67s9vc8g4djgm3c3p', sound: sound)
+    response = message.push
     true
   end
 end
 
 def usd_bal
-  rest_api = Coinbase::Exchange::Client.new(ENV["GDAX_TOKEN"], ENV["GDAX_SECRET"], ENV["GDAX_PW"])
+  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   rest_api.accounts do |resp|
     resp.each do |account|
-      return account.available.to_f - 0.01 if account.currency == "USD"
+      return account.available.to_f - 0.01 if account.currency == 'USD'
     end
   end
 end
@@ -96,18 +98,97 @@ class Account
   end
 end
 
-def bal(pair = "BTC-USD")
-  rest_api = Coinbase::Exchange::Client.new(ENV["GDAX_TOKEN"], ENV["GDAX_SECRET"], ENV["GDAX_PW"])
+def bal(pair = 'BTC-USD')
+  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   rest_api.accounts do |resp|
     resp.each do |account|
-      return account.available.to_f.round_down(8) if account.currency == pair.split("-")[1]
+      return account.available.to_f.round_down(8) if account.currency == pair.split('-')[1]
     end
   end
 end
 
+def balanceInUsd(currency)
+  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  redis = Redis.new
+
+  rest_api.accounts do |resp|
+    resp.each do |account|
+
+      spot = format('%.5f', redis.get("spot_#{currency}_USD")).to_f
+      return((account.available.to_f.round_down(8)) * spot).round_down(2) if account.currency == currency
+    end
+  end
+end
+balanceInUsd("BTC")
+
+
+def balancePortfolio
+  b = balances
+
+  b.each do |balnc|
+    if balnc["cur"] != "USD"
+      if balnc["BorS"]["move"] = "buy"
+        buy(balnc["cur"]+"-USD",balnc["BorS"]["price"],balnc["BorS"]["size"].abs)
+      else
+        sell(balnc["cur"]+"-USD",balnc["BorS"]["price"],balnc["BorS"]["size"].abs)
+      end
+    end
+  end
+end
+
+
+
+def balances
+  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  redis = Redis.new
+
+  acts = ["LTC", "BCH", "BTC", "ETH"]
+  balncs = []
+  total = 0
+  acts.each do |act|
+    balnc = balanceInUsd(act)
+    balncs << {
+      "cur" => act,
+      "bal" => balnc
+    }
+    total = total + balnc
+  end
+  balncs << {
+    "cur" => "USD",
+    "bal" => bal.round_down(2)
+  }
+  total = total + bal.round_down(2)
+  #binding.pry
+  balsWPercents = []
+  balncs.each do |balnc|
+    balnc["per"] = ((balnc["bal"]/total)*100).round_down(2)
+    balnc["dif"] = (total/5)-balnc["bal"]
+    if balnc['cur'] != "USD"
+      #binding.pry
+      if balnc["dif"].positive?
+        balnc["BorS"] = {
+          "size" => format('%.5f',(balnc["dif"]/format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
+          "price" => ((redis.get("spot_#{balnc['cur']}_USD").to_f).round_down(2) - 0.02).round_down(2),
+          "move" => "buy"
+        }
+      else
+        balnc["BorS"] = {
+          "size" => format('%.5f',(balnc["dif"]/format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
+          "price" => ((redis.get("spot_#{balnc['cur']}_USD").to_f).round_down(2) + 0.02).round_down(2),
+          "move" => "sell"
+        }
+      end
+    end
+    balsWPercents << balnc
+
+  end
+   puts total.round_down(2)
+  return balsWPercents
+end
+
 def update_accounts
-  rest_api = Coinbase::Exchange::Client.new(ENV["GDAX_TOKEN"], ENV["GDAX_SECRET"], ENV["GDAX_PW"])
+  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   accounts = []
 
@@ -116,7 +197,7 @@ def update_accounts
       held = 0
       rest_api.account_holds(account.id) do |resp2|
         resp2.each do |hold|
-          held += hold["amount"].to_f
+          held += hold['amount'].to_f
         end
       end
       accounts << Account.new(account.id, account.currency, account.available, held)
@@ -127,11 +208,11 @@ def update_accounts
 end
 
 def orders
-  rest_api = Coinbase::Exchange::Client.new(ENV["GDAX_TOKEN"], ENV["GDAX_SECRET"], ENV["GDAX_PW"])
+  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   orders = []
 
-  rest_api.orders(status: "open") do |resp|
+  rest_api.orders(status: 'open') do |resp|
     resp.each do |order|
       orders << order
     end
