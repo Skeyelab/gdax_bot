@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 def blah_method
-  puts "blah"
+  puts 'blah'
 end
-
 
 def humanize(secs)
   [[60, :seconds], [60, :minutes], [24, :hours], [1000, :days]].map do |count, name|
@@ -120,7 +119,7 @@ def balanceInUsd(currency)
 
   rest_api.accounts do |resp|
     resp.each do |account|
-      #binding.pry
+      # binding.pry
       spot = format('%.5f', redis.get("spot_#{currency}_USD")).to_f
       begin
         return((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2) if account.currency == currency
@@ -132,12 +131,11 @@ def balanceInUsd(currency)
   end
 end
 
-
 def balancePortfolioContinual
   prompt = TTY::Prompt.new
-  seconds = prompt.ask('How many often? (seconds): ',default: 900)
-  while true
-    balancePortfolio;
+  seconds = prompt.ask('How many often? (seconds): ', default: 900)
+  loop do
+    balancePortfolio
 
     sleep seconds.to_i
     k = GetKey.getkey
@@ -149,72 +147,70 @@ def balancePortfolioContinual
   end
 end
 
-
 def balancePortfolio
-  b = balances;
-  return if orders.count != 0 
+  b = balances
+  return if orders.count != 0
+
   b.each do |balnc|
-    if balnc["cur"] != "USD"
-      #binding.pry
-      if balnc["BorS"]["move"] == "buy"
+    if balnc['cur'] != 'USD'
+      # binding.pry
+      if balnc['BorS']['move'] == 'buy'
         puts "buying #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
-        buy(balnc['cur']+'-USD',balnc['BorS']['price'],balnc['BorS']['size'].abs)
+        buy(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
       else
         puts "selling #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
-        sell2(balnc['cur']+'-USD',balnc['BorS']['price'],balnc['BorS']['size'].abs)
+        sell2(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
       end
     end
   end
 end
 
-
-
 def balances
   rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   redis = Redis.new
 
-  acts = ["LTC", "BCH", "BTC", "ETH"]
+  acts = %w[LTC BCH BTC ETH]
   balncs = []
   total = 0
   acts.each do |act|
     balnc = balanceInUsd(act)
     balncs << {
-      "cur" => act,
-      "bal" => balnc
+      'cur' => act,
+      'bal' => balnc
     }
-    total = total + balnc
+    total += balnc
   end
   balncs << {
-    "cur" => "USD",
-    "bal" => bal.round_down(2)
+    'cur' => 'USD',
+    'bal' => bal.round_down(2)
   }
-  total = total + bal.round_down(2)
-  #binding.pry
+  total += bal.round_down(2)
+  # binding.pry
   balsWPercents = []
   balncs.each do |balnc|
-    balnc["per"] = ((balnc["bal"]/total)*100).round_down(2)
-    balnc["dif"] = (total/(acts.count+1))-balnc["bal"]
-    if balnc['cur'] != "USD"
-      #binding.pry
-      if balnc["dif"].positive?
-        balnc["BorS"] = {
-          "size" => format('%.5f',(balnc["dif"]/format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-          "price" => ((redis.get("spot_#{balnc['cur']}_USD").to_f).round_down(2) - 0.02).round_down(2),
-          "move" => "buy"
-        }
-      else
-        balnc["BorS"] = {
-          "size" => format('%.5f',(balnc["dif"]/format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-          "price" => ((redis.get("spot_#{balnc['cur']}_USD").to_f).round_down(2) + 0.02).round_down(2),
-          "move" => "sell"
-        }
-      end
+    balnc['per'] = ((balnc['bal'] / total) * 100).round_down(2)
+    balnc['dif'] = (total / (acts.count + 1)) - balnc['bal']
+    #balnc['dif'] = 0 - balnc['bal']
+    if balnc['cur'] != 'USD'
+      # binding.pry
+      balnc['BorS'] = if balnc['dif'].positive?
+                        {
+                          'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
+                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 0.999).round_down(2),
+                          'move' => 'buy'
+                        }
+                      else
+                        {
+                          'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
+                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1.001).round_down(2),
+                          'move' => 'sell'
+                        }
+                      end
     end
     balsWPercents << balnc
-
   end
-   
-  return balsWPercents
+
+  balsWPercents
 end
 
 def update_accounts
