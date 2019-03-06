@@ -27,7 +27,7 @@ class Menus < GdaxBot
       when 'trailing_stop'
         trailing_stop_menu
       when 'balance_portfolio'
-        balancePortfolioContinual;
+        balancePortfolioContinual
       end
     end
       end
