@@ -8,15 +8,16 @@ def buy(pair, price, order_size)
 
 	begin
 		buy_order = rest_api.buy(order_size, price)
-
+		return buy_order
 	rescue Coinbase::Exchange::NotFoundError => e
 		if e.message == '{"message":"NotFound"}'
 			puts 'Order not found'
 			sleep 1
-			return sell_order
+			return buy_order
 		end
 	rescue StandardError => e
 		puts e
 	end
 	# binding.pry
+
 end

@@ -61,6 +61,7 @@ def init_redis
   redis.set('spot_BCH_USD', 0) unless redis.get('spot_BCH_USD')
   redis.set('spot_BCH_BTC', 0) unless redis.get('spot_BCH_BTC')
   redis.set('spot_ETC_BTC', 0) unless redis.get('spot_ETC_BTC')
+  redis.set('spot_ETC_USD', 0) unless redis.get('spot_ETC_USD')
   redis.set('spot_ZRX_BTC', 0) unless redis.get('spot_ZRX_BTC')
 end
 
@@ -121,7 +122,12 @@ def balanceInUsd(currency)
     resp.each do |account|
       #binding.pry
       spot = format('%.5f', redis.get("spot_#{currency}_USD")).to_f
-      return((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2) if account.currency == currency
+      begin
+        return((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2) if account.currency == currency
+      rescue Exception => e
+        puts e
+        return 0
+      end
     end
   end
 end
@@ -146,6 +152,7 @@ end
 
 def balancePortfolio
   b = balances;
+  return if orders.count != 0 
   b.each do |balnc|
     if balnc["cur"] != "USD"
       #binding.pry
@@ -186,7 +193,7 @@ def balances
   balsWPercents = []
   balncs.each do |balnc|
     balnc["per"] = ((balnc["bal"]/total)*100).round_down(2)
-    balnc["dif"] = (total/5)-balnc["bal"]
+    balnc["dif"] = (total/(acts.count+1))-balnc["bal"]
     if balnc['cur'] != "USD"
       #binding.pry
       if balnc["dif"].positive?
