@@ -8,7 +8,7 @@ def sell2(pair, price, order_size)
 
 	begin
 		sell_order = rest_api.sell(order_size, price)
-
+		return sell_orber
 	rescue Coinbase::Exchange::NotFoundError => e
 		if e.message == '{"message":"NotFound"}'
 			puts 'Order not found'
@@ -19,4 +19,5 @@ def sell2(pair, price, order_size)
 		puts e
 	end
 	# binding.pry
+
 end
