@@ -190,18 +190,19 @@ def balances
   balncs.each do |balnc|
     balnc['per'] = ((balnc['bal'] / total) * 100).round_down(2)
     balnc['dif'] = (total / (acts.count + 1)) - balnc['bal']
+    #balnc['dif'] = 0 - balnc['bal']
     if balnc['cur'] != 'USD'
       # binding.pry
       balnc['BorS'] = if balnc['dif'].positive?
                         {
-                          'size' => format('%.5f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) - 0.02).round_down(2),
+                          'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
+                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 0.999).round_down(2),
                           'move' => 'buy'
                         }
                       else
                         {
-                          'size' => format('%.5f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) + 0.02).round_down(2),
+                          'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
+                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1.001).round_down(2),
                           'move' => 'sell'
                         }
                       end
