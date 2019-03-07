@@ -227,7 +227,9 @@ def update_accounts
         end
       end
       accounts << Account.new(account.id, account.currency, account.available, held)
-      p "Account balance is %.8f #{account.currency}" % account.balance
+      if account.balance > 0 {
+        p "Account balance is %.8f #{account.currency}" % account.balance
+      }
     end
   end
 
