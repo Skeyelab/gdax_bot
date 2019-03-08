@@ -143,7 +143,7 @@ def balancePortfolioContinual(seconds = 0)
   # loop do
   orders = balancePortfolio
 
-  #binding.pry
+  # binding.pry
 
   sleep seconds.to_i
   k = GetKey.getkey
@@ -152,7 +152,7 @@ def balancePortfolioContinual(seconds = 0)
   when 120
     return
   end
-  #rest_api.order(orders[0].id)['settled']
+  # rest_api.order(orders[0].id)['settled']
   balancePortfolioContinual(seconds)
   # end
 end
