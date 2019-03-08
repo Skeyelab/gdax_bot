@@ -220,13 +220,13 @@ def balances
       balnc['BorS'] = if balnc['dif'].positive?
                         {
                           'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 0.9995).round_down(2),
+                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) - 0.02).round_down(2),
                           'move' => 'buy'
                         }
                       else
                         {
                           'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1.0005).round_down(2),
+                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) + 0.02).round_down(2),
                           'move' => 'sell'
                         }
                       end
