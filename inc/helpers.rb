@@ -146,13 +146,25 @@ def balancePortfolioContinual(seconds = 0)
   # binding.pry
 
   sleep seconds.to_i
+
+  begin
+    if orders.count > 0
+      orders.each do |order|
+        rest_api.cancel(order.id) do
+          puts 'Order canceled successfully'
+        end
+      end
+    end
+  rescue StandardError => e
+    # binding.pry
+  end
+
   k = GetKey.getkey
   system('stty -raw echo')
   case k
   when 120
     return
   end
-  # rest_api.order(orders[0].id)['settled']
   balancePortfolioContinual(seconds)
   # end
 end
@@ -214,7 +226,7 @@ def balances
                       else
                         {
                           'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1.00).round_down(2),
+                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1.0005).round_down(2),
                           'move' => 'sell'
                         }
                       end
