@@ -131,38 +131,50 @@ def balanceInUsd(currency)
   end
 end
 
-def balancePortfolioContinual
-  prompt = TTY::Prompt.new
-  seconds = prompt.ask('How many often? (seconds): ', default: 900)
-  loop do
-    balancePortfolio
+def balancePortfolioContinual(seconds = 0)
+  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
-    sleep seconds.to_i
-    k = GetKey.getkey
-    system('stty -raw echo')
-    case k
-    when 120
-      break
-    end
+  prompt = TTY::Prompt.new
+  if seconds == 0
+    seconds = prompt.ask('How many often? (seconds): ', default: 900)
   end
+  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+
+  # loop do
+  orders = balancePortfolio
+
+  #binding.pry
+
+  sleep seconds.to_i
+  k = GetKey.getkey
+  system('stty -raw echo')
+  case k
+  when 120
+    return
+  end
+  #rest_api.order(orders[0].id)['settled']
+  balancePortfolioContinual(seconds)
+  # end
 end
 
 def balancePortfolio
   b = balances
   return if orders.count != 0
 
+  orders = []
   b.each do |balnc|
     if balnc['cur'] != 'USD'
       # binding.pry
       if balnc['BorS']['move'] == 'buy'
         puts "buying #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
-        buy(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
+        orders << buy(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
       else
         puts "selling #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
-        sell2(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
+        orders << sell2(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
       end
     end
   end
+  orders.compact
 end
 
 def balances
@@ -190,19 +202,19 @@ def balances
   balncs.each do |balnc|
     balnc['per'] = ((balnc['bal'] / total) * 100).round_down(2)
     balnc['dif'] = (total / (acts.count + 1)) - balnc['bal']
-    #balnc['dif'] = 0 - balnc['bal']
+    # balnc['dif'] = 0 - balnc['bal']
     if balnc['cur'] != 'USD'
       # binding.pry
       balnc['BorS'] = if balnc['dif'].positive?
                         {
                           'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 0.999).round_down(2),
+                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 0.9995).round_down(2),
                           'move' => 'buy'
                         }
                       else
                         {
                           'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1.001).round_down(2),
+                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1.00).round_down(2),
                           'move' => 'sell'
                         }
                       end
@@ -227,7 +239,7 @@ def update_accounts
         end
       end
       accounts << Account.new(account.id, account.currency, account.available, held)
-      p "Account balance is %.2f #{account.currency}" % account.balance
+      p format("Account balance is %.2f #{account.currency}", account.balance)
     end
   end
 
