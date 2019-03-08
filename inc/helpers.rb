@@ -147,16 +147,15 @@ def balancePortfolioContinual(seconds = 0)
 
   sleep seconds.to_i
 
-  begin
-    if orders.count > 0
-      orders.each do |order|
-        rest_api.cancel(order.id) do
-          puts 'Order canceled successfully'
-        end
+  if orders.count > 0
+    orders.each do |order|
+      rest_api.cancel(order.id) do
+        puts 'Order canceled successfully'
       end
+    rescue StandardError => e
+      # binding.pry
+      next
     end
-  rescue StandardError => e
-    # binding.pry
   end
 
   k = GetKey.getkey
@@ -220,13 +219,13 @@ def balances
       balnc['BorS'] = if balnc['dif'].positive?
                         {
                           'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) - 0.02).round_down(2),
+                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 0.9995).round_down(2),
                           'move' => 'buy'
                         }
                       else
                         {
                           'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) + 0.02).round_down(2),
+                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1.0005).round_down(2),
                           'move' => 'sell'
                         }
                       end
