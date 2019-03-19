@@ -147,15 +147,20 @@ def balancePortfolioContinual(seconds = 0)
 
   sleep seconds.to_i
 
-  if orders.count > 0
-    orders.each do |order|
-      rest_api.cancel(order.id) do
-        puts 'Order canceled successfully'
+  begin
+
+    if orders.count > 0
+      orders.each do |order|
+        rest_api.cancel(order.id) do
+          puts 'Order canceled successfully'
+        end
+      rescue StandardError => e
+        # binding.pry
+        next
       end
-    rescue StandardError => e
-      # binding.pry
-      next
     end
+  rescue Exception => e
+    #puts e
   end
 
   k = GetKey.getkey
@@ -192,27 +197,49 @@ def balances
   rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   redis = Redis.new
 
-  acts = %w[LTC BCH BTC ETH]
+  #acts = %w[LTC BCH BTC ETH]
+  acts = [
+    {
+      "cur" => "LTC",
+      "split" => 0.3
+    },
+    {
+      "cur" => "BCH",
+      "split" => 0.2
+    },
+    {
+      "cur" => "BTC",
+      "split" => 0.2
+    },
+    {
+      "cur" => "ETH",
+      "split" => 0.1
+    },
+  ]
   balncs = []
   total = 0
   acts.each do |act|
-    balnc = balanceInUsd(act)
+    balnc = balanceInUsd(act['cur'])
     balncs << {
-      'cur' => act,
-      'bal' => balnc
+      'cur' => act['cur'],
+      'bal' => balnc,
+      'split' => act['split']
     }
     total += balnc
   end
   balncs << {
     'cur' => 'USD',
-    'bal' => bal.round_down(2)
+    'bal' => bal.round_down(2),
+    'split' => 0.2
   }
   total += bal.round_down(2)
   # binding.pry
   balsWPercents = []
   balncs.each do |balnc|
     balnc['per'] = ((balnc['bal'] / total) * 100).round_down(2)
-    balnc['dif'] = (total / (acts.count + 1)) - balnc['bal']
+    #balnc['dif'] = (total / (acts.count + 1)) - balnc['bal']
+    balnc['dif'] = (total * balnc['split']) - balnc['bal']
+    #binding.pry
     # balnc['dif'] = 0 - balnc['bal']
     if balnc['cur'] != 'USD'
       # binding.pry
