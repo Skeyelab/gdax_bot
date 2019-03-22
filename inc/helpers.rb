@@ -201,7 +201,7 @@ def balances
   acts = [
     {
       "cur" => "LTC",
-      "split" => 0.3
+      "split" => 0.2
     },
     {
       "cur" => "BCH",
@@ -213,7 +213,7 @@ def balances
     },
     {
       "cur" => "ETH",
-      "split" => 0.1
+      "split" => 0.2
     },
   ]
   balncs = []
