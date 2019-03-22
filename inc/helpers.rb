@@ -201,19 +201,19 @@ def balances
   acts = [
     {
       "cur" => "LTC",
-      "split" => 0.3
+      "split" => 0.4
     },
     {
       "cur" => "BCH",
-      "split" => 0.2
+      "split" => 0.125
     },
     {
       "cur" => "BTC",
-      "split" => 0.2
+      "split" => 0.225
     },
     {
       "cur" => "ETH",
-      "split" => 0.1
+      "split" => 0.125
     },
   ]
   balncs = []
@@ -230,7 +230,7 @@ def balances
   balncs << {
     'cur' => 'USD',
     'bal' => bal.round_down(2),
-    'split' => 0.2
+    'split' => 0.125
   }
   total += bal.round_down(2)
   # binding.pry
