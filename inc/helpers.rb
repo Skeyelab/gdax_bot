@@ -144,8 +144,15 @@ def balancePortfolioContinual(seconds = 0)
   orders = balancePortfolio
 
   # binding.pry
+  #print "\r"
+  #sleep seconds.to_i
 
-  sleep seconds.to_i
+  t = Time.new(0)
+  seconds.downto(0) do |seconds|
+    print (t + seconds).strftime('%H:%M:%S')
+    sleep 1
+    print "\r"
+  end
 
   begin
     if orders.count > 0
