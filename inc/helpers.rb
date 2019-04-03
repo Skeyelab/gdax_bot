@@ -148,7 +148,7 @@ def balancePortfolioContinual(seconds = 0)
   #sleep seconds.to_i
 
   t = Time.new(0)
-  seconds.downto(0) do |seconds|
+  seconds.to_i.downto(0) do |seconds|
     print (t + seconds).strftime('%H:%M:%S')
     sleep 1
     print "\r"
