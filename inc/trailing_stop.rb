@@ -170,23 +170,23 @@ def sell(pair, order_size)
   puts ''
   puts 'Selling'
   spot = redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f
-    if pair != 'BCH-BTC'
-        if pair.split('-')[1] == 'USD'
-        puts "Selling at #{spot - 0.01}"
-        order = rest_api.sell(order_size.round_down(8), (spot - 0.01).round_down(2), type: 'market')
-        else
-        puts "Selling at #{spot - 0.00001}"
-        order = rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8), type: 'market')
-        end
+  if pair != 'BCH-BTC'
+    if pair.split('-')[1] == 'USD'
+      puts "Selling at #{spot - 0.01}"
+      order = rest_api.sell(order_size.round_down(8), (spot - 0.01).round_down(2), type: 'market')
     else
-        if pair.split('-')[1] == 'USD'
-            puts "Selling at #{spot - 0.01}"
-            order = rest_api.sell(order_size.round_down(8), (spot - 0.01).round_down(2), type: 'limit')
-            else
-            puts "Selling at #{spot - 0.00001}"
-            order = rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8), type: 'limit')
-            end
-    end
+      puts "Selling at #{spot - 0.00001}"
+      order = rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8), type: 'market')
+      end
+  else
+    if pair.split('-')[1] == 'USD'
+      puts "Selling at #{spot - 0.01}"
+      order = rest_api.sell(order_size.round_down(8), (spot - 0.01).round_down(2), type: 'limit')
+    else
+      puts "Selling at #{spot - 0.00001}"
+      order = rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8), type: 'limit')
+          end
+  end
   sleep 1
   watch_order(order) unless rest_api.order(order.id).settled
   try_push_message(pair.to_s, 'Trailing Stop Completed', 'cashregister')
