@@ -152,31 +152,18 @@ def balancePortfolioContinual(seconds = 0)
     print (t + seconds).strftime('%H:%M:%S')
     sleep 1
     print "\r"
-  end
-
-  begin
-    if orders.count > 0
-      orders.each do |order|
-        rest_api.cancel(order.id) do
-          puts 'Order canceled successfully'
-        end
-      rescue StandardError => e
-        # binding.pry
-        next
-      end
+    k = GetKey.getkey
+    system('stty -raw echo')
+    case k
+    when 120
+      cancel_orders orders
+      return
     end
-  rescue Exception => e
-    # puts e
   end
 
-  k = GetKey.getkey
-  system('stty -raw echo')
-  case k
-  when 120
-    return
-  end
+  cancel_orders orders
   balancePortfolioContinual(seconds)
-  # end
+
 end
 
 def balancePortfolio
@@ -303,4 +290,22 @@ def orders
   end
 
   orders
+end
+
+
+def cancel_orders orders
+  begin
+    if orders.count > 0
+      orders.each do |order|
+        rest_api.cancel(order.id) do
+          puts 'Order canceled successfully'
+        end
+      rescue StandardError => e
+        # binding.pry
+        next
+      end
+    end
+  rescue Exception => e
+    # puts e
+  end
 end
