@@ -177,7 +177,8 @@ def sell(pair, order_size)
     else
       puts "Selling at #{spot - 0.00001}"
       order = rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8), type: 'market')
-      end
+    end
+    
   else
     if pair.split('-')[1] == 'USD'
       puts "Selling at #{spot - 0.01}"
@@ -185,10 +186,10 @@ def sell(pair, order_size)
     else
       puts "Selling at #{spot - 0.00001}"
       order = rest_api.sell(order_size.round_down(8), (spot - 0.00001).round_down(8), type: 'limit')
-          end
+    end
+    sleep 1
+    watch_order(order) unless rest_api.order(order.id).settled
+    try_push_message(pair.to_s, 'Trailing Stop Completed', 'cashregister')
+    puts 'Sold'
   end
-  sleep 1
-  watch_order(order) unless rest_api.order(order.id).settled
-  try_push_message(pair.to_s, 'Trailing Stop Completed', 'cashregister')
-  puts 'Sold'
 end
