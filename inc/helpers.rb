@@ -294,6 +294,7 @@ end
 
 
 def cancel_orders orders
+  sleep 1
   begin
     if orders.count > 0
       orders.each do |order|
