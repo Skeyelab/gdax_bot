@@ -198,11 +198,11 @@ def balances
     },
     {
       'cur' => 'BCH',
-      'split' => 0.0
+      'split' => 0.2
     },
     {
       'cur' => 'BTC',
-      'split' => 0.4
+      'split' => 0.2
     },
     {
       'cur' => 'ETH',
