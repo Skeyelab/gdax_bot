@@ -294,6 +294,7 @@ end
 
 
 def cancel_orders orders
+  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   sleep 1
   begin
     if orders.count > 0
