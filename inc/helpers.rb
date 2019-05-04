@@ -302,11 +302,12 @@ def cancel_orders orders
           puts 'Order canceled successfully'
         end
       rescue StandardError => e
+        puts e
         # binding.pry
         next
       end
     end
   rescue Exception => e
-    # puts e
+    puts e
   end
 end
