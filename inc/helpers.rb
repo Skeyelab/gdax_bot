@@ -206,7 +206,7 @@ def balances
     },
     {
       'cur' => 'ETH',
-      'split' => 0.2
+      'split' => 0.1
     }
   ]
   balncs = []
@@ -223,7 +223,7 @@ def balances
   balncs << {
     'cur' => 'USD',
     'bal' => bal.round_down(2),
-    'split' => 0.2
+    'split' => 0.3
   }
   total += bal.round_down(2)
   # binding.pry
