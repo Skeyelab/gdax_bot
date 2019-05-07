@@ -173,22 +173,22 @@ end
 
 def balancePortfolio
   b = balances
-  orders = []
-  return orders if orders.count != 0
+  return if orders.count != 0
 
+  orderz = []
   b.each do |balnc|
     if balnc['cur'] != 'USD'
       # binding.pry
       if balnc['BorS']['move'] == 'buy'
         puts "buying #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
-        orders << buy(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
+        orderz << buy(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
       else
         puts "selling #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
-        orders << sell2(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
+        orderz << sell2(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
       end
     end
   end
-  orders.compact
+  orderz.compact
 end
 
 def balances
