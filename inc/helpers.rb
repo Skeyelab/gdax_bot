@@ -173,7 +173,7 @@ end
 
 def balancePortfolio
   b = balances
-  return if orders.count != 0
+  return [] if orders.count != 0
 
   orderz = []
   b.each do |balnc|
