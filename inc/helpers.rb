@@ -62,6 +62,11 @@ def init_redis
   redis.set('spot_ETC_BTC', 0) unless redis.get('spot_ETC_BTC')
   redis.set('spot_ETC_USD', 0) unless redis.get('spot_ETC_USD')
   redis.set('spot_ZRX_BTC', 0) unless redis.get('spot_ZRX_BTC')
+
+  redis.set('BTC_split', 0.2) unless redis.get('BTC_split')
+  redis.set('LTC_split', 0.2) unless redis.get('LTC_split')
+  redis.set('ETH_split', 0.2) unless redis.get('ETH_split')
+  redis.set('BCH_split', 0.2) unless redis.get('BCH_split')
 end
 
 def try_push_message(message, title, sound = 'none')
@@ -194,19 +199,19 @@ def balances
   acts = [
     {
       'cur' => 'LTC',
-      'split' => 0.2
+      'split' => redis.get('LTC_split').to_f
     },
     {
       'cur' => 'BCH',
-      'split' => 0.2
+      'split' => redis.get('BCH_split').to_f
     },
     {
       'cur' => 'BTC',
-      'split' => 0.2
+      'split' => redis.get('BTC_split').to_f
     },
     {
       'cur' => 'ETH',
-      'split' => 0.2
+      'split' => redis.get('ETH_split').to_f
     }
   ]
   balncs = []
@@ -220,10 +225,13 @@ def balances
     }
     total += balnc
   end
+
+
+
   balncs << {
     'cur' => 'USD',
     'bal' => bal.round_down(2),
-    'split' => 0.1
+    'split' => 1 - (redis.get('LTC_split').to_f + redis.get('BCH_split').to_f + redis.get('BTC_split').to_f + redis.get('ETH_split').to_f)
   }
   total += bal.round_down(2)
   # binding.pry
