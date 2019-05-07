@@ -173,9 +173,9 @@ end
 
 def balancePortfolio
   b = balances
-  return if orders.count != 0
-
   orders = []
+  return orders if orders.count != 0
+
   b.each do |balnc|
     if balnc['cur'] != 'USD'
       # binding.pry
