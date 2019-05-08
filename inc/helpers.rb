@@ -137,6 +137,8 @@ def balanceInUsd(currency)
 end
 
 def balancePortfolioContinual(seconds = 0)
+  redis = Redis.new
+
   rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   prompt = TTY::Prompt.new
