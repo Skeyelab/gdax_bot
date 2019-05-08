@@ -1,7 +1,7 @@
 
 .env
 
-key_checker.rb
+#key_checker.rb
 console.rb
 
 .vscode/*
