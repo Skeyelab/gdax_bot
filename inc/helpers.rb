@@ -163,6 +163,14 @@ def balancePortfolioContinual(seconds = 0)
     when 120
       cancel_orders orders
       return
+    when 97
+      if !prompt.no?('Abort?')
+        redis.set('BTC_split', 0)
+        redis.set('LTC_split', 0)
+        redis.set('ETH_split', 0)
+        redis.set('BCH_split', 0)
+      end
+      return
     end
   end
 
