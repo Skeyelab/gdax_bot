@@ -223,7 +223,7 @@ def balances
   balncs << {
     'cur' => 'USD',
     'bal' => bal.round_down(2),
-    'split' => 0.2
+    'split' => 0.1
   }
   total += bal.round_down(2)
   # binding.pry
@@ -294,6 +294,8 @@ end
 
 
 def cancel_orders orders
+  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  sleep 1
   begin
     if orders.count > 0
       orders.each do |order|
@@ -301,11 +303,12 @@ def cancel_orders orders
           puts 'Order canceled successfully'
         end
       rescue StandardError => e
+        puts e
         # binding.pry
         next
       end
     end
   rescue Exception => e
-    # puts e
+    puts e
   end
 end
