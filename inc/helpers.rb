@@ -171,7 +171,7 @@ def balancePortfolioContinual(seconds = 0)
         redis.set('LTC_split', 0)
         redis.set('ETH_split', 0)
         redis.set('BCH_split', 0)
-        return
+        break
       end
     end
   end
