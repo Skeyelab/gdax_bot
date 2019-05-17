@@ -19,7 +19,7 @@ def sell2(pair, price, order_size)
       return sell_order
     end
   rescue StandardError => e
-    puts e
+    #puts e
   end
   # binding.pry
 end
