@@ -10,6 +10,7 @@ def sell2(pair, price, order_size)
 
   begin
     sell_order = rest_api.sell(order_size, price)
+    puts "selling #{order_size.abs} #{balnc['cur'].chomp('-USD')} @ #{price}"
     return sell_order
   rescue Coinbase::Exchange::NotFoundError => e
     if e.message == '{"message":"NotFound"}'
