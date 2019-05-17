@@ -191,10 +191,10 @@ def balancePortfolio
       # binding.pry
       if balnc['BorS']['move'] == 'buy'
 #        puts "buying #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
-        orders << buy(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
+        orderz << buy(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
       else
 #        puts "selling #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
-        orders << sell2(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
+        orderz << sell2(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
       end
     end
   end
@@ -304,7 +304,7 @@ def orders
     resp.each do |order|
       orders << order
     end
-    puts "You have #{resp.count} open orders."
+    #puts "You have #{resp.count} open orders."
   end
 
   orders
