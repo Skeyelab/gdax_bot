@@ -8,7 +8,7 @@ def buy(pair, price, order_size)
     product_id: pair
   )
 
-  puts "buying #{order_size.abs} #{balnc['cur'].chomp('-USD')} @ #{price}"
+  puts "buying #{order_size.abs} #{order_size.chomp('-USD')} @ #{price}"
   begin
     buy_order = rest_api.buy(order_size, price)
     return buy_order
