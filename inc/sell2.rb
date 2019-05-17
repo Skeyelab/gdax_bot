@@ -8,7 +8,7 @@ def sell2(pair, price, order_size)
     product_id: pair
   )
 
-  puts "selling #{order_size.abs} #{order_size.chomp('-USD')} @ #{price}"
+  puts "selling #{order_size.abs} #{pair.chomp('-USD')} @ #{price}"
   begin
     sell_order = rest_api.sell(order_size, price)
     return sell_order
