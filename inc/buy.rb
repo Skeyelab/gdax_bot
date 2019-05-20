@@ -10,7 +10,7 @@ def buy(pair, price, order_size)
 
   begin
     buy_order = rest_api.buy(order_size, price)
-    puts "buying #{order_size.abs} #{pair.chomp('-USD')} @ #{price}"
+    puts "buying #{order_size.abs} #{pair.chomp('-USD')} @ #{price} - #{Date.now}"
     return buy_order
   rescue Coinbase::Exchange::NotFoundError => e
     if e.message == '{"message":"NotFound"}'
