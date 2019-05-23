@@ -69,6 +69,14 @@ def init_redis
   redis.set('BCH_split', 0.2) unless redis.get('BCH_split')
 end
 
+def bump_splits(bump = 0.01)
+  redis.set('BTC_split', redis.get('BTC_split').to_f + bump)
+  redis.set('LTC_split', redis.get('LTC_split').to_f + bump)
+  redis.set('ETH_split', redis.get('ETH_split').to_f + bump)
+  redis.set('BCH_split', redis.get('BCH_split').to_f + bump)
+end
+
+
 def try_push_message(message, title, sound = 'none')
   if ENV['PUSHOVER_USER'] == ''
     false
