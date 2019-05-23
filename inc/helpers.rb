@@ -70,6 +70,7 @@ def init_redis
 end
 
 def bump_splits(bump = 0.01)
+  redis = Redis.new
   redis.set('BTC_split', redis.get('BTC_split').to_f + bump)
   redis.set('LTC_split', redis.get('LTC_split').to_f + bump)
   redis.set('ETH_split', redis.get('ETH_split').to_f + bump)
