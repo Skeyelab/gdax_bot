@@ -75,7 +75,7 @@ def try_push_message(message, title, sound = 'none')
 end
 
 def usd_bal
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   rest_api.accounts do |resp|
     resp.each do |account|
@@ -104,7 +104,7 @@ class Account
 end
 
 def bal(pair = 'BTC-USD')
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   rest_api.accounts do |resp|
     resp.each do |account|
@@ -114,7 +114,7 @@ def bal(pair = 'BTC-USD')
 end
 
 def balanceInUsd(currency)
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   redis = Redis.new
 
   rest_api.accounts do |resp|
@@ -132,13 +132,13 @@ def balanceInUsd(currency)
 end
 
 def balancePortfolioContinual(seconds = 0)
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   prompt = TTY::Prompt.new
   if seconds == 0
     seconds = prompt.ask('How many often? (seconds): ', default: 900)
   end
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   # loop do
   orders = balancePortfolio
@@ -187,7 +187,7 @@ def balancePortfolio
 end
 
 def balances
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   redis = Redis.new
 
   # acts = %w[LTC BCH BTC ETH]
@@ -257,7 +257,7 @@ def balances
 end
 
 def update_accounts
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   accounts = []
 
@@ -278,7 +278,7 @@ def update_accounts
 end
 
 def orders
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   orders = []
 
@@ -294,7 +294,7 @@ end
 
 
 def cancel_orders orders
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   sleep 1
   begin
     if orders.count > 0

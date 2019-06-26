@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Coinbase
-  module Exchange
+  module Pro
     # Websocket client for Coinbase Exchange
     class Websocket
       def initialize(options = {})

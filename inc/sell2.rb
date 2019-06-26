@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 def sell2(pair, price, order_size)
-  rest_api = Coinbase::Exchange::Client.new(
+  rest_api = Coinbase::Pro::Client.new(
     ENV['GDAX_TOKEN'],
     ENV['GDAX_SECRET'],
     ENV['GDAX_PW'],
@@ -11,7 +11,7 @@ def sell2(pair, price, order_size)
   begin
     sell_order = rest_api.sell(order_size, price)
     return sell_order
-  rescue Coinbase::Exchange::NotFoundError => e
+  rescue Coinbase::Pro::NotFoundError => e
     if e.message == '{"message":"NotFound"}'
       puts 'Order not found'
       sleep 1

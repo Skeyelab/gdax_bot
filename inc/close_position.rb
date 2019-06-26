@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 def close_position(order, price)
-  rest_api = Coinbase::Exchange::Client.new(
+  rest_api = Coinbase::Pro::Client.new(
     ENV['GDAX_TOKEN'],
     ENV['GDAX_SECRET'],
     ENV['GDAX_PW'],
@@ -22,7 +22,7 @@ def close_position(order, price)
       # puts sell_order
       watch_order sell_order
       return
-    rescue Coinbase::Exchange::NotFoundError => e
+    rescue Coinbase::Pro::NotFoundError => e
       if e.message == '{"message":"NotFound"}'
         puts 'Order not found'
         sleep 1

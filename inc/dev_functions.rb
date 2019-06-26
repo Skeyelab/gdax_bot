@@ -95,7 +95,7 @@ end
 def run_websocket
   redis = Redis.new
 
-  websocket = Coinbase::Exchange::Websocket.new(keepalive: true)
+  websocket = Coinbase::Pro::Websocket.new(keepalive: true)
   websocket.match do |resp|
     redis.set('last_ws_message_time', resp['time'])
 
