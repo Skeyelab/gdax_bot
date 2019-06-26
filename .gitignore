@@ -15,3 +15,4 @@ jobs/*.json
 
 .rubocop.yml
 .rubocop_todo.yml
+Gemfile.lock
