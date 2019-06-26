@@ -17,3 +17,4 @@ jobs/*.json
 .rubocop_todo.yml
 Gemfile.lock
 Gemfile.lock
+*.lock
