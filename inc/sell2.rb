@@ -10,6 +10,7 @@ def sell2(pair, price, order_size)
 
   begin
     sell_order = rest_api.sell(order_size, price)
+    puts "selling #{order_size.abs} #{pair.chomp('-USD')} @ #{price} - #{Time.now}"
     return sell_order
   rescue Coinbase::Pro::NotFoundError => e
     if e.message == '{"message":"NotFound"}'
@@ -18,7 +19,7 @@ def sell2(pair, price, order_size)
       return sell_order
     end
   rescue StandardError => e
-    puts e
+    #puts e
   end
   # binding.pry
 end

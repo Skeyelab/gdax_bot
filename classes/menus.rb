@@ -27,10 +27,42 @@ class Menus < GdaxBot
       when 'trailing_stop'
         trailing_stop_menu
       when 'balance_portfolio'
+        show_splits
+        if !prompt.no?('Set splits?')
+          set_splits
+        end
         balancePortfolioContinual
       end
     end
       end
+
+  def self.show_splits
+    redis = Redis.new
+    puts 'BTC: ' + redis.get('BTC_split')
+    puts 'LTC: ' + redis.get('LTC_split')
+    puts 'ETH: ' + redis.get('ETH_split')
+    puts 'BCH: ' + redis.get('BCH_split')
+    puts 'USD: ' + (1.0 - (redis.get('LTC_split').to_f + redis.get('BCH_split').to_f + redis.get('BTC_split').to_f + redis.get('ETH_split').to_f)).round(2).to_s
+  end
+
+  def self.set_splits
+    prompt = TTY::Prompt.new
+    redis = Redis.new
+
+    btc_split = prompt.ask('BTC:', default: 0.2).to_f
+    redis.set('BTC_split', btc_split)
+
+    ltc_split = prompt.ask('LTC:', default: 0.2).to_f
+    redis.set('LTC_split', ltc_split)
+
+    eth_split = prompt.ask('ETH:', default: 0.2).to_f
+    redis.set('ETH_split', eth_split)
+
+    bch_split = prompt.ask('BCH:', default: 0.2).to_f
+    redis.set('BCH_split', bch_split)
+
+
+  end
 
   def self.trailing_stop_menu
     prompt = TTY::Prompt.new
