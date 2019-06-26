@@ -62,7 +62,21 @@ def init_redis
   redis.set('spot_ETC_BTC', 0) unless redis.get('spot_ETC_BTC')
   redis.set('spot_ETC_USD', 0) unless redis.get('spot_ETC_USD')
   redis.set('spot_ZRX_BTC', 0) unless redis.get('spot_ZRX_BTC')
+
+  redis.set('BTC_split', 0.2) unless redis.get('BTC_split')
+  redis.set('LTC_split', 0.2) unless redis.get('LTC_split')
+  redis.set('ETH_split', 0.2) unless redis.get('ETH_split')
+  redis.set('BCH_split', 0.2) unless redis.get('BCH_split')
 end
+
+def bump_splits(bump = 0.01)
+  redis = Redis.new
+  redis.set('BTC_split', redis.get('BTC_split').to_f + bump)
+  redis.set('LTC_split', redis.get('LTC_split').to_f + bump)
+  redis.set('ETH_split', redis.get('ETH_split').to_f + bump)
+  redis.set('BCH_split', redis.get('BCH_split').to_f + bump)
+end
+
 
 def try_push_message(message, title, sound = 'none')
   if ENV['PUSHOVER_USER'] == ''
@@ -132,6 +146,8 @@ def balanceInUsd(currency)
 end
 
 def balancePortfolioContinual(seconds = 0)
+  redis = Redis.new
+
   rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   prompt = TTY::Prompt.new
@@ -158,6 +174,14 @@ def balancePortfolioContinual(seconds = 0)
     when 120
       cancel_orders orders
       return
+    when 97
+      if !prompt.no?('Abort?')
+        redis.set('BTC_split', 0)
+        redis.set('LTC_split', 0)
+        redis.set('ETH_split', 0)
+        redis.set('BCH_split', 0)
+        break
+      end
     end
   end
 
@@ -168,22 +192,22 @@ end
 
 def balancePortfolio
   b = balances
-  return if orders.count != 0
+  return [] if orders.count != 0
 
-  orders = []
+  orderz = []
   b.each do |balnc|
     if balnc['cur'] != 'USD'
       # binding.pry
       if balnc['BorS']['move'] == 'buy'
-        puts "buying #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
-        orders << buy(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
+#        puts "buying #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
+        orderz << buy(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
       else
-        puts "selling #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
-        orders << sell2(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
+#        puts "selling #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
+        orderz << sell2(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
       end
     end
   end
-  orders.compact
+  orderz.compact
 end
 
 def balances
@@ -194,19 +218,19 @@ def balances
   acts = [
     {
       'cur' => 'LTC',
-      'split' => 0.2
+      'split' => redis.get('LTC_split').to_f
     },
     {
       'cur' => 'BCH',
-      'split' => 0.2
+      'split' => redis.get('BCH_split').to_f
     },
     {
       'cur' => 'BTC',
-      'split' => 0.2
+      'split' => redis.get('BTC_split').to_f
     },
     {
       'cur' => 'ETH',
-      'split' => 0.2
+      'split' => redis.get('ETH_split').to_f
     }
   ]
   balncs = []
@@ -220,10 +244,13 @@ def balances
     }
     total += balnc
   end
+
+
+
   balncs << {
     'cur' => 'USD',
     'bal' => bal.round_down(2),
-    'split' => 0.1
+    'split' => 1 - (redis.get('LTC_split').to_f + redis.get('BCH_split').to_f + redis.get('BTC_split').to_f + redis.get('ETH_split').to_f)
   }
   total += bal.round_down(2)
   # binding.pry
@@ -239,13 +266,13 @@ def balances
       balnc['BorS'] = if balnc['dif'].positive?
                         {
                           'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 0.9995).round_down(2),
+                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 0.999).round_down(2),
                           'move' => 'buy'
                         }
                       else
                         {
                           'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1.0005).round_down(2),
+                          'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1.001).round_down(2),
                           'move' => 'sell'
                         }
                       end
@@ -286,7 +313,7 @@ def orders
     resp.each do |order|
       orders << order
     end
-    puts "You have #{resp.count} open orders."
+    #puts "You have #{resp.count} open orders."
   end
 
   orders
@@ -303,7 +330,7 @@ def cancel_orders orders
           puts 'Order canceled successfully'
         end
       rescue StandardError => e
-        puts e
+        #puts e
         # binding.pry
         next
       end
