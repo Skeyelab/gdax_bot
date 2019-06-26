@@ -145,6 +145,16 @@ def balanceInUsd(currency)
   end
 end
 
+def cb_withdraw(dollars)
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api.coinbase_withdraw(dollars, 'USD', "c4cc0ecd-d7f8-545c-a388-3508e973931c")
+end
+
+def cb_deposit(dollars)
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api.coinbase_withdraw(dollars, 'USD', "c4cc0ecd-d7f8-545c-a388-3508e973931c")
+end
+
 def balancePortfolioContinual(seconds = 0)
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   redis = Redis.new
