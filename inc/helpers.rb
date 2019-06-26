@@ -145,6 +145,24 @@ def balanceInUsd(currency)
   end
 end
 
+def totalBalanceInUsd
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  redis = Redis.new
+  total = 0
+  rest_api.accounts do |resp|
+    resp.each do |account|
+      #binding.pry
+      begin
+        spot = format('%.5f', redis.get("spot_#{account.currency}_USD")).to_f
+        total = total + ((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2)
+      rescue Exception => e
+        #puts e
+      end
+    end
+  end
+  return (total + usd_bal).round_down(2)
+end
+
 def cb_withdraw(dollars)
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   rest_api.coinbase_withdrawal(dollars, 'USD', "c4cc0ecd-d7f8-545c-a388-3508e973931c")
