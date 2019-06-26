@@ -18,6 +18,7 @@ check_for_zombie_servers
 web_socket_daemon = Daemons.call(app_name: 'GDAX_Bot', backtrace: true, multiple: true) do
   run_websocket
 end
+rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
 # web_server_daemon = Daemons.call({ :app_name => 'Webserver', :monitor => true, :backtrace => true, :multiple => true}) do
 #   startWebserver
