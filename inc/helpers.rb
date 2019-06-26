@@ -155,6 +155,15 @@ def cb_deposit(dollars)
   rest_api.coinbase_deposit(dollars, 'USD', "c4cc0ecd-d7f8-545c-a388-3508e973931c")
 end
 
+def cb_balance
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api.coinbase_accounts.each do |cba|
+    if cba['name'] == "USD Wallet"
+      return cba['balance'].to_f
+    end
+  end
+end
+
 def balancePortfolioContinual(seconds = 0)
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   redis = Redis.new
