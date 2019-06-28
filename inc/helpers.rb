@@ -190,10 +190,16 @@ def balancePortfolioContinual(seconds = 0)
   if seconds == 0
     seconds = prompt.ask('How many often? (seconds): ', default: 900)
   end
+  og_seconds = seconds
+
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   # loop do
   orders = balancePortfolio
+
+  if orders.count > 0
+    seconds = seconds.to_i * 3
+  end
 
   # binding.pry
   #print "\r"
@@ -222,7 +228,7 @@ def balancePortfolioContinual(seconds = 0)
   end
 
   cancel_orders orders
-  balancePortfolioContinual(seconds)
+  balancePortfolioContinual(og_seconds)
 
 end
 
