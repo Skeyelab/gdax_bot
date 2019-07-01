@@ -165,12 +165,12 @@ end
 
 def cb_withdraw(dollars)
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
-  rest_api.coinbase_withdrawal(dollars, 'USD', "c4cc0ecd-d7f8-545c-a388-3508e973931c")
+  rest_api.coinbase_withdrawal(dollars, 'USD', ENV['CB_WALLET_ID'])
 end
 
 def cb_deposit(dollars)
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
-  rest_api.coinbase_deposit(dollars, 'USD', "c4cc0ecd-d7f8-545c-a388-3508e973931c")
+  rest_api.coinbase_deposit(dollars, 'USD', ENV['CB_WALLET_ID'])
 end
 
 def cb_balance
