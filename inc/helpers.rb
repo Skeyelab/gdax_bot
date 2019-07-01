@@ -195,9 +195,9 @@ def balancePortfolioContinual(seconds = 0)
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   # loop do
-  orders = balancePortfolio
+  orderz = balancePortfolio
 
-  if orders.count > 0
+  if orderz.count > 0
     seconds = seconds.to_i * 3
   end
 
@@ -214,7 +214,7 @@ def balancePortfolioContinual(seconds = 0)
     system('stty -raw echo')
     case k
     when 120
-      cancel_orders orders
+      cancel_orders orderz
       return
     when 97
       if !prompt.no?('Abort?')
@@ -227,7 +227,7 @@ def balancePortfolioContinual(seconds = 0)
     end
   end
 
-  cancel_orders orders
+  cancel_orders orderz
   balancePortfolioContinual(og_seconds)
 
 end
