@@ -182,6 +182,14 @@ def cb_balance
   end
 end
 
+
+def balLoop(seconds = 0)
+  redis = Redis.new
+  while redis.get('balanceLoop') == 'true'
+    seconds = balancePortfolioContinual(seconds)
+  end
+end
+
 def balancePortfolioContinual(seconds = 0)
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   redis = Redis.new
@@ -215,7 +223,8 @@ def balancePortfolioContinual(seconds = 0)
     case k
     when 120
       cancel_orders orderz
-      return
+      redis.set('balanceLoop', 'false')
+      return og_seconds
     when 97
       if !prompt.no?('Abort?')
         redis.set('BTC_split', 0)
@@ -228,8 +237,8 @@ def balancePortfolioContinual(seconds = 0)
   end
 
   cancel_orders orderz
-  balancePortfolioContinual(og_seconds)
-
+  #balancePortfolioContinual(og_seconds)
+  return og_seconds
 end
 
 def balancePortfolio
