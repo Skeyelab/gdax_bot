@@ -33,7 +33,8 @@ class Menus < GdaxBot
         if !prompt.no?('Set splits?')
           set_splits
         end
-        balancePortfolioContinual
+        redis.set('balanceLoop', 'true')
+        balLoop
       end
     end
       end
