@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 def buy(pair, price, order_size)
-  rest_api = Coinbase::Exchange::Client.new(
+  rest_api = Coinbase::Pro::Client.new(
     ENV['GDAX_TOKEN'],
     ENV['GDAX_SECRET'],
     ENV['GDAX_PW'],
@@ -12,7 +12,7 @@ def buy(pair, price, order_size)
     buy_order = rest_api.buy(order_size, price)
     puts "buying #{order_size.abs} #{pair.chomp('-USD')} @ #{price} - #{Time.now}"
     return buy_order
-  rescue Coinbase::Exchange::NotFoundError => e
+  rescue Coinbase::Pro::NotFoundError => e
     if e.message == '{"message":"NotFound"}'
       puts 'Order not found'
       sleep 1

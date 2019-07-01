@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 gem 'coinbase'
-gem 'coinbase-exchange'
+gem 'coinbase-pro', git: 'https://github.com/Skeyelab/coinbase-pro'
 gem 'colorize'
 gem 'cryptoexchange'
 gem 'daemons'

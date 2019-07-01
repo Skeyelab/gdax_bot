@@ -12,7 +12,7 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
   profit_goal_price = (open_price + (open_price * profit / 100)).round_down(5)
   t_stop_price = (profit_goal_price - (profit_goal_price * t_stop / 100)).round_down(5)
   last_t_stop = t_stop_price
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair)
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair)
 
   color = :light_yellow
   bg_color = :default
@@ -165,7 +165,7 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
 end
 
 def sell(pair, order_size)
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair)
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair)
   redis = Redis.new
   puts ''
   puts 'Selling'

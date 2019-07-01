@@ -89,7 +89,7 @@ def try_push_message(message, title, sound = 'none')
 end
 
 def usd_bal
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   rest_api.accounts do |resp|
     resp.each do |account|
@@ -118,7 +118,7 @@ class Account
 end
 
 def bal(pair = 'BTC-USD')
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   rest_api.accounts do |resp|
     resp.each do |account|
@@ -128,7 +128,7 @@ def bal(pair = 'BTC-USD')
 end
 
 def balanceInUsd(currency)
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   redis = Redis.new
 
   rest_api.accounts do |resp|
@@ -145,19 +145,69 @@ def balanceInUsd(currency)
   end
 end
 
-def balancePortfolioContinual(seconds = 0)
+def totalBalanceInUsd
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   redis = Redis.new
+  total = 0
+  rest_api.accounts do |resp|
+    resp.each do |account|
+      #binding.pry
+      begin
+        spot = format('%.5f', redis.get("spot_#{account.currency}_USD")).to_f
+        total = total + ((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2)
+      rescue Exception => e
+        #puts e
+      end
+    end
+  end
+  return (total + usd_bal).round_down(2)
+end
 
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+def cb_withdraw(dollars)
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api.coinbase_withdrawal(dollars, 'USD', ENV['CB_WALLET_ID'])
+end
+
+def cb_deposit(dollars)
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api.coinbase_deposit(dollars, 'USD', ENV['CB_WALLET_ID'])
+end
+
+def cb_balance
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api.coinbase_accounts.each do |cba|
+    if cba['name'] == "USD Wallet"
+      return cba['balance'].to_f
+    end
+  end
+end
+
+
+def balLoop(seconds = 0)
+  redis = Redis.new
+  while redis.get('balanceLoop') == 'true'
+    seconds = balancePortfolioContinual(seconds)
+  end
+end
+
+def balancePortfolioContinual(seconds = 0)
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  redis = Redis.new
 
   prompt = TTY::Prompt.new
   if seconds == 0
     seconds = prompt.ask('How many often? (seconds): ', default: 900)
   end
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  og_seconds = seconds
+
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   # loop do
   orderz = balancePortfolio
+
+  if orderz.count > 0
+    seconds = seconds.to_i * 3
+  end
 
   # binding.pry
   #print "\r"
@@ -173,21 +223,23 @@ def balancePortfolioContinual(seconds = 0)
     case k
     when 120
       cancel_orders orderz
-      return
+      redis.set('balanceLoop', 'false')
+      return og_seconds
     when 97
       if !prompt.no?('Abort?')
         redis.set('BTC_split', 0)
         redis.set('LTC_split', 0)
         redis.set('ETH_split', 0)
         redis.set('BCH_split', 0)
+        redis.set('balanceLoop', 'false')
         break
       end
     end
   end
 
   cancel_orders orderz
-  balancePortfolioContinual(seconds)
-
+  #balancePortfolioContinual(og_seconds)
+  return og_seconds
 end
 
 def balancePortfolio
@@ -211,7 +263,7 @@ def balancePortfolio
 end
 
 def balances
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   redis = Redis.new
 
   # acts = %w[LTC BCH BTC ETH]
@@ -284,7 +336,7 @@ def balances
 end
 
 def update_accounts
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   accounts = []
 
@@ -305,7 +357,7 @@ def update_accounts
 end
 
 def orders
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
   orders = []
 
@@ -321,7 +373,7 @@ end
 
 
 def cancel_orders orders
-  rest_api = Coinbase::Exchange::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   sleep 1
   begin
     if orders.count > 0

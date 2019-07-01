@@ -21,6 +21,8 @@ class Menus < GdaxBot
       when 'exit'
         abort
       when 'prompt'
+        rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+
         binding.pry
       when 'view_websocket'
         view_websocket
@@ -31,7 +33,8 @@ class Menus < GdaxBot
         if !prompt.no?('Set splits?')
           set_splits
         end
-        balancePortfolioContinual
+        redis.set('balanceLoop', 'true')
+        balLoop
       end
     end
       end
