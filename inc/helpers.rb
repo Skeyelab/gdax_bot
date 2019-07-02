@@ -107,16 +107,6 @@ def decimals(abc)
   num
 end
 
-# Account class
-class Account
-  def initialize(id, currency, balance = 0, hold = 0)
-    @id = id
-    @currency = currency
-    @balance = balance
-    @hold = hold
-  end
-end
-
 def bal(pair = 'BTC-USD')
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
