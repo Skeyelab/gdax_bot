@@ -77,7 +77,6 @@ def bump_splits(bump = 0.01)
   redis.set('BCH_split', redis.get('BCH_split').to_f + bump)
 end
 
-
 def try_push_message(message, title, sound = 'none')
   if ENV['PUSHOVER_USER'] == ''
     false
@@ -141,16 +140,15 @@ def totalBalanceInUsd
   total = 0
   rest_api.accounts do |resp|
     resp.each do |account|
-      #binding.pry
-      begin
-        spot = format('%.5f', redis.get("spot_#{account.currency}_USD")).to_f
-        total = total + ((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2)
-      rescue Exception => e
-        #puts e
-      end
+      # binding.pry
+
+      spot = format('%.5f', redis.get("spot_#{account.currency}_USD")).to_f
+      total += ((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2)
+    rescue Exception => e
+      # puts e
     end
   end
-  return (total + usd_bal).round_down(2)
+  (total + usd_bal).round_down(2)
 end
 
 def cb_withdraw(dollars)
@@ -166,12 +164,9 @@ end
 def cb_balance
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   rest_api.coinbase_accounts.each do |cba|
-    if cba['name'] == "USD Wallet"
-      return cba['balance'].to_f
-    end
+    return cba['balance'].to_f if cba['name'] == 'USD Wallet'
   end
 end
-
 
 def balLoop(seconds = 0)
   redis = Redis.new
@@ -195,13 +190,11 @@ def balancePortfolioContinual(seconds = 0)
   # loop do
   orderz = balancePortfolio
 
-  if orderz.count > 0
-    seconds = seconds.to_i * 3
-  end
+  seconds = seconds.to_i * 3 if orderz.count > 0
 
   # binding.pry
-  #print "\r"
-  #sleep seconds.to_i
+  # print "\r"
+  # sleep seconds.to_i
 
   t = Time.new(0)
   seconds.to_i.downto(0) do |seconds|
@@ -216,7 +209,7 @@ def balancePortfolioContinual(seconds = 0)
       redis.set('balanceLoop', 'false')
       return og_seconds
     when 97
-      if !prompt.no?('Abort?')
+      unless prompt.no?('Abort?')
         redis.set('BTC_split', 0)
         redis.set('LTC_split', 0)
         redis.set('ETH_split', 0)
@@ -228,8 +221,8 @@ def balancePortfolioContinual(seconds = 0)
   end
 
   cancel_orders orderz
-  #balancePortfolioContinual(og_seconds)
-  return og_seconds
+  # balancePortfolioContinual(og_seconds)
+  og_seconds
 end
 
 def balancePortfolio
@@ -241,10 +234,10 @@ def balancePortfolio
     if balnc['cur'] != 'USD'
       # binding.pry
       if balnc['BorS']['move'] == 'buy'
-#        puts "buying #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
+        #        puts "buying #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
         orderz << buy(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
       else
-#        puts "selling #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
+        #        puts "selling #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
         orderz << sell2(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
       end
     end
@@ -286,8 +279,6 @@ def balances
     }
     total += balnc
   end
-
-
 
   balncs << {
     'cur' => 'USD',
@@ -355,14 +346,13 @@ def orders
     resp.each do |order|
       orders << order
     end
-    #puts "You have #{resp.count} open orders."
+    # puts "You have #{resp.count} open orders."
   end
 
   orders
 end
 
-
-def cancel_orders orders
+def cancel_orders(orders)
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   sleep 1
   begin
@@ -372,7 +362,7 @@ def cancel_orders orders
           puts 'Order canceled successfully'
         end
       rescue StandardError => e
-        #puts e
+        # puts e
         # binding.pry
         next
       end

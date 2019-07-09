@@ -64,7 +64,7 @@ def start_webserver
     socket = server.accept
     request_line = socket.gets
 
-    STDERR.puts request_line
+    warn request_line
 
     path = requested_file(request_line)
 
