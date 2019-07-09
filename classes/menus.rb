@@ -30,9 +30,7 @@ class Menus < GdaxBot
         trailing_stop_menu
       when 'balance_portfolio'
         show_splits
-        if !prompt.no?('Set splits?')
-          set_splits
-        end
+        set_splits unless prompt.no?('Set splits?')
         redis.set('balanceLoop', 'true')
         balLoop
       end
@@ -63,8 +61,6 @@ class Menus < GdaxBot
 
     bch_split = prompt.ask('BCH:', default: 0.2).to_f
     redis.set('BCH_split', bch_split)
-
-
   end
 
   def self.trailing_stop_menu
