@@ -108,10 +108,9 @@ end
 
 def showPotentialOrders
   balances[0..3].each do |b|
-    puts  b["BorS"]["size"].to_f
+    puts b['BorS']['size'].to_f
   end
 end
-
 
 def bal(pair = 'BTC-USD')
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
