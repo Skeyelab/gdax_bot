@@ -33,7 +33,7 @@ module Coinbase
                             ->(_event) { EM.stop }
                           else
                             ->(_event) { nil }
-        end
+                          end
         @socket.close
       end
 

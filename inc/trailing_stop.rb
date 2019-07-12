@@ -122,7 +122,7 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
               ' + '.white.on_green.bold
             else
               '   '.white
-    end
+            end
 
     system('stty raw -echo')
     k = GetKey.getkey

@@ -18,7 +18,7 @@ def buy(pair, price, order_size)
       sleep 1
       return buy_order
     end
-  rescue StandardError => e
+  rescue StandardError
     # puts e
   end
   # binding.pry

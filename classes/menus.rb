@@ -35,7 +35,7 @@ class Menus < GdaxBot
         balLoop
       end
     end
-      end
+  end
 
   def self.show_splits
     redis = Redis.new
