@@ -157,22 +157,22 @@ def totalBalanceInUsd
   (total + usd_bal).round_down(2)
 end
 
-def cb_withdraw(dollars)
-  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
-  rest_api.coinbase_withdrawal(dollars, 'USD', ENV['CB_WALLET_ID'])
-end
+# def cb_withdraw(dollars)
+#   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+#   rest_api.coinbase_withdrawal(dollars, 'USD', ENV['CB_WALLET_ID'])
+# end
 
-def cb_deposit(dollars)
-  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
-  rest_api.coinbase_deposit(dollars, 'USD', ENV['CB_WALLET_ID'])
-end
+# def cb_deposit(dollars)
+#   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+#   rest_api.coinbase_deposit(dollars, 'USD', ENV['CB_WALLET_ID'])
+# end
 
-def cb_balance
-  rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
-  rest_api.coinbase_accounts.each do |cba|
-    return cba['balance'].to_f if cba['name'] == 'USD Wallet'
-  end
-end
+# def cb_balance
+#   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
+#   rest_api.coinbase_accounts.each do |cba|
+#     return cba['balance'].to_f if cba['name'] == 'USD Wallet'
+#   end
+# end
 
 def balLoop(seconds = 0)
   redis = Redis.new
