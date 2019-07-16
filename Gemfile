@@ -18,6 +18,7 @@ gem 'rubocop'
 gem 'rufus-scheduler'
 gem 'solargraph'
 gem 'tty'
+gem 'tty-prompt'
 gem 'zeitwerk', '~> 1.0.0.beta2'
 
 gem 'standard', group: %i[development test]
