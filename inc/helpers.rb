@@ -222,7 +222,7 @@ def balancePortfolioContinual(seconds = 0)
         redis.set('ETH_split', 0)
         redis.set('BCH_split', 0)
         redis.set('balanceLoop', 'false')
-        break
+        return og_seconds
       end
     end
   end
