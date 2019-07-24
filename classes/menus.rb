@@ -109,7 +109,7 @@ class Menus < GdaxBot
   def self.select_recent_order_menu(pair)
     puts 'Please wait, building menu.'
     orders = []
-    rest_api = Coinbase::Exchange::Client.new(
+    rest_api = Coinbase::Pro::Client.new(
       ENV['GDAX_TOKEN'],
       ENV['GDAX_SECRET'],
       ENV['GDAX_PW']
