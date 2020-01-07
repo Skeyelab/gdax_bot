@@ -69,6 +69,8 @@ def init_redis
   redis.set('ETH_split', 0.2) unless redis.get('ETH_split')
   redis.set('BCH_split', 0.2) unless redis.get('BCH_split')
   redis.set('XRP_split', 0.0) unless redis.get('XRP_split')
+
+  redis.set('XRP_min', 1) unless redis.get('XRP_min')
 end
 
 def bump_splits(bump = 0.01)
@@ -327,13 +329,13 @@ def balances
       elsif balnc['cur'] == 'XRP'
         balnc['BorS'] = if balnc['dif'].positive?
                           {
-                            'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0) > 10 ? format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0) : 0,
+                            'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0) > redis.get('XRP_min').to_i ? format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0) : 0,
                             'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(4) * 0.999).round_down(4),
                             'move' => 'buy'
                           }
                         else
                           {
-                            'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0) > 10 ? format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0) : 0,
+                            'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0) > redis.get('XRP_min').to_i ? format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0) : 0,
                             'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(4) * 1.001).round_down(4),
                             'move' => 'sell'
                           }
