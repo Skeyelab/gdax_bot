@@ -121,7 +121,9 @@ class Menus < GdaxBot
 
     rest_api.orders(status: 'done') do |resp|
       resp.each do |order|
-        orders << order if (order['product_id'] == pair) && (order['done_reason'] == 'filled') && (order['side'] == 'buy')
+        if (order['product_id'] == pair) && (order['done_reason'] == 'filled') && (order['side'] == 'buy')
+          orders << order
+        end
       end
     end
 

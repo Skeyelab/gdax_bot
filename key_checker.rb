@@ -5,7 +5,7 @@ require 'bundler'
 Bundler.require
 Dotenv.load
 system('clear')
-Dir['./inc/*.rb'].each { |file| require file }
+Dir['./inc/*.rb'].sort.each { |file| require file }
 # redis = Redis.new
 
 loop do

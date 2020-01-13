@@ -5,7 +5,7 @@ require 'bundler'
 Bundler.require
 Dotenv.load
 system('clear')
-Dir['./inc/*.rb'].each { |file| require file }
+Dir['./inc/*.rb'].sort.each { |file| require file }
 require 'zeitwerk'
 $loader = Zeitwerk::Loader.new
 $loader.push_dir('classes')
@@ -24,7 +24,10 @@ rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV[
 #   startWebserver
 # end
 
+
+
 begin
+  processCLI
   Menus.main_menu
 rescue SystemExit => e
   puts "Error: #{e}"

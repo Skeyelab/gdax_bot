@@ -122,7 +122,9 @@ def bal(pair = 'BTC-USD')
 
   rest_api.accounts do |resp|
     resp.each do |account|
-      return account.available.to_f.round_down(8) if account.currency == pair.split('-')[1]
+      if account.currency == pair.split('-')[1]
+        return account.available.to_f.round_down(8)
+      end
     end
   end
 end
@@ -136,7 +138,9 @@ def balanceInUsd(currency)
       # binding.pry
       spot = format('%.5f', redis.get("spot_#{currency}_USD")).to_f
       begin
-        return((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2) if account.currency == currency
+        if account.currency == currency
+          return((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2)
+        end
       rescue Exception => e
         puts e
         return 0
@@ -401,5 +405,25 @@ def cancel_orders(orders)
     end
   rescue Exception => e
     puts e
+  end
+end
+
+def parseARGV(switch)
+  (0...ARGV.length).each do |i|
+    return ARGV[i + 1] if ARGV[i] == switch
+  end
+end
+
+def processCLI
+  unless ARGV.empty?
+
+    case parseARGV '-f'
+    when 'balance', 'b'
+      redis = Redis.new
+      redis.set('balanceLoop', 'true')
+      balLoop (parseARGV '-s').to_i
+    else
+      binding.pry
+    end
   end
 end

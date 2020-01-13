@@ -139,7 +139,9 @@ def run_websocket
   EM.run do
     websocket.start!
     EM.add_periodic_timer(30) do
-      websocket.start! if (Time.now - Time.parse(redis.get('last_ws_message_time'))) > 30
+      if (Time.now - Time.parse(redis.get('last_ws_message_time'))) > 30
+        websocket.start!
+      end
     end
     EM.error_handler do |_e|
       sleep 1
