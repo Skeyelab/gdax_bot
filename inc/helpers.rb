@@ -64,11 +64,11 @@ def init_redis
   redis.set('spot_ZRX_BTC', 0) unless redis.get('spot_ZRX_BTC')
   redis.set('spot_XRP_USD', 0) unless redis.get('spot_XRP_USD')
 
-  redis.set('BTC_split', 0.2) unless redis.get('BTC_split')
-  redis.set('LTC_split', 0.2) unless redis.get('LTC_split')
-  redis.set('ETH_split', 0.2) unless redis.get('ETH_split')
-  redis.set('BCH_split', 0.2) unless redis.get('BCH_split')
-  redis.set('XRP_split', 0.0) unless redis.get('XRP_split')
+  # redis.set('BTC_split', 0.2) unless redis.get('BTC_split')
+  # redis.set('LTC_split', 0.2) unless redis.get('LTC_split')
+  # redis.set('ETH_split', 0.2) unless redis.get('ETH_split')
+  # redis.set('BCH_split', 0.2) unless redis.get('BCH_split')
+  # redis.set('XRP_split', 0.0) unless redis.get('XRP_split')
 
   redis.set('XRP_min', 1) unless redis.get('XRP_min')
 end
