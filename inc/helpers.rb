@@ -166,6 +166,13 @@ def totalBalanceInUsd
   (total + usd_bal).round_down(2)
 end
 
+def takeProfitTo(bottom)
+  if totalBalanceInUsd > bottom
+    withdrawal = totalBalanceInUsd - bottom
+    Cb.withdraw withdrawal.round(2)
+  end
+end
+
 # def cb_withdraw(dollars)
 #   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 #   rest_api.coinbase_withdrawal(dollars, 'USD', ENV['CB_WALLET_ID'])
