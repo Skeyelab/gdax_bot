@@ -71,8 +71,7 @@ def init_redis
   redis.set('XRP_split', 0.1) unless redis.get('XRP_split')
 
   redis.set('XRP_min', 1) unless redis.get('XRP_min')
-  redis.set('ProfitTo', 10000) unless redis.get('ProfitTo')
-
+  redis.set('ProfitTo', 10_000) unless redis.get('ProfitTo')
 end
 
 def bump_splits(bump = 0.01)
