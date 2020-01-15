@@ -5,5 +5,5 @@ redis = Redis.new
 
 scheduler.every '10m' do
   # puts "Taking profit to #{redis.get('ProfitTo')}"
-  # takeProfitTo redis.get('ProfitTo').to_f
+  takeProfitTo redis.get('ProfitTo').to_f
 end
