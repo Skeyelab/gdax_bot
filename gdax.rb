@@ -37,4 +37,5 @@ ensure
   web_socket_daemon.stop
   #  web_server_daemon.stop
   system('stty -raw echo')
+  system('rm .rufus-scheduler.lock')
 end
