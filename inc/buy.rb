@@ -10,16 +10,16 @@ def buy(pair, price, order_size)
 
   begin
     buy_order = rest_api.buy(order_size, price)
-    puts "buying".green + " #{order_size.abs} #{pair.chomp('-USD')} @ #{price} - #{Time.now}"
-    return buy_order
+    puts 'buying'.green + " #{order_size.abs} #{pair.chomp('-USD')} @ #{price} - #{Time.now} | #{Time.now.getgm}"
+    buy_order
   rescue Coinbase::Pro::NotFoundError => e
     if e.message == '{"message":"NotFound"}'
       puts 'Order not found'
       sleep 1
-      return buy_order
+      buy_order
     end
-  rescue StandardError => e
-    #puts e
+  rescue StandardError
+    # puts e
   end
   # binding.pry
 end

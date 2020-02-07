@@ -30,14 +30,12 @@ class Menus < GdaxBot
         trailing_stop_menu
       when 'balance_portfolio'
         show_splits
-        if !prompt.no?('Set splits?')
-          set_splits
-        end
+        set_splits unless prompt.no?('Set splits?')
         redis.set('balanceLoop', 'true')
         balLoop
       end
     end
-      end
+  end
 
   def self.show_splits
     redis = Redis.new
@@ -45,7 +43,8 @@ class Menus < GdaxBot
     puts 'LTC: ' + redis.get('LTC_split')
     puts 'ETH: ' + redis.get('ETH_split')
     puts 'BCH: ' + redis.get('BCH_split')
-    puts 'USD: ' + (1.0 - (redis.get('LTC_split').to_f + redis.get('BCH_split').to_f + redis.get('BTC_split').to_f + redis.get('ETH_split').to_f)).round(2).to_s
+    puts 'XRP: ' + redis.get('XRP_split')
+    puts 'USD: ' + (1.0 - (redis.get('LTC_split').to_f + redis.get('BCH_split').to_f + redis.get('BTC_split').to_f + redis.get('ETH_split').to_f + redis.get('XRP_split').to_f)).round(2).to_s
   end
 
   def self.set_splits
@@ -64,7 +63,8 @@ class Menus < GdaxBot
     bch_split = prompt.ask('BCH:', default: 0.2).to_f
     redis.set('BCH_split', bch_split)
 
-
+    xrp_split = prompt.ask('XRP:', default: 0.1).to_f
+    redis.set('XRP_split', xrp_split)
   end
 
   def self.trailing_stop_menu
@@ -113,7 +113,7 @@ class Menus < GdaxBot
   def self.select_recent_order_menu(pair)
     puts 'Please wait, building menu.'
     orders = []
-    rest_api = Coinbase::Exchange::Client.new(
+    rest_api = Coinbase::Pro::Client.new(
       ENV['GDAX_TOKEN'],
       ENV['GDAX_SECRET'],
       ENV['GDAX_PW']
@@ -121,7 +121,9 @@ class Menus < GdaxBot
 
     rest_api.orders(status: 'done') do |resp|
       resp.each do |order|
-        orders << order if (order['product_id'] == pair) && (order['done_reason'] == 'filled') && (order['side'] == 'buy')
+        if (order['product_id'] == pair) && (order['done_reason'] == 'filled') && (order['side'] == 'buy')
+          orders << order
+        end
       end
     end
 

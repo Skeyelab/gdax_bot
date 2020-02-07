@@ -9,8 +9,8 @@ def market_skim(times = 2, pair = 'ETH-BTC', percent_of_portfolio = 0.99, down =
     puts "Spot: #{spot}"
     begin
       open_position((spot.to_f - down).round_down(5), (spot.to_f + up).round_down(5), percent_of_portfolio, pair)
-    rescue StandardError => exception
-      puts exception
+    rescue StandardError => e
+      puts e
       break
     end
     sleep 1

@@ -12,9 +12,7 @@ console.rb
 
 
 jobs/*.json
-
+Gemfile.lock
 .rubocop.yml
 .rubocop_todo.yml
-Gemfile.lock
-Gemfile.lock
 *.lock
