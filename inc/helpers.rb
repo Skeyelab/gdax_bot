@@ -401,7 +401,7 @@ begin
     end
     # puts "You have #{resp.count} open orders."
   end
-rescue => Coinbase::Pro::RateLimitError
+rescue Coinbase::Pro::RateLimitError
   sleep 1
   retry
 end
