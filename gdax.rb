@@ -17,6 +17,7 @@ check_for_zombie_servers
 
 Rollbar.configure do |config|
   config.access_token = ENV['ROLLBAR_KEY']
+  config.logger_level = 'warn'
 end
 
 web_socket_daemon = Daemons.call(app_name: 'GDAX_Bot', backtrace: true, multiple: true) do
