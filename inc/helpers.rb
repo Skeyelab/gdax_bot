@@ -394,12 +394,19 @@ def orders
 
   orders = []
 
+begin
   rest_api.orders(status: 'open') do |resp|
     resp.each do |order|
       orders << order
     end
     # puts "You have #{resp.count} open orders."
   end
+rescue => Coinbase::Pro::RateLimitError
+  sleep 1
+  retry
+end
+  
+
 
   orders
 end
