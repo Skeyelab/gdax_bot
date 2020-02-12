@@ -6,7 +6,14 @@ begin
 
   scheduler.cron '*/3 * * * *' do
     if redis.get('takeProfits') == 'true'
-      takeProfitTo redis.get('ProfitTo').to_f
+
+      begin
+        takeProfitTo redis.get('ProfitTo').to_f
+      rescue StandardError => e
+        Rollbar.error(e)
+        raise e
+      end
+
     end
   end
 rescue Rufus::Scheduler::NotRunningError => e

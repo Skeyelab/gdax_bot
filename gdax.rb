@@ -15,6 +15,10 @@ init_env
 init_redis
 check_for_zombie_servers
 
+Rollbar.configure do |config|
+  config.access_token = ENV['ROLLBAR_KEY']
+end
+
 web_socket_daemon = Daemons.call(app_name: 'GDAX_Bot', backtrace: true, multiple: true) do
   run_websocket
 end

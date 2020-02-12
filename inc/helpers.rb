@@ -394,19 +394,18 @@ def orders
 
   orders = []
 
-begin
-  rest_api.orders(status: 'open') do |resp|
-    resp.each do |order|
-      orders << order
+  begin
+    rest_api.orders(status: 'open') do |resp|
+      resp.each do |order|
+        orders << order
+      end
+      # puts "You have #{resp.count} open orders."
     end
-    # puts "You have #{resp.count} open orders."
+  rescue StandardError => e # Never rescue Exception *unless* you re-raise in rescue body
+    Rollbar.error(e)
+    sleep 1
+    retry
   end
-rescue Coinbase::Pro::RateLimitError
-  sleep 1
-  retry
-end
-  
-
 
   orders
 end
@@ -421,8 +420,7 @@ def cancel_orders(orders)
           puts 'Order canceled successfully'
         end
       rescue StandardError => e
-        # puts e
-        # binding.pry
+        Rollbar.error(e)
         next
       end
     end
