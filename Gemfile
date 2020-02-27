@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
+gem 'bundler'
 gem 'coinbase'
 gem 'coinbase-pro', git: 'https://github.com/Skeyelab/coinbase-pro'
 gem 'colorize'
@@ -10,6 +11,7 @@ gem 'dotenv'
 gem 'eventmachine'
 gem 'gserver'
 gem 'moving_average'
+gem 'net_http_ssl_fix', require: 'net_http_ssl_fix'
 gem 'percentage'
 gem 'pry'
 gem 'pushover'

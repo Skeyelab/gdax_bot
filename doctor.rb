@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Usage: ruby doctor.rb [HOST=status.github.com[:PORT=443]]
 require 'rbconfig'
 require 'net/https'
@@ -14,13 +16,13 @@ ruby_version = RUBY_VERSION
 if patch = RbConfig::CONFIG['PATCHLEVEL']
   ruby_version += "-p#{patch}"
 end
-puts "%s (%s)" % [ruby, ruby_version]
+puts format('%s (%s)', ruby, ruby_version)
 
 openssl_dir = OpenSSL::X509::DEFAULT_CERT_AREA
-mac_openssl = '/System/Library/OpenSSL' == openssl_dir
-puts "%s: %s" % [OpenSSL::OPENSSL_VERSION, openssl_dir]
+mac_openssl = openssl_dir == '/System/Library/OpenSSL'
+puts format('%s: %s', OpenSSL::OPENSSL_VERSION, openssl_dir)
 [OpenSSL::X509::DEFAULT_CERT_DIR_ENV, OpenSSL::X509::DEFAULT_CERT_FILE_ENV].each do |key|
-  puts "%s=%s" % [key, ENV[key].to_s.inspect]
+  puts format('%s=%s', key, ENV[key].to_s.inspect)
 end
 
 ca_file = ENV[OpenSSL::X509::DEFAULT_CERT_FILE_ENV] || OpenSSL::X509::DEFAULT_CERT_FILE
@@ -46,9 +48,9 @@ if mac_openssl
   # cert verification fail for requests that would otherwise be successful.
 else
   http.verify_callback = lambda { |verify_ok, store_context|
-    if !verify_ok
+    unless verify_ok
       failed_cert = store_context.current_cert
-      failed_cert_reason = "%d: %s" % [ store_context.error, store_context.error_string ]
+      failed_cert_reason = format('%d: %s', store_context.error, store_context.error_string)
     end
     verify_ok
   }
@@ -60,9 +62,9 @@ req = Net::HTTP::Head.new('/', 'user-agent' => user_agent)
 begin
   res = http.start { http.request(req) }
   abort res.inspect if res.code.to_i >= 500
-  puts "OK"
+  puts 'OK'
 rescue Errno::ECONNREFUSED
-  puts "Error: connection refused"
+  puts 'Error: connection refused'
   exit 1
 rescue OpenSSL::SSL::SSLError => e
   puts "#{e.class}: #{e.message}"
@@ -71,7 +73,7 @@ rescue OpenSSL::SSL::SSLError => e
     puts "\nThe server presented a certificate that could not be verified:"
     puts "  subject: #{failed_cert.subject}"
     puts "  issuer: #{failed_cert.issuer}"
-    puts "  error code %s" % failed_cert_reason
+    puts '  error code %s' % failed_cert_reason
   end
 
   ca_file_missing = !File.exist?(ca_file) && !mac_openssl

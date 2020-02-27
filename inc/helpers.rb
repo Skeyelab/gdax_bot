@@ -345,7 +345,7 @@ def balances
                             'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1.001).round_down(2),
                             'move' => 'sell'
                           }
-        end
+                        end
       elsif balnc['cur'] == 'XRP'
         balnc['BorS'] = if balnc['dif'].positive?
                           {
@@ -359,7 +359,7 @@ def balances
                             'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(4) * 1.001).round_down(4),
                             'move' => 'sell'
                           }
-        end
+                        end
       end
     end
     balsWPercents << balnc
