@@ -419,6 +419,8 @@ def cancel_orders(orders)
         rest_api.cancel(order.id) do
           puts 'Order canceled successfully'
         end
+      rescue Coinbase::Pro::NotFoundError
+        next
       rescue StandardError => e
         Rollbar.error(e)
         next
