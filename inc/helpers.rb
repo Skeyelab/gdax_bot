@@ -221,7 +221,8 @@ def balancePortfolioContinual(seconds = 0)
   # loop do
   orderz = balancePortfolio
 
-  seconds = seconds.to_i * 3 if orderz.count > 0
+  #seconds = seconds.to_i * 3 if orderz.count > 0
+  seconds = 15 if orderz.count > 0
 
   # binding.pry
   # print "\r"
