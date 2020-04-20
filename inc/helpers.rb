@@ -259,7 +259,13 @@ def balancePortfolioContinual(seconds = 0)
 end
 
 def balancePortfolio
-  b = balances
+  begin
+    b = balances
+  rescue => exception
+    puts exception
+    sleep 1
+    retry
+  end
   return [] if orders.count != 0
 
   orderz = []
