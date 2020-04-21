@@ -20,7 +20,6 @@ def buy(pair, price, order_size)
       buy_order
     end
   rescue Coinbase::Pro::BadRequestError => e
-    
   rescue StandardError => e
     Raven.capture_exception(e)
     # puts e
