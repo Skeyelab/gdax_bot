@@ -163,6 +163,7 @@ def totalBalanceInUsd
 
       spot = format('%.5f', redis.get("spot_#{account.currency}_USD")).to_f
       total += ((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2)
+    rescue TypeError => e
     rescue Exception => e
       Raven.capture_exception(e)
       # puts e
