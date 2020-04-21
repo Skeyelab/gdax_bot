@@ -19,6 +19,7 @@ def buy(pair, price, order_size)
       sleep 1
       buy_order
     end
+  rescue Coinbase::Pro::RateLimitError => e
   rescue Coinbase::Pro::BadRequestError => e
     Raven.capture_exception(e) unless e.message.include? 'size'
   rescue StandardError => e
