@@ -13,12 +13,14 @@ def sell2(pair, price, order_size)
     puts 'selling'.red + " #{order_size.abs} #{pair.chomp('-USD')} @ #{price} - #{Time.now} | #{Time.now.getgm}"
     sell_order
   rescue Coinbase::Pro::NotFoundError => e
+    Raven.capture_exception(e)
     if e.message == '{"message":"NotFound"}'
       puts 'Order not found'
       sleep 1
       sell_order
     end
   rescue StandardError => e
+    Raven.capture_exception(e)
     # puts e
   end
   # binding.pry

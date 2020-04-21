@@ -10,12 +10,13 @@ begin
       begin
         takeProfitTo redis.get('ProfitTo').to_f
       rescue StandardError => e
-        Rollbar.error(e)
+        Raven.capture_exception(e)
         raise e
       end
 
     end
   end
 rescue Rufus::Scheduler::NotRunningError => e
+  Raven.capture_exception(e)
   puts 'scheduler already running'
 end

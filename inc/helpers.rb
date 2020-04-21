@@ -49,6 +49,7 @@ def init_redis
   begin
     redis = Redis.new
   rescue StandardError => e
+    Raven.capture_exception(e)
     puts e
   end
 
@@ -144,6 +145,7 @@ def balanceInUsd(currency)
           return((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2)
         end
       rescue Exception => e
+        Raven.capture_exception(e)
         puts e
         return 0
       end
@@ -162,6 +164,7 @@ def totalBalanceInUsd
       spot = format('%.5f', redis.get("spot_#{account.currency}_USD")).to_f
       total += ((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2)
     rescue Exception => e
+      Raven.capture_exception(e)
       # puts e
     end
   end
@@ -409,7 +412,7 @@ def orders
       # puts "You have #{resp.count} open orders."
     end
   rescue StandardError => e # Never rescue Exception *unless* you re-raise in rescue body
-    Rollbar.error(e)
+    Raven.capture_exception(e)
     sleep 1
     retry
   end
@@ -426,14 +429,16 @@ def cancel_orders(orders)
         rest_api.cancel(order.id) do
           puts 'Order canceled successfully'
         end
-      rescue Coinbase::Pro::NotFoundError
+      rescue Coinbase::Pro::NotFoundError => e
+        Raven.capture_exception(e)
         next
       rescue StandardError => e
-        Rollbar.error(e)
+        Raven.capture_exception(e)
         next
       end
     end
   rescue Exception => e
+    Raven.capture_exception(e)
     puts e
   end
 end

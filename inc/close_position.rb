@@ -23,12 +23,14 @@ def close_position(order, price)
       watch_order sell_order
       return
     rescue Coinbase::Pro::NotFoundError => e
+      Raven.capture_exception(e)
       if e.message == '{"message":"NotFound"}'
         puts 'Order not found'
         sleep 1
         return
       end
     rescue StandardError => e
+      Raven.capture_exception(e)
       puts e
       # binding.pry
     end

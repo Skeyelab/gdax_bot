@@ -13,12 +13,14 @@ def buy(pair, price, order_size)
     puts 'buying'.green + " #{order_size.abs} #{pair.chomp('-USD')} @ #{price} - #{Time.now} | #{Time.now.getgm}"
     buy_order
   rescue Coinbase::Pro::NotFoundError => e
+    Raven.capture_exception(e)
     if e.message == '{"message":"NotFound"}'
       puts 'Order not found'
       sleep 1
       buy_order
     end
-  rescue StandardError
+  rescue StandardError => e
+    Raven.capture_exception(e)
     # puts e
   end
   # binding.pry

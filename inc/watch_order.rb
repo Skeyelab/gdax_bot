@@ -44,6 +44,7 @@ def watch_order(order)
       spinner.spin
     end
   rescue Coinbase::Pro::NotFoundError => e
+    Raven.capture_exception(e)
     if e.message == '{"message":"NotFound"}'
       system('stty -raw echo')
       spinner.error('Order not found')
@@ -51,6 +52,7 @@ def watch_order(order)
       return false
     end
   rescue StandardError => e
+    Raven.capture_exception(e)
     # puts "Error, retrying"
     # puts e
     sleep 1
