@@ -431,7 +431,6 @@ def cancel_orders(orders)
           puts 'Order canceled successfully'
         end
       rescue Coinbase::Pro::NotFoundError => e
-        Raven.capture_exception(e)
         next
       rescue StandardError => e
         Raven.capture_exception(e)
