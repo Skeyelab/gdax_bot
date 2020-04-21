@@ -20,6 +20,7 @@ def sell2(pair, price, order_size)
       sell_order
     end
   rescue Coinbase::Pro::BadRequestError => e
+    puts e.message
   rescue StandardError => e
     Raven.capture_exception(e)
     # puts e
