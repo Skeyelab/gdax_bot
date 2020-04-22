@@ -97,11 +97,20 @@ end
 
 def usd_bal
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
-
-  rest_api.accounts do |resp|
-    resp.each do |account|
-      return account.available.to_f - 0.01 if account.currency == 'USD'
+  begin
+    rest_api.accounts do |resp|
+      resp.each do |account|
+        return account.available.to_f - 0.01 if account.currency == 'USD'
+      end
     end
+  rescue Coinbase::Pro::RateLimitError => e
+    sleep 1
+    retry
+  rescue Coinbase::Pro::BadRequestError => e
+    Raven.capture_exception(e) unless e.message.include? 'size'
+  rescue StandardError => e
+    Raven.capture_exception(e)
+    # puts e
   end
 end
 
