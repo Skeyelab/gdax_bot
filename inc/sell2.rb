@@ -28,5 +28,4 @@ def sell2(pair, price, order_size)
     Raven.capture_exception(e)
     # puts e
   end
-
 end
