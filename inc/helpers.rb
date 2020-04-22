@@ -153,6 +153,9 @@ def balanceInUsd(currency)
         if account.currency == currency
           return((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2)
         end
+      rescue Coinbase::Pro::RateLimitError => e
+        sleep 1
+        retry
       rescue Exception => e
         Raven.capture_exception(e)
         puts e
