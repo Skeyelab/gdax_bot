@@ -147,7 +147,6 @@ def balanceInUsd(currency)
 
   rest_api.accounts do |resp|
     resp.each do |account|
-      # binding.pry
       spot = format('%.5f', redis.get("spot_#{currency}_USD")).to_f
       begin
         if account.currency == currency
@@ -171,11 +170,11 @@ def totalBalanceInUsd
   total = 0
   rest_api.accounts do |resp|
     resp.each do |account|
-      # binding.pry
-
       spot = format('%.5f', redis.get("spot_#{account.currency}_USD")).to_f
       total += ((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2)
-    rescue TypeError => e
+    rescue TypeError, Net::OpenTimeout => e
+      sleep 1
+      retry
     rescue Exception => e
       Raven.capture_exception(e)
       # puts e
