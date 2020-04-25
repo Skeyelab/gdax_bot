@@ -19,6 +19,5 @@ begin
     end
   end
 rescue Rufus::Scheduler::NotRunningError => e
-  Raven.capture_exception(e)
   puts 'scheduler already running'
 end
