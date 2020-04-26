@@ -179,6 +179,7 @@ def totalBalanceInUsd
     rescue Net::OpenTimeout => e
       sleep 1
       retry
+    rescue TypeError
     rescue Exception => e
       Raven.capture_exception(e)
       # puts e
