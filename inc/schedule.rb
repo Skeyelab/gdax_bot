@@ -4,9 +4,9 @@ begin
   scheduler = Rufus::Scheduler.new(lockfile: '.rufus-scheduler.lock')
   redis = Redis.new
 
-  scheduler.every '30m' do
-    $loader.reload
-  end
+  # scheduler.every '30m' do
+  #   $loader.reload
+  # end
 
   scheduler.cron '*/3 * * * *' do
     if redis.get('takeProfits') == 'true'
