@@ -23,7 +23,12 @@ def sell2(pair, price, order_size)
     sleep 1
     retry
   rescue Coinbase::Pro::BadRequestError => e
-    Raven.capture_exception(e) unless e.message.include? 'size'
+    if e.message == 'Insufficient funds'
+      sleep 1
+      retry
+    else
+      Raven.capture_exception(e) unless e.message.include? 'size'
+    end
   rescue StandardError => e
     Raven.capture_exception(e)
     # puts e
