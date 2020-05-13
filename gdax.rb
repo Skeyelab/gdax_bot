@@ -3,6 +3,7 @@
 require 'rubygems'
 require 'bundler'
 Bundler.require
+
 Dotenv.load
 system('clear')
 Dir['./inc/*.rb'].sort.each { |file| require file }
