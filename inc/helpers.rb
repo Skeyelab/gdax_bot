@@ -166,8 +166,13 @@ def balanceInUsd(currency)
       end
     end
   rescue Coinbase::Pro::BadRequestError => e
-    Raven.capture_exception(e) unless e.message == 'request timestamp expired'
-  end
+    if e.message == 'request timestamp expired'
+      sleep 1 
+      retry
+    else 
+      Raven.capture_exception(e)
+    end
+    end
 end
 
 def totalBalanceInUsd
@@ -426,6 +431,14 @@ def orders
       end
       # puts "You have #{resp.count} open orders."
     end
+  rescue Coinbase::Pro::BadRequestError => e
+    if e.message == 'request timestamp expired'
+      sleep 1 
+      retry
+    else 
+      Raven.capture_exception(e)
+    end
+  end
   rescue StandardError => e # Never rescue Exception *unless* you re-raise in rescue body
     Raven.capture_exception(e)
     sleep 1
