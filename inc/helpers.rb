@@ -161,9 +161,8 @@ def balanceInUsd(currency)
         end
       end
     end
-  rescue Exception => e
-    Raven.capture_exception(e)
-    puts e
+  rescue Coinbase::Pro::BadRequestError => e
+    Raven.capture_exception(e) unless e.message == 'request timestamp expired'
   end
 end
 
