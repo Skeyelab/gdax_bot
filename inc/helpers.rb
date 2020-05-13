@@ -134,9 +134,7 @@ def bal(pair = 'BTC-USD')
 
   rest_api.accounts do |resp|
     resp.each do |account|
-      if account.currency == pair.split('-')[1]
-        return account.available.to_f.round_down(8)
-      end
+      return account.available.to_f.round_down(8) if account.currency == pair.split('-')[1]
     end
   end
 end
@@ -145,26 +143,27 @@ def balanceInUsd(currency)
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   redis = Redis.new
 
-  rest_api.accounts do |resp|
-    resp.each do |account|
-      spot = format('%.5f', redis.get("spot_#{currency}_USD")).to_f
-      begin
-        if account.currency == currency
-          return((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2)
-        end
-      rescue Coinbase::Pro::RateLimitError, Net::OpenTimeout => e
-        sleep 1
-        retry
-      rescue Coinbase::Pro::BadRequestError => e
-        unless e.message == 'request timestamp expired'
+  begin
+    rest_api.accounts do |resp|
+      resp.each do |account|
+        spot = format('%.5f', redis.get("spot_#{currency}_USD")).to_f
+        begin
+          return((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2) if account.currency == currency
+        rescue Coinbase::Pro::RateLimitError, Net::OpenTimeout => e
+          sleep 1
+          retry
+        rescue Coinbase::Pro::BadRequestError => e
+          Raven.capture_exception(e) unless e.message == 'request timestamp expired'
+        rescue Exception => e
           Raven.capture_exception(e)
+          puts e
+          return 0
         end
-      rescue Exception => e
-        Raven.capture_exception(e)
-        puts e
-        return 0
       end
     end
+  rescue Exception => e
+    Raven.capture_exception(e)
+    puts e
   end
 end
 
@@ -221,9 +220,7 @@ end
 
 def balLoop(seconds = 0)
   redis = Redis.new
-  while redis.get('balanceLoop') == 'true'
-    seconds = balancePortfolioContinual(seconds)
-  end
+  seconds = balancePortfolioContinual(seconds) while redis.get('balanceLoop') == 'true'
 end
 
 def balancePortfolioContinual(seconds = 0)
@@ -231,9 +228,7 @@ def balancePortfolioContinual(seconds = 0)
   redis = Redis.new
 
   prompt = TTY::Prompt.new
-  if seconds == 0
-    seconds = prompt.ask('How many often? (seconds): ', default: 900)
-  end
+  seconds = prompt.ask('How many often? (seconds): ', default: 900) if seconds == 0
   og_seconds = seconds
 
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
@@ -290,16 +285,16 @@ def balancePortfolio
 
   orderz = []
   b.each do |balnc|
-    if balnc['cur'] != 'USD'
-      # binding.pry
-      if balnc['BorS']['move'] == 'buy'
-        #        puts "buying #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
-        orderz << buy(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
-      else
-        #        puts "selling #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
-        orderz << sell2(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
-      end
-    end
+    next unless balnc['cur'] != 'USD'
+
+    # binding.pry
+    orderz << if balnc['BorS']['move'] == 'buy'
+                #        puts "buying #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
+                buy(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
+              else
+                #        puts "selling #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
+                sell2(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
+              end
   end
   orderz.compact
 end
