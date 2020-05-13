@@ -155,6 +155,10 @@ def balanceInUsd(currency)
       rescue Coinbase::Pro::RateLimitError, Net::OpenTimeout => e
         sleep 1
         retry
+      rescue Coinbase::Pro::BadRequestError => e
+        unless e.message == 'request timestamp expired'
+          Raven.capture_exception(e)
+        end
       rescue Exception => e
         Raven.capture_exception(e)
         puts e
@@ -172,9 +176,10 @@ def totalBalanceInUsd
     resp.each do |account|
       spot = format('%.5f', redis.get("spot_#{account.currency}_USD")).to_f
       total += ((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2)
-    rescue TypeError, Net::OpenTimeout => e
+    rescue Net::OpenTimeout => e
       sleep 1
       retry
+    rescue TypeError
     rescue Exception => e
       Raven.capture_exception(e)
       # puts e
