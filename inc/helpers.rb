@@ -132,10 +132,14 @@ end
 def bal(pair = 'BTC-USD')
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
 
-  rest_api.accounts do |resp|
-    resp.each do |account|
-      return account.available.to_f.round_down(8) if account.currency == pair.split('-')[1]
+  begin
+    rest_api.accounts do |resp|
+      resp.each do |account|
+        return account.available.to_f.round_down(8) if account.currency == pair.split('-')[1]
+      end
     end
+  rescue Coinbase::Pro::BadRequestError => e
+    Raven.capture_exception(e) unless e.message == 'request timestamp expired'
   end
 end
 
