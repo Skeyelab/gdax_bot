@@ -139,7 +139,12 @@ def bal(pair = 'BTC-USD')
       end
     end
   rescue Coinbase::Pro::BadRequestError => e
-    Raven.capture_exception(e) unless e.message == 'request timestamp expired'
+    if e.message == 'request timestamp expired'
+      sleep 1
+      retry
+    else
+      Raven.capture_exception(e)
+    end
   end
 end
 
@@ -148,23 +153,23 @@ def balanceInUsd(currency)
   redis = Redis.new
 
   begin
-      rest_api.accounts do |resp|
-        resp.each do |account|
-          spot = format('%.5f', redis.get("spot_#{currency}_USD")).to_f
-          begin
-            return((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2) if account.currency == currency
-          rescue Coinbase::Pro::RateLimitError, Net::OpenTimeout => e
-            sleep 1
-            retry
-          rescue Coinbase::Pro::BadRequestError => e
-            Raven.capture_exception(e) unless e.message == 'request timestamp expired'
-          rescue Exception => e
-            Raven.capture_exception(e)
-            puts e
-            return 0
-          end
+    rest_api.accounts do |resp|
+      resp.each do |account|
+        spot = format('%.5f', redis.get("spot_#{currency}_USD")).to_f
+        begin
+          return((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2) if account.currency == currency
+        rescue Coinbase::Pro::RateLimitError, Net::OpenTimeout => e
+          sleep 1
+          retry
+        rescue Coinbase::Pro::BadRequestError => e
+          Raven.capture_exception(e) unless e.message == 'request timestamp expired'
+        rescue Exception => e
+          Raven.capture_exception(e)
+          puts e
+          return 0
         end
       end
+    end
   rescue Coinbase::Pro::BadRequestError => e
     if e.message == 'request timestamp expired'
       sleep 1
@@ -172,7 +177,7 @@ def balanceInUsd(currency)
     else
       Raven.capture_exception(e)
     end
-    end
+  end
 end
 
 def totalBalanceInUsd
