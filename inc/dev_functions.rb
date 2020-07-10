@@ -81,7 +81,7 @@ def view_websocket
   redis = Redis.new
 
   loop do
-    puts format('$%.2f', redis.get('spot_BTC_USD')) + ' | ' + format('$%.2f', redis.get('spot_ETH_USD')) + ' | ' + format('$%.2f', redis.get('spot_LTC_USD')) + ' | ' + format('Ƀ%.5f', redis.get('spot_ETH_BTC')) + ' | ' + format('Ƀ%.5f', redis.get('spot_LTC_BTC')) + ' | ' + format('$%.2f', redis.get('spot_BCH_USD')) + ' | ' + format('$%.4f', redis.get('spot_XRP_USD')) + ' | ' + format('Ƀ%.5f', redis.get('spot_BCH_BTC')) + ' | ' + format('Ƀ%.5f', redis.get('spot_ETC_BTC')) + ' | ' + format('Ƀ%.8f', redis.get('spot_ZRX_BTC'))
+    puts format('$%.2f', redis.get('spot_BTC_USD')) + ' | ' + format('$%.2f', redis.get('spot_ETH_USD')) + ' | ' + format('$%.2f', redis.get('spot_LTC_USD')) + ' | ' + format('Ƀ%.5f', redis.get('spot_ETH_BTC')) + ' | ' + format('Ƀ%.5f', redis.get('spot_LTC_BTC')) + ' | ' + format('$%.2f', redis.get('spot_BCH_USD')) + ' | ' + format('$%.4f', redis.get('spot_XRP_USD')) + ' | ' + format('Ƀ%.5f', redis.get('spot_BCH_BTC')) + ' | ' + format('Ƀ%.5f', redis.get('spot_ETC_BTC')) + ' | ' + format('Ƀ%.8f', redis.get('spot_ZRX_BTC')) + ' | ' + format('$%.5f', redis.get('spot_LINK_USD'))
     sleep 1.0 / 20
     k = GetKey.getkey
     system('stty -raw echo')
@@ -129,6 +129,9 @@ def run_websocket
       # p "LTC Spot Rate: $ %.2f" % resp.price
     when 'ZRX-BTC'
       redis.set('spot_ZRX_BTC', resp.price)
+      # p "LTC Spot Rate: $ %.2f" % resp.price
+    when 'LINK-USD'
+      redis.set('spot_LINK_USD', resp.price)
       # p "LTC Spot Rate: $ %.2f" % resp.price
     end
     sleep 1.0 / 1000
