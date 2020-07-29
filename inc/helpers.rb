@@ -207,6 +207,7 @@ def takeProfitTo(bottom)
   if totalBalanceInUsd > bottom
     withdrawal = totalBalanceInUsd - bottom
     Cb.withdraw withdrawal.round(2)
+	  puts ""
 	puts "withdrew $ #{withdrawal.round(2)}"
   end
 end
