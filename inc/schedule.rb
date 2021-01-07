@@ -9,7 +9,7 @@ begin
   # end
 
 #  scheduler.cron '*/3 * * * *' do
-scheduler.every '10s' do
+scheduler.every '2s' do
     if redis.get('takeProfits') == 'true'
       begin
         takeProfitTo redis.get('ProfitTo').to_f
