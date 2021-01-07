@@ -53,7 +53,9 @@ def select_recent_order_menu(pair)
   )
 
   rest_api.orders(status: 'done') do |resp|
+    sleep 1
     resp.each do |order|
+      sleep 1
       if (order['product_id'] == pair) && (order['done_reason'] == 'filled') && (order['side'] == 'buy')
         orders << order
       end
