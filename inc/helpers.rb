@@ -208,7 +208,7 @@ def takeProfitTo(bottom)
     withdrawal = totalBalanceInUsd - bottom
     Cb.withdraw withdrawal.round(2)
 	  puts ""
-	puts "withdrew $ #{withdrawal.round(2)}"
+	puts "withdrew $ #{withdrawal.round(2)} - #{Time.now} | #{Time.now.getgm}"
   end
 end
 
