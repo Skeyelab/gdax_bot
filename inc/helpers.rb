@@ -63,17 +63,17 @@ def init_redis
   redis.set('spot_ETC_BTC', 0) unless redis.get('spot_ETC_BTC')
   redis.set('spot_ETC_USD', 0) unless redis.get('spot_ETC_USD')
   redis.set('spot_ZRX_BTC', 0) unless redis.get('spot_ZRX_BTC')
-  redis.set('spot_XRP_USD', 0) unless redis.get('spot_XRP_USD')
+  #redis.set('spot_XRP_USD', 0) unless redis.get('spot_XRP_USD')
   redis.set('spot_LINK_USD', 0) unless redis.get('spot_LINK_USD')
 
   redis.set('BTC_split', 0.1) unless redis.get('BTC_split')
   redis.set('LTC_split', 0.1) unless redis.get('LTC_split')
   redis.set('ETH_split', 0.1) unless redis.get('ETH_split')
   redis.set('BCH_split', 0.1) unless redis.get('BCH_split')
-  redis.set('XRP_split', 0.1) unless redis.get('XRP_split')
+  #redis.set('XRP_split', 0.1) unless redis.get('XRP_split')
   redis.set('LINK_split', 0.0) unless redis.get('LINK_split')
 
-  redis.set('XRP_min', 5) unless redis.get('XRP_min')
+  #redis.set('XRP_min', 5) unless redis.get('XRP_min')
   redis.set('ProfitTo', 10_000) unless redis.get('ProfitTo')
   redis.set('takeProfits', 'false') unless redis.get('takeProfits')
 end
@@ -84,7 +84,7 @@ def bump_splits(bump = 0.01)
   redis.set('LTC_split', redis.get('LTC_split').to_f + bump)
   redis.set('ETH_split', redis.get('ETH_split').to_f + bump)
   redis.set('BCH_split', redis.get('BCH_split').to_f + bump)
-  redis.set('XRP_split', redis.get('XRP_split').to_f + bump)
+  #redis.set('XRP_split', redis.get('XRP_split').to_f + bump)
   redis.set('LINK_split', redis.get('LINK_split').to_f + bump)
 end
 
@@ -279,7 +279,7 @@ def balancePortfolioContinual(seconds = 0)
         redis.set('LTC_split', 0)
         redis.set('ETH_split', 0)
         redis.set('BCH_split', 0)
-        redis.set('XRP_split', 0)
+        #redis.set('XRP_split', 0)
         redis.set('LINK_split', 0)
         redis.set('balanceLoop', 'true')
         return og_seconds
@@ -340,10 +340,10 @@ def balances
       'cur' => 'ETH',
       'split' => redis.get('ETH_split').to_f
     },
-    {
-      'cur' => 'XRP',
-      'split' => redis.get('XRP_split').to_f
-    },
+    # {
+    #   'cur' => 'XRP',
+    #   'split' => redis.get('XRP_split').to_f
+    # },
     {
       'cur' => 'LINK',
       'split' => redis.get('LINK_split').to_f
@@ -364,7 +364,7 @@ def balances
   balncs << {
     'cur' => 'USD',
     'bal' => bal.round_down(2),
-    'split' => 1 - (redis.get('LTC_split').to_f + redis.get('BCH_split').to_f + redis.get('BTC_split').to_f + redis.get('ETH_split').to_f + redis.get('XRP_split').to_f + redis.get('LINK_split').to_f)
+    'split' => 1 - (redis.get('LTC_split').to_f + redis.get('BCH_split').to_f + redis.get('BTC_split').to_f + redis.get('ETH_split').to_f + redis.get('LINK_split').to_f)
   }
   total += bal.round_down(2)
   # binding.pry

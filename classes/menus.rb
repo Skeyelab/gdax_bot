@@ -43,9 +43,9 @@ class Menus < GdaxBot
     puts 'LTC: ' + redis.get('LTC_split')
     puts 'ETH: ' + redis.get('ETH_split')
     puts 'BCH: ' + redis.get('BCH_split')
-    puts 'XRP: ' + redis.get('XRP_split')
+    #puts 'XRP: ' + redis.get('XRP_split')
     puts 'LINK: ' + redis.get('LINK_split')
-    puts 'USD: ' + (1.0 - (redis.get('LTC_split').to_f + redis.get('BCH_split').to_f + redis.get('BTC_split').to_f + redis.get('ETH_split').to_f + redis.get('XRP_split').to_f + redis.get('LINK_split').to_f)).round(2).to_s
+    puts 'USD: ' + (1.0 - (redis.get('LTC_split').to_f + redis.get('BCH_split').to_f + redis.get('BTC_split').to_f + redis.get('ETH_split').to_f + redis.get('LINK_split').to_f)).round(2).to_s
   end
 
   def self.set_splits
@@ -64,8 +64,8 @@ class Menus < GdaxBot
     bch_split = prompt.ask('BCH:', default: 0.2).to_f
     redis.set('BCH_split', bch_split)
 
-    xrp_split = prompt.ask('XRP:', default: 0.1).to_f
-    redis.set('XRP_split', xrp_split)
+    # xrp_split = prompt.ask('XRP:', default: 0.1).to_f
+    # redis.set('XRP_split', xrp_split)
 
     link_split = prompt.ask('LINK:', default: 0.0).to_f
     redis.set('LINK_split', link_split)
