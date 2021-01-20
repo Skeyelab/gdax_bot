@@ -63,17 +63,17 @@ def init_redis
   redis.set('spot_ETC_BTC', 0) unless redis.get('spot_ETC_BTC')
   redis.set('spot_ETC_USD', 0) unless redis.get('spot_ETC_USD')
   redis.set('spot_ZRX_BTC', 0) unless redis.get('spot_ZRX_BTC')
-  #redis.set('spot_XRP_USD', 0) unless redis.get('spot_XRP_USD')
+  # redis.set('spot_XRP_USD', 0) unless redis.get('spot_XRP_USD')
   redis.set('spot_LINK_USD', 0) unless redis.get('spot_LINK_USD')
 
   redis.set('BTC_split', 0.1) unless redis.get('BTC_split')
   redis.set('LTC_split', 0.1) unless redis.get('LTC_split')
   redis.set('ETH_split', 0.1) unless redis.get('ETH_split')
   redis.set('BCH_split', 0.1) unless redis.get('BCH_split')
-  #redis.set('XRP_split', 0.1) unless redis.get('XRP_split')
+  # redis.set('XRP_split', 0.1) unless redis.get('XRP_split')
   redis.set('LINK_split', 0.0) unless redis.get('LINK_split')
 
-  #redis.set('XRP_min', 5) unless redis.get('XRP_min')
+  # redis.set('XRP_min', 5) unless redis.get('XRP_min')
   redis.set('ProfitTo', 10_000) unless redis.get('ProfitTo')
   redis.set('takeProfits', 'false') unless redis.get('takeProfits')
 end
@@ -84,7 +84,7 @@ def bump_splits(bump = 0.01)
   redis.set('LTC_split', redis.get('LTC_split').to_f + bump)
   redis.set('ETH_split', redis.get('ETH_split').to_f + bump)
   redis.set('BCH_split', redis.get('BCH_split').to_f + bump)
-  #redis.set('XRP_split', redis.get('XRP_split').to_f + bump)
+  # redis.set('XRP_split', redis.get('XRP_split').to_f + bump)
   redis.set('LINK_split', redis.get('LINK_split').to_f + bump)
 end
 
@@ -138,7 +138,9 @@ def bal(pair = 'BTC-USD')
   begin
     rest_api.accounts do |resp|
       resp.each do |account|
-        return account.available.to_f.round_down(8) if account.currency == pair.split('-')[1]
+        if account.currency == pair.split('-')[1]
+          return account.available.to_f.round_down(8)
+        end
       end
     end
   rescue Coinbase::Pro::BadRequestError => e
@@ -160,12 +162,16 @@ def balanceInUsd(currency)
       resp.each do |account|
         spot = format('%.5f', redis.get("spot_#{currency}_USD")).to_f
         begin
-          return((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2) if account.currency == currency
+          if account.currency == currency
+            return((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2)
+          end
         rescue Coinbase::Pro::RateLimitError, Net::OpenTimeout => e
           sleep 1
           retry
         rescue Coinbase::Pro::BadRequestError => e
-          Raven.capture_exception(e) unless e.message == 'request timestamp expired'
+          unless e.message == 'request timestamp expired'
+            Raven.capture_exception(e)
+          end
         rescue Exception => e
           Raven.capture_exception(e)
           puts e
@@ -207,8 +213,8 @@ def takeProfitTo(bottom)
   if totalBalanceInUsd > bottom
     withdrawal = totalBalanceInUsd - bottom
     Cb.withdraw withdrawal.round(2)
-	  puts ""
-	puts "withdrew $ #{withdrawal.round(2)} - #{Time.now} | #{Time.now.getgm}"
+    puts ''
+    puts "withdrew $ #{withdrawal.round(2)} - #{Time.now} | #{Time.now.getgm}"
   end
 end
 
@@ -246,7 +252,9 @@ def balancePortfolioContinual(seconds = 0)
   redis = Redis.new
 
   prompt = TTY::Prompt.new
-  seconds = prompt.ask('How many often? (seconds): ', default: 900) if seconds == 0
+  if seconds == 0
+    seconds = prompt.ask('How many often? (seconds): ', default: 900)
+  end
   og_seconds = seconds
 
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
@@ -279,7 +287,7 @@ def balancePortfolioContinual(seconds = 0)
         redis.set('LTC_split', 0)
         redis.set('ETH_split', 0)
         redis.set('BCH_split', 0)
-        #redis.set('XRP_split', 0)
+        # redis.set('XRP_split', 0)
         redis.set('LINK_split', 0)
         redis.set('balanceLoop', 'true')
         return og_seconds

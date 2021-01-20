@@ -43,7 +43,7 @@ class Menus < GdaxBot
     puts 'LTC: ' + redis.get('LTC_split')
     puts 'ETH: ' + redis.get('ETH_split')
     puts 'BCH: ' + redis.get('BCH_split')
-    #puts 'XRP: ' + redis.get('XRP_split')
+    # puts 'XRP: ' + redis.get('XRP_split')
     puts 'LINK: ' + redis.get('LINK_split')
     puts 'USD: ' + (1.0 - (redis.get('LTC_split').to_f + redis.get('BCH_split').to_f + redis.get('BTC_split').to_f + redis.get('ETH_split').to_f + redis.get('LINK_split').to_f)).round(2).to_s
   end
