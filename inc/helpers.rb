@@ -127,8 +127,12 @@ def decimals(abc)
 end
 
 def showPotentialOrders
-  balances[0..5].each do |b|
-    puts b['BorS']['size'].to_f
+  balances[0..4].each do |b|
+    begin
+      puts b['BorS']['size'].to_f
+    rescue => exception
+      binding.pry
+    end
   end
 end
 
