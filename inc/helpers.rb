@@ -30,8 +30,8 @@ end
 def check_for_paused_job(type)
   if File.file?("jobs/paused_#{type}.json")
     file = File.read("jobs/paused_#{type}.json")
-    paused_job = JSON.parse(file)
-    paused_job
+    JSON.parse(file)
+
   else
     false
   end
@@ -92,7 +92,8 @@ def try_push_message(message, title, sound = 'none')
   if ENV['PUSHOVER_USER'] == ''
     false
   else
-    message = Pushover::Message.create(message: message, title: title, user: ENV['PUSHOVER_USER'], token: 'a1ny247b6atuu67s9vc8g4djgm3c3p', sound: sound)
+    message = Pushover::Message.create(message: message, title: title, user: ENV['PUSHOVER_USER'],
+                                       token: 'a1ny247b6atuu67s9vc8g4djgm3c3p', sound: sound)
     response = message.push
     true
   end
@@ -128,11 +129,9 @@ end
 
 def showPotentialOrders
   balances[0..4].each do |b|
-    begin
-      puts b['BorS']['size'].to_f
-    rescue => exception
-      binding.pry
-    end
+    puts b['BorS']['size'].to_f
+  rescue StandardError => e
+    binding.pry
   end
 end
 
@@ -142,9 +141,7 @@ def bal(pair = 'BTC-USD')
   begin
     rest_api.accounts do |resp|
       resp.each do |account|
-        if account.currency == pair.split('-')[1]
-          return account.available.to_f.round_down(8)
-        end
+        return account.available.to_f.round_down(8) if account.currency == pair.split('-')[1]
       end
     end
   rescue Coinbase::Pro::BadRequestError => e
@@ -173,9 +170,7 @@ def balanceInUsd(currency)
           sleep 1
           retry
         rescue Coinbase::Pro::BadRequestError => e
-          unless e.message == 'request timestamp expired'
-            Raven.capture_exception(e)
-          end
+          Raven.capture_exception(e) unless e.message == 'request timestamp expired'
         rescue Exception => e
           Raven.capture_exception(e)
           puts e
@@ -216,9 +211,14 @@ end
 def takeProfitTo(bottom)
   if totalBalanceInUsd > bottom
     withdrawal = totalBalanceInUsd - bottom
-    Cb.withdraw withdrawal.round(2)
-    puts ''
-    puts "withdrew $ #{withdrawal.round(2)} - #{Time.now} | #{Time.now.getgm}"
+    begin
+      Cb.withdraw withdrawal.round(2)
+    rescue StandardError => e
+      puts e
+    else
+      puts ''
+      puts "withdrew $ #{withdrawal.round(2)} - #{Time.now} | #{Time.now.getgm}"
+    end
   end
 end
 
@@ -256,9 +256,7 @@ def balancePortfolioContinual(seconds = 0)
   redis = Redis.new
 
   prompt = TTY::Prompt.new
-  if seconds == 0
-    seconds = prompt.ask('How many often? (seconds): ', default: 900)
-  end
+  seconds = prompt.ask('How many often? (seconds): ', default: 900) if seconds == 0
   og_seconds = seconds
 
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
@@ -392,13 +390,17 @@ def balances
       if balnc['cur'] != 'XRP' && balnc['cur'] != 'LINK'
         balnc['BorS'] = if balnc['dif'].positive?
                           {
-                            'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
+                            'size' => format('%.8f',
+                                             (balnc['dif'] / format('%.2f',
+                                                                    redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
                             'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1 - redis.get('spread').to_f).round_down(2),
                             'move' => 'buy'
                           }
                         else
                           {
-                            'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
+                            'size' => format('%.8f',
+                                             (balnc['dif'] / format('%.2f',
+                                                                    redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
                             'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1 + redis.get('spread').to_f).round_down(2),
                             'move' => 'sell'
                           }
@@ -406,13 +408,31 @@ def balances
       elsif balnc['cur'] == 'XRP'
         balnc['BorS'] = if balnc['dif'].positive?
                           {
-                            'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0).abs >= redis.get('XRP_min').to_i ? format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0) : 0,
+                            'size' => if format('%.8f',
+                                                (balnc['dif'] / format('%.2f',
+                                                                       redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0).abs >= redis.get('XRP_min').to_i
+                                        format('%.8f',
+                                               (balnc['dif'] / format(
+                                                 '%.2f', redis.get("spot_#{balnc['cur']}_USD")
+                                               ).to_f)).to_f.round_down(0)
+                                      else
+                                        0
+                                      end,
                             'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(4) * 1 - redis.get('spread').to_f).round_down(4),
                             'move' => 'buy'
                           }
                         else
                           {
-                            'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0).abs >= redis.get('XRP_min').to_i ? format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0) : 0,
+                            'size' => if format('%.8f',
+                                                (balnc['dif'] / format('%.2f',
+                                                                       redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0).abs >= redis.get('XRP_min').to_i
+                                        format('%.8f',
+                                               (balnc['dif'] / format(
+                                                 '%.2f', redis.get("spot_#{balnc['cur']}_USD")
+                                               ).to_f)).to_f.round_down(0)
+                                      else
+                                        0
+                                      end,
                             'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(4) * 1 + redis.get('spread').to_f).round_down(4),
                             'move' => 'sell'
                           }
@@ -420,17 +440,21 @@ def balances
       elsif balnc['cur'] == 'LINK'
         balnc['BorS'] = if balnc['dif'].positive?
                           {
-                            'size' => format('%.2f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
+                            'size' => format('%.2f',
+                                             (balnc['dif'] / format('%.2f',
+                                                                    redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
                             'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(5) * 1 - redis.get('spread').to_f).round_down(5),
                             'move' => 'buy'
                           }
                         else
                           {
-                            'size' => format('%.2f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
+                            'size' => format('%.2f',
+                                             (balnc['dif'] / format('%.2f',
+                                                                    redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
                             'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(5) * 1 + redis.get('spread').to_f).round_down(5),
                             'move' => 'sell'
                           }
-        end
+                        end
 
       end
     end

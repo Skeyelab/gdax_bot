@@ -8,7 +8,9 @@ def watch_order(order)
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'], product_id: pair)
   puts "Press 'c' to cancel the order"
   system('stty raw -echo')
-  spinner = TTY::Spinner.new("[:spinner] #{order.side.capitalize}ing :size :p1 for :price :p2 - Current spread: :spread", format: :bouncing_ball, hide_cursor: true)
+  spinner = TTY::Spinner.new(
+    "[:spinner] #{order.side.capitalize}ing :size :p1 for :price :p2 - Current spread: :spread", format: :bouncing_ball, hide_cursor: true
+  )
   loop do
     spot = format('%.5f', redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}"))
     spinner.update(p1: pair.split('-')[0])

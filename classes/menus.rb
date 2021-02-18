@@ -66,7 +66,7 @@ class Menus < GdaxBot
 
     # xrp_split = prompt.ask('XRP:', default: 0.1).to_f
     # redis.set('XRP_split', xrp_split)
-    redis.set('spread',0.002)  
+    redis.set('spread', 0.002)
     link_split = prompt.ask('LINK:', default: 0.0).to_f
     redis.set('LINK_split', link_split)
   end
@@ -83,7 +83,8 @@ class Menus < GdaxBot
       puts "Profit Goal %? #{check_for_paused_job('ts')['profit'].to_s.green}"
       puts "Trailing Stop %? #{check_for_paused_job('ts')['t_stop'].to_s.green}"
       puts "Initial Stop Loss %? #{check_for_paused_job('ts')['stop'].to_s.green}"
-      trailing_stop(check_for_paused_job('ts')['open_price'], check_for_paused_job('ts')['percent_of_portfolio'], check_for_paused_job('ts')['pair'], check_for_paused_job('ts')['profit'], check_for_paused_job('ts')['t_stop'], check_for_paused_job('ts')['stop_percent'], check_for_paused_job('ts')['existing'])
+      trailing_stop(check_for_paused_job('ts')['open_price'], check_for_paused_job('ts')['percent_of_portfolio'],
+                    check_for_paused_job('ts')['pair'], check_for_paused_job('ts')['profit'], check_for_paused_job('ts')['t_stop'], check_for_paused_job('ts')['stop_percent'], check_for_paused_job('ts')['existing'])
 
     else
 
@@ -107,7 +108,8 @@ class Menus < GdaxBot
 
       unless existing
         percent_of_portfolio = prompt.ask('Percent of portfolio to use?', default: 10.0).to_f
-        open_price = prompt.ask('Open Price?', default: redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f.round_down(5)).to_f
+        open_price = prompt.ask('Open Price?',
+                                default: redis.get("spot_#{pair.split('-')[0]}_#{pair.split('-')[1]}").to_f.round_down(5)).to_f
       end
 
       trailing_stop(open_price, percent_of_portfolio / 100, pair, profit, t_stop, stop_percent, existing)

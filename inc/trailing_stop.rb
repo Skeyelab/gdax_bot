@@ -56,7 +56,9 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
   puts ''
   puts "Press 'c' to cancel, 'p' to pause."
   # puts "Trailing Stop %: #{'%.2f' % t_stop}"
-  spinner = TTY::Spinner.new("[:spinner] Profit %: :p1 | Profit #{pair.split('-')[1]}: :p2 | Current Price: :spot |:trend| SMA: :sma | Stop: :stop | Stop Distance: :dist | SMA Dist: :s2", interval: 5, format: :bouncing_ball, hide_cursor: true)
+  spinner = TTY::Spinner.new(
+    "[:spinner] Profit %: :p1 | Profit #{pair.split('-')[1]}: :p2 | Current Price: :spot |:trend| SMA: :sma | Stop: :stop | Stop Distance: :dist | SMA Dist: :s2", interval: 5, format: :bouncing_ball, hide_cursor: true
+  )
 
   # try_push_message(pair.to_s, 'Trailing Stop Started', 'pushover')
 
@@ -148,7 +150,8 @@ def trailing_stop(open_price, percent_of_portfolio, pair = 'LTC-BTC', profit = 0
     # puts  "| spot SMA: #{'%.5f' % spot_sma} | stop %: #{'%.2f' % stop_percent} | stop: #{'%.5f' % stop_price} | stop range: #{'%.5f' % stop_distance} | t stop range: #{'%.5f' % t_stop_distance} | market high: #{'%.5f' % market_high}".colorize(color)
 
     if (i % 5).zero?
-      spinner.update(p1: format('%.5f', current_profit_percentage.round_down(5)).to_s.colorize(color: color, background: bg_color))
+      spinner.update(p1: format('%.5f', current_profit_percentage.round_down(5)).to_s.colorize(color: color,
+                                                                                               background: bg_color))
       spinner.update(p2: format('%.5f', current_profit).to_s)
       spinner.update(spot: format('%.5f', spot).to_s)
       spinner.update(trend: trend.to_s)
