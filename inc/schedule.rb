@@ -13,6 +13,15 @@ begin
     if redis.get('takeProfits') == 'true'
       begin
         takeProfitTo redis.get('ProfitTo').to_f
+        if totalBalanceInUsd < (redis.get('ProfitTo').to_f * redis.get('stopPercent').to_f)
+          redis.set('BTC_split', 0)
+          redis.set('LTC_split', 0)
+          redis.set('ETH_split', 0)
+          redis.set('BCH_split', 0)
+          # redis.set('XRP_split', 0)
+          redis.set('LINK_split', 0)
+          redis.set('balanceLoop', 'true')
+        end
       rescue StandardError => e
         Raven.capture_exception(e)
         raise e
