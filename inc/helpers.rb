@@ -216,6 +216,7 @@ def takeProfitTo(bottom)
     rescue StandardError => e
       puts e
     else
+      redis = Redis.new
       redis.set('ProfitTo', redis.get('ProfitTo').to_f + (redis.get('ProfitTo').to_f * 0.005))
       puts ''
       puts "withdrew $ #{withdrawal.round(2)} - #{Time.now} | #{Time.now.getgm}"
