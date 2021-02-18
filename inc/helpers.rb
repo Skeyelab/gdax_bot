@@ -393,13 +393,13 @@ def balances
         balnc['BorS'] = if balnc['dif'].positive?
                           {
                             'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-                            'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 0.998).round_down(2),
+                            'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1 - redis.get('spread').to_f).round_down(2),
                             'move' => 'buy'
                           }
                         else
                           {
                             'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-                            'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1.002).round_down(2),
+                            'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1 + redis.get('spread').to_f).round_down(2),
                             'move' => 'sell'
                           }
                         end
@@ -407,13 +407,13 @@ def balances
         balnc['BorS'] = if balnc['dif'].positive?
                           {
                             'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0).abs >= redis.get('XRP_min').to_i ? format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0) : 0,
-                            'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(4) * 0.998).round_down(4),
+                            'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(4) * 1 - redis.get('spread').to_f).round_down(4),
                             'move' => 'buy'
                           }
                         else
                           {
                             'size' => format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0).abs >= redis.get('XRP_min').to_i ? format('%.8f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f.round_down(0) : 0,
-                            'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(4) * 1.002).round_down(4),
+                            'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(4) * 1 + redis.get('spread').to_f).round_down(4),
                             'move' => 'sell'
                           }
                         end
@@ -421,13 +421,13 @@ def balances
         balnc['BorS'] = if balnc['dif'].positive?
                           {
                             'size' => format('%.2f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-                            'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(5) * 0.998).round_down(5),
+                            'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(5) * 1 - redis.get('spread').to_f).round_down(5),
                             'move' => 'buy'
                           }
                         else
                           {
                             'size' => format('%.2f', (balnc['dif'] / format('%.2f', redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
-                            'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(5) * 1.002).round_down(5),
+                            'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(5) * 1 + redis.get('spread').to_f).round_down(5),
                             'move' => 'sell'
                           }
         end
