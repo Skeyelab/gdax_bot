@@ -66,7 +66,7 @@ class Menus < GdaxBot
 
     # xrp_split = prompt.ask('XRP:', default: 0.1).to_f
     # redis.set('XRP_split', xrp_split)
-
+    redis.set('spread',0.002)  
     link_split = prompt.ask('LINK:', default: 0.0).to_f
     redis.set('LINK_split', link_split)
   end
