@@ -217,7 +217,7 @@ def takeProfitTo(bottom)
       puts e
     else
       redis = Redis.new
-      redis.set('ProfitTo', redis.get('ProfitTo').to_f + (redis.get('ProfitTo').to_f * 0.005))
+      redis.set('ProfitTo', redis.get('ProfitTo').to_f + (redis.get('ProfitTo').to_f * 0.001))
       puts ''
       puts "withdrew $ #{withdrawal.round(2)} - #{Time.now} | #{Time.now.getgm}"
     end
