@@ -16,7 +16,7 @@ end
 # adds percent_of to Numeric class
 class Numeric
   def percent_of(num)
-    to_f / num.to_f * 100.0
+    to_f / num * 100.0
   end
 end
 
@@ -217,7 +217,8 @@ def takeProfitTo(bottom)
       puts e
     else
       redis = Redis.new
-      redis.set('ProfitTo', (redis.get('ProfitTo').to_f + (redis.get('ProfitTo').to_f * redis.get('ProfitToBump').to_f)).to_f.round(2))
+      redis.set('ProfitTo',
+                (redis.get('ProfitTo').to_f + (redis.get('ProfitTo').to_f * redis.get('ProfitToBump').to_f)).to_f.round(2))
       puts ''
       puts "withdrew $ #{withdrawal.round(2)} - #{Time.now} | #{Time.now.getgm} - new ProfitTo: #{redis.get('ProfitTo').to_f}"
     end
@@ -258,7 +259,7 @@ def balancePortfolioContinual(seconds = 0)
   redis = Redis.new
 
   prompt = TTY::Prompt.new
-  seconds = prompt.ask('How many often? (seconds): ', default: 900) if seconds == 0
+  seconds = prompt.ask('How many often? (seconds): ', default: 900) if seconds.zero?
   og_seconds = seconds
 
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
@@ -267,7 +268,7 @@ def balancePortfolioContinual(seconds = 0)
   orderz = balancePortfolio
 
   # seconds = seconds.to_i * 3 if orderz.count > 0
-  seconds = 15 if orderz.count > 0
+  seconds = 15 if orderz.count.positive?
 
   # binding.pry
   # print "\r"
@@ -321,10 +322,10 @@ def balancePortfolio
     # binding.pry
     orderz << if balnc['BorS']['move'] == 'buy'
                 #        puts "buying #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
-                buy(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
+                buy("#{balnc['cur']}-USD", balnc['BorS']['price'], balnc['BorS']['size'].abs)
               else
                 #        puts "selling #{balnc['BorS']['size'].abs} #{balnc['cur']} @ #{balnc['BorS']['price']}"
-                sell2(balnc['cur'] + '-USD', balnc['BorS']['price'], balnc['BorS']['size'].abs)
+                sell2("#{balnc['cur']}-USD", balnc['BorS']['price'], balnc['BorS']['size'].abs)
               end
   end
   orderz.compact
@@ -519,7 +520,7 @@ def cancel_orders(orders)
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
   sleep 1
   begin
-    if orders.count > 0
+    if orders.count.positive?
       orders.each do |order|
         rest_api.cancel(order.id) do
           puts 'Order canceled successfully'

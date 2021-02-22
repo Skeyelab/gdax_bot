@@ -73,9 +73,10 @@ def select_recent_order_menu(pair)
     menu.choice 'Manual'
     menu.choice 'Back'
   end
-  if selected_order == 'Back'
+  case selected_order
+  when 'Back'
     return false
-  elsif selected_order == 'Manual'
+  when 'Manual'
     selected_order = {}
     selected_order['size'] = prompt.ask('Order size?')
     selected_order['price'] = prompt.ask('Open price?')

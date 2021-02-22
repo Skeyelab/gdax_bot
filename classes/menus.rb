@@ -39,13 +39,13 @@ class Menus < GdaxBot
 
   def self.show_splits
     redis = Redis.new
-    puts 'BTC: ' + redis.get('BTC_split')
-    puts 'LTC: ' + redis.get('LTC_split')
-    puts 'ETH: ' + redis.get('ETH_split')
-    puts 'BCH: ' + redis.get('BCH_split')
+    puts "BTC: #{redis.get('BTC_split')}"
+    puts "LTC: #{redis.get('LTC_split')}"
+    puts "ETH: #{redis.get('ETH_split')}"
+    puts "BCH: #{redis.get('BCH_split')}"
     # puts 'XRP: ' + redis.get('XRP_split')
-    puts 'LINK: ' + redis.get('LINK_split')
-    puts 'USD: ' + (1.0 - (redis.get('LTC_split').to_f + redis.get('BCH_split').to_f + redis.get('BTC_split').to_f + redis.get('ETH_split').to_f + redis.get('LINK_split').to_f)).round(2).to_s
+    puts "LINK: #{redis.get('LINK_split')}"
+    puts "USD: #{(1.0 - (redis.get('LTC_split').to_f + redis.get('BCH_split').to_f + redis.get('BTC_split').to_f + redis.get('ETH_split').to_f + redis.get('LINK_split').to_f)).round(2)}"
   end
 
   def self.set_splits
@@ -144,9 +144,10 @@ class Menus < GdaxBot
       menu.choice 'Manual'
       menu.choice 'Back'
     end
-    if selected_order == 'Back'
+    case selected_order
+    when 'Back'
       return false
-    elsif selected_order == 'Manual'
+    when 'Manual'
       selected_order = {}
       selected_order['size'] = prompt.ask('Order size?')
       selected_order['price'] = prompt.ask('Open price?')

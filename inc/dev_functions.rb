@@ -19,7 +19,7 @@ module GetKey
     if @use_stty
       system('stty raw -echo') # => Raw mode, no echo
       (begin
-        STDIN.read_nonblock(1).ord
+        $stdin.read_nonblock(1).ord
       rescue StandardError
         nil
       end)

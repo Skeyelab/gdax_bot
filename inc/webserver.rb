@@ -4,7 +4,7 @@ require 'socket'
 require 'uri'
 
 # Files will be served from this directory
-WEB_ROOT = `pwd`.strip + '/public'
+WEB_ROOT = "#{`pwd`.strip}/public"
 
 # Map extensions to their content type
 CONTENT_TYPE_MAPPING = {
