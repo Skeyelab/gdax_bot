@@ -395,7 +395,7 @@ def balances
                           {
                             'size' => format('%.8f',
                                              (balnc['dif'] / format('%.2f',
-                                                                    redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
+                                                                    redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f / 2,
                             'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1 - redis.get('spread').to_f).round_down(2),
                             'move' => 'buy'
                           }
@@ -403,7 +403,7 @@ def balances
                           {
                             'size' => format('%.8f',
                                              (balnc['dif'] / format('%.2f',
-                                                                    redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f,
+                                                                    redis.get("spot_#{balnc['cur']}_USD")).to_f)).to_f / 2,
                             'price' => (redis.get("spot_#{balnc['cur']}_USD").to_f.round_down(2) * 1 + redis.get('spread').to_f).round_down(2),
                             'move' => 'sell'
                           }
