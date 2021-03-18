@@ -24,7 +24,7 @@ begin
           redis.set('LINK_split', 0)
           redis.set('balanceLoop', 'true')
         end
-      rescue StandardError => e
+      rescue Exception => e
         Raven.capture_exception(e)
         raise e
       end
