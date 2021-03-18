@@ -520,15 +520,14 @@ def parseARGV(switch)
 end
 
 def processCLI
-  unless ARGV.empty?
+  return if ARGV.empty?
 
-    case parseARGV '-f'
-    when 'balance', 'b'
-      redis = Redis.new
-      redis.set('balanceLoop', 'true')
-      balLoop (parseARGV '-s').to_i
-    else
-      binding.pry
-    end
+  case parseARGV '-f'
+  when 'balance', 'b'
+    redis = Redis.new
+    redis.set('balanceLoop', 'true')
+    balLoop (parseARGV '-s').to_i
+  else
+    binding.pry
   end
 end
