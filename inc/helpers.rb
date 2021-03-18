@@ -507,7 +507,7 @@ def cancel_orders(orders)
         next
       end
     end
-  rescue Exception => e
+  rescue StandardError => e
     Raven.capture_exception(e)
     puts e
   end
