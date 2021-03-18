@@ -142,7 +142,9 @@ def bal(pair = 'BTC-USD')
   begin
     rest_api.accounts do |resp|
       resp.each do |account|
-        return account.available.to_f.round_down(8) if account.currency == pair.split('-')[1]
+        if account.currency == pair.split('-')[1]
+          return account.available.to_f.round_down(8)
+        end
       end
     end
   rescue Coinbase::Pro::BadRequestError => e
@@ -171,7 +173,9 @@ def balanceInUsd(currency)
           sleep 1
           retry
         rescue Coinbase::Pro::BadRequestError => e
-          Raven.capture_exception(e) unless e.message == 'request timestamp expired'
+          unless e.message == 'request timestamp expired'
+            Raven.capture_exception(e)
+          end
         rescue Exception => e
           Raven.capture_exception(e)
           puts e
@@ -260,7 +264,9 @@ def balancePortfolioContinual(seconds = 0)
   redis = Redis.new
 
   prompt = TTY::Prompt.new
-  seconds = prompt.ask('How many often? (seconds): ', default: 900) if seconds.zero?
+  if seconds.zero?
+    seconds = prompt.ask('How many often? (seconds): ', default: 900)
+  end
   og_seconds = seconds
 
   rest_api = Coinbase::Pro::Client.new(ENV['GDAX_TOKEN'], ENV['GDAX_SECRET'], ENV['GDAX_PW'])
@@ -268,8 +274,8 @@ def balancePortfolioContinual(seconds = 0)
   # loop do
   orderz = balancePortfolio
 
-  seconds = seconds.to_i if orderz.count > 0
-  #seconds = 15 if orderz.count.positive?
+  seconds = seconds.to_i * 2 if orderz.count > 0
+  # seconds = 15 if orderz.count.positive?
 
   # binding.pry
   # print "\r"
