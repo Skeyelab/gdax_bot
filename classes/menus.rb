@@ -43,7 +43,6 @@ class Menus < GdaxBot
     puts "LTC: #{redis.get('LTC_split')}"
     puts "ETH: #{redis.get('ETH_split')}"
     puts "BCH: #{redis.get('BCH_split')}"
-    # puts 'XRP: ' + redis.get('XRP_split')
     puts "LINK: #{redis.get('LINK_split')}"
     puts "USD: #{(1.0 - (redis.get('LTC_split').to_f + redis.get('BCH_split').to_f + redis.get('BTC_split').to_f + redis.get('ETH_split').to_f + redis.get('LINK_split').to_f)).round(2)}"
   end
@@ -52,22 +51,22 @@ class Menus < GdaxBot
     prompt = TTY::Prompt.new
     redis = Redis.new
 
-    btc_split = prompt.ask('BTC:', default: 0.2).to_f
+    btc_split = prompt.ask('BTC:', default: redis.get('BTC_split')).to_f
     redis.set('BTC_split', btc_split)
 
-    ltc_split = prompt.ask('LTC:', default: 0.2).to_f
+    ltc_split = prompt.ask('LTC:', default: redis.get('LTC_split')).to_f
     redis.set('LTC_split', ltc_split)
 
-    eth_split = prompt.ask('ETH:', default: 0.2).to_f
+    eth_split = prompt.ask('ETH:', default: redis.get('ETH_split')).to_f
     redis.set('ETH_split', eth_split)
 
-    bch_split = prompt.ask('BCH:', default: 0.2).to_f
+    bch_split = prompt.ask('BCH:', default: redis.get('BCH_split')).to_f
     redis.set('BCH_split', bch_split)
 
     # xrp_split = prompt.ask('XRP:', default: 0.1).to_f
     # redis.set('XRP_split', xrp_split)
-    redis.set('spread', 0.002)
-    link_split = prompt.ask('LINK:', default: 0.0).to_f
+    # redis.set('spread', 0.002)
+    link_split = prompt.ask('LINK:', default: redis.get('LINK_split')).to_f
     redis.set('LINK_split', link_split)
   end
 
