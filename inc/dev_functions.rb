@@ -6,9 +6,9 @@ module GetKey
   @use_stty = begin
     require 'Win32API'
     false
-  rescue LoadError
-    # Use Unix way
-    true
+              rescue LoadError
+                # Use Unix way
+                true
   end
 
   # Return the ASCII code last key pressed, or nil if none
@@ -20,8 +20,8 @@ module GetKey
       system('stty raw -echo') # => Raw mode, no echo
       (begin
         $stdin.read_nonblock(1).ord
-      rescue StandardError
-        nil
+       rescue StandardError
+         nil
       end)
       # system('stty -raw echo') # => Reset terminal mode
 
@@ -151,7 +151,9 @@ def run_websocket
   EM.run do
     websocket.start!
     EM.add_periodic_timer(30) do
-      websocket.start! if (Time.now - Time.parse(redis.get('last_ws_message_time'))) > 30
+      if (Time.now - Time.parse(redis.get('last_ws_message_time'))) > 30
+        websocket.start!
+      end
     end
     EM.error_handler do |_e|
       sleep 1

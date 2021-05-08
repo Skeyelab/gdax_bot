@@ -58,7 +58,9 @@ def select_recent_order_menu(pair)
     sleep 1
     resp.each do |order|
       sleep 1
-      orders << order if (order['product_id'] == pair) && (order['done_reason'] == 'filled') && (order['side'] == 'buy')
+      if (order['product_id'] == pair) && (order['done_reason'] == 'filled') && (order['side'] == 'buy')
+        orders << order
+      end
     end
   end
 
