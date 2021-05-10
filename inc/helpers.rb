@@ -93,7 +93,7 @@ def try_push_message(message, title, sound = 'none')
   if ENV['PUSHOVER_USER'] == ''
     false
   else
-    message = Pushover::Message.create(message: message, title: title, user: ENV['PUSHOVER_USER'],
+    message = Pushover::Message.new(message: message, title: title, user: ENV['PUSHOVER_USER'],
                                        token: 'a1ny247b6atuu67s9vc8g4djgm3c3p', sound: sound)
     response = message.push
     true

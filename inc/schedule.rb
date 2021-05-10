@@ -14,6 +14,7 @@ begin
       begin
         takeProfitTo redis.get('ProfitTo').to_f
         if (totalBalanceInUsd < (redis.get('ProfitTo').to_f * redis.get('stopPercent').to_f)) && balancePortfolio.count.zero?
+          try_push_message("Go check the GDAX Bot","AUTO SELL")
           binding.pry
           redis.set('orderSizeDividedBy', 1)
           redis.set('spread', 0.000)
