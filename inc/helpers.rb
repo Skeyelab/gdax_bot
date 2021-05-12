@@ -199,8 +199,9 @@ def totalBalanceInUsd
   total = 0
   rest_api.accounts do |resp|
     resp.each do |account|
-      binding.pry
       spot = format('%.5f', redis.get("spot_#{account.currency}_USD")).to_f
+      binding.pry
+
       total += ((account.available.to_f.round_down(8) + account.hold.to_f.round_down(8)) * spot).round_down(2)
     rescue Net::OpenTimeout => e
       sleep 1
